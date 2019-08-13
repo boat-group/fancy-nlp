@@ -24,6 +24,7 @@ matplotlib==3.1.0
 numpy==1.16.4
 protobuf==3.4.0
 pyparsing==2.4.0
+pytest==5.0.1
 python-dateutil==2.8.0
 PyYAML==5.1
 redis==3.2.1
