@@ -2,7 +2,7 @@
 
 from absl import logging
 from keras.preprocessing.sequence import pad_sequences
-from ..utils import load_pre_trained, train_w2v, train_glove, train_fasttext
+from ..utils import load_pre_trained, train_w2v, train_fasttext
 
 
 class Preprocessor(object):
@@ -76,8 +76,6 @@ class Preprocessor(object):
             return train_w2v(corpus, vocab, pad_idx, unk_idx)
         elif embed_type == 'fasttext':
             return train_fasttext(corpus, vocab, pad_idx, unk_idx)
-        elif embed_type == 'glove':
-            return train_glove(corpus, vocab, pad_idx, unk_idx)
         else:
             try:
                 return load_pre_trained(embed_type, vocab, pad_idx, unk_idx)

@@ -6,7 +6,6 @@ import numpy as np
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 from fasttext import train_unsupervised
-from glove import Glove, Corpus
 
 
 def load_glove_format(filename):
@@ -136,34 +135,6 @@ def train_w2v(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embe
     weights = model.wv.syn0
     d = dict([(k, v.index) for k, v in model.wv.vocab.items()])
     word_vectors = dict((w, weights[d[w], :]) for w in d)
-    emb = filter_embeddings(word_vectors, embedding_dim, vocabulary, zero_init_indices,
-                            rand_init_indices)
-    return emb
-
-
-def train_glove(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embedding_dim=300):
-    """Use glove to train on corpus to obtain embedding
-    Here we use a python implementation of Glove, but the official glove implementation of C version
-    is also highly recommended: https://github.com/stanfordnlp/GloVe/blob/master/demo.sh
-
-    Args:
-        corpus: list of tokenized texts, corpus to train on
-        vocabulary: dict, a mapping of words to indices
-        zero_init_indices: int or a list, the indices which use zero-initialization. These indices
-                           usually represent padding token.
-        rand_init_indices: int or a list, the indices which use randomly-initialization.These
-                           indices usually represent other special tokens, such as "unk" token.
-        embedding_dim: int, dimensionality of embedding
-
-    Returns: np.array, a word embedding matrix.
-
-    """
-    corpus_model = Corpus()
-    corpus_model.fit(corpus, window=10)
-    glove = Glove(no_components=embedding_dim, learning_rate=0.05)
-    glove.fit(corpus_model.matrix, epochs=10, no_threads=4, verbose=True)
-    glove.add_dictionary(corpus_model.dictionary)
-    word_vectors = dict((w, glove.word_vectors[glove.dictionary[w]]) for w in glove.dictionary)
     emb = filter_embeddings(word_vectors, embedding_dim, vocabulary, zero_init_indices,
                             rand_init_indices)
     return emb
