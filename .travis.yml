@@ -5,7 +5,8 @@ install:
   - pip install -r requirements.txt
 script:
   - pip install google-compute-engine
+  - pip install pytest==5.0.1
   - pip install -e .
-  - pytest
+  - pytest --cov=fancy_nlp tests/
 after_success:
   - coveralls
