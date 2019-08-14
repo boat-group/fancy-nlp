@@ -58,7 +58,7 @@ class Preprocessor(object):
         token_count = {token: count for token, count in token_count.items()
                        if count >= min_count}
         id2token = {idx + start_index: token for idx, token in enumerate(token_count)}
-        token_vocab = {token: idx for idx, token in id2token}
+        token_vocab = {token: idx for idx, token in id2token.items()}
 
         logging.info('Build vocabulary finished, vocabulary size: {}'.format(len(token_vocab)))
         return token_count, token_vocab, id2token
@@ -67,7 +67,7 @@ class Preprocessor(object):
         raise NotImplementedError
 
     @staticmethod
-    def build_embedding(self, embed_type, vocab, corpus=None, pad_idx=0, unk_idx=1):
+    def build_embedding(embed_type, vocab, corpus=None, pad_idx=0, unk_idx=1):
         """preprae embeddingd for the words in vocab
         """
         if embed_type is None:
