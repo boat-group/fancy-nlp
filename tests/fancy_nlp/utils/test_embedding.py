@@ -11,8 +11,8 @@ class TestEmbedding:
 
     @classmethod
     def setup_class(self):
-        self.test_corpus = load_ner_data_and_labels(self.test_file)
-        self.test_vocab = dict((token, i + 2) for i, token in enumerate(self.test_corpus[0]))
+        self.test_corpus, _ = load_ner_data_and_labels(self.test_file)
+        self.test_vocab = dict((token, i+2) for i, token in enumerate(set(self.test_corpus[0])))
 
     def test_train_w2v(self):
         emb = train_w2v(self.test_corpus, self.test_vocab, embedding_dim=10)
