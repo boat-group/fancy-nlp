@@ -43,3 +43,6 @@ termcolor==1.1.0
 tqdm==4.32.1
 urllib3==1.25.3
 Werkzeug==0.15.4
+jieba=0.39
+glove-python=0.1.0
+fasttext=0.8.22
