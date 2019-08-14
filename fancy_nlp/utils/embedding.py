@@ -5,7 +5,7 @@ import os
 import numpy as np
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
-from fastText import train_unsupervised
+from fasttext import train_unsupervised
 from glove import Glove, Corpus
 
 
