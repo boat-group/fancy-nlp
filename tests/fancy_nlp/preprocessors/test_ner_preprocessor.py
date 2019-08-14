@@ -12,19 +12,19 @@ class TestNERPreprocessor:
     def setup_class(self):
         x_train, y_train = load_ner_data_and_labels(self.test_file)
         self.preprocessor = NERPreprocessor(x_train, y_train, use_word=True,
-                                            char_embed_type='word2vec')
+                                            char_embed_type='word2vec', max_len=50)
 
     def test_init(self):
         assert len(self.preprocessor.char_vocab_count) == len(self.preprocessor.char_vocab) \
             == len(self.preprocessor.id2char)
-        assert list(self.preprocessor.id2char.keys()) == 2
+        assert list(self.preprocessor.id2char.keys())[0] == 2
         assert self.preprocessor.char_embeddings.shape[0] == len(self.preprocessor.char_vocab) + 2
         assert self.preprocessor.char_embeddings.shape[1] == 300
         assert not np.any(self.preprocessor.char_embeddings[0])
 
         assert len(self.preprocessor.word_vocab_count) == len(self.preprocessor.word_vocab) \
             == len(self.preprocessor.id2word)
-        assert list(self.preprocessor.id2word.keys()) == 2
+        assert list(self.preprocessor.id2word.keys())[0] == 2
         assert self.preprocessor.word_embeddings is None
 
         assert len(self.preprocessor.label_vocab) == len(self.preprocessor.id2label)
