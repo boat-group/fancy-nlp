@@ -8,6 +8,7 @@ script:
   - pip install google-compute-engine
   - pip install pytest==5.0.1
   - pip install pytest-cov==2.7.1
+  - pip install coveralls
   - pip install -e .
   - pytest --cov=fancy_nlp tests/
 after_success:
