@@ -27,18 +27,20 @@ def load_ner_data_and_labels(filename, split=False, split_size=0.1, seed=42):
         token_seqs, label_seqs = [], []
         tokens, labels = [], []
         for line in reader:
-            line_split = line.strip().split('\t')
-            if len(line_split) == 2:
-                token, label = line_split
-                tokens.append(token)
-                labels.append(label)
-            elif len(line_split) == 0:
+            line = line.rstrip()
+            if line:
+                line_split = line.split('\t')
+                if len(line_split) == 2:
+                    token, label = line_split
+                    tokens.append(token)
+                    labels.append(label)
+                else:
+                    raise Exception('Format Error! Input file should follow CoNLL format.')
+            else:
                 if tokens:
                     token_seqs.append(tokens)
                     label_seqs.append(labels)
                     tokens, labels = [], []
-            else:
-                raise Exception('Format Error! Input file should follow CoNLL format.')
 
         if tokens:  # in case there's no blank line at the end of the file
             token_seqs.append(tokens)
