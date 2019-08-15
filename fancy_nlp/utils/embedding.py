@@ -99,7 +99,7 @@ def load_pre_trained(load_filename, vocabulary=None, zero_init_indices=0, rand_i
     word_vectors = {}
     try:
         model = KeyedVectors.load_word2vec_format(load_filename)
-        weights = model.wv.syn0
+        weights = model.wv.vectors
         embedding_dim = weights.shape[1]
         for k, v in model.wv.vocab.items():
             word_vectors[k] = weights[v.index, :]
@@ -132,7 +132,7 @@ def train_w2v(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embe
 
     """
     model = Word2Vec(corpus, size=embedding_dim, min_count=1, window=5, sg=1, iter=10)
-    weights = model.wv.syn0
+    weights = model.wv.vectors
     d = dict([(k, v.index) for k, v in model.wv.vocab.items()])
     word_vectors = dict((w, weights[d[w], :]) for w in d)
     emb = filter_embeddings(word_vectors, embedding_dim, vocabulary, zero_init_indices,
