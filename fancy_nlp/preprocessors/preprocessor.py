@@ -19,7 +19,7 @@ class Preprocessor(object):
 
     @staticmethod
     def build_corpus(untokenized_texts, cut_func):
-        """Build corpus.
+        """Build corpus from untokenized texts.
 
         Args:
             cut_func: function to tokenize texts. For example, lambda x: list(x) can be used for
@@ -40,7 +40,7 @@ class Preprocessor(object):
 
         Args:
             corpus: list of tokenized texts, like ``[['我', '是', '中', '国', '人']]``
-            min_count: token whose frequency is less than min_count will be ingnored
+            min_count: token whose frequency is less than min_count will be ignored
             start_index: token's starting index, we usually set it to be 2, which means we preserve
                          the first 2 indices: 0 for padding token, 1 for "unk" token
 
@@ -64,14 +64,26 @@ class Preprocessor(object):
         return token_count, token_vocab, id2token
 
     def build_label_vocab(self, labels):
+        """Build label vocabulary
+        """
         raise NotImplementedError
 
     @staticmethod
     def build_embedding(embed_type, vocab, corpus=None, pad_idx=0, unk_idx=1):
-        """preprae embeddingd for the words in vocab
+        """Prepare embeddings for the words in vocab.
+        We support loading external pre-trained embeddings as well as training on the corpus to
+        obtain embeddings
+
+        Args:
+            embed_type: str, can be a path to pre-trained embedding file or pre-train embedding
+                        method to train on corpus
+            vocab: a mapping of words to indices
+            corpus: a list of tokenized texts
+            pad_idx: the index of padding token
+            unk_idx: the index of unknown token
         """
         if embed_type is None:
-            return None
+            return None     # do not adopt any pre-trained embeddings
         if embed_type == 'word2vec':
             return train_w2v(corpus, vocab, pad_idx, unk_idx)
         elif embed_type == 'fasttext':
@@ -82,13 +94,46 @@ class Preprocessor(object):
             except FileNotFoundError:
                 raise ValueError('`embed_type` input error: {}'.format(embed_type))
 
+    def prepare_input(self, data, label=None):
+        """Prepare input for neural model training, evaluating and testing
+        """
+        raise NotImplementedError
+
     @staticmethod
-    def build_id_sequence(tokenized_texts, vocabulary, unk_idx=1):
-        """Given a list, each item is a token list, return the corresponding id sequence.
+    def build_id_sequence(tokenized_text, vocabulary, unk_idx=1):
+        """Given a token list, return the corresponding id sequence.
+
+        Args:
+            tokenized_text: list of str, like `['我', '是', '中', '国', '人']`
+            vocabulary: a mapping of words to indices
+            unk_idx: the index of words that do not appear in vocabulary, we usually set it to 1
+
+        Returns: list of indices
+
+        """
+        return [vocabulary.get(token, unk_idx) for token in tokenized_text]
+
+    @staticmethod
+    def build_id_matrix(tokenized_texts, vocabulary, unk_idx=1):
+        """Given a list, each item is a token list, return the corresponding id matrix.
+
+        Args:
+            tokenized_texts: list of tokenized texts, like ``[['我', '是', '中', '国', '人']]``
+            vocabulary: a mapping of words to indices
+            unk_idx: the index of words that do not appear in vocabulary, we usually set it to 1
+
+        Returns: list of list of indices
+
         """
         return [[vocabulary.get(token, unk_idx) for token in text] for text in tokenized_texts]
 
     def pad_sequence(self, sequence_list):
         """Given a list, each item is a id sequence, return the padded sequence
         """
-        return pad_sequences(sequence_list, maxlen=self.max_len, truncating=self.truncating_mode)
+        return pad_sequences(sequence_list, maxlen=self.max_len, padding=self.padding_mode,
+                             truncating=self.truncating_mode)
+
+    def label_decode(self, predictions):
+        """Decode model predictions to labels
+        """
+        raise NotImplementedError
