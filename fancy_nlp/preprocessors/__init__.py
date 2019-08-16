@@ -2,5 +2,4 @@
 
 from __future__ import absolute_import
 
-from . import ner_preprocessor
-from . import text_classification_preprocessor
+from .ner_preprocessor import NERPreprocessor
