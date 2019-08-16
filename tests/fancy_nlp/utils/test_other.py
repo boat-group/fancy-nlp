@@ -16,6 +16,16 @@ class TestOther:
                                   truncating='post')
         np.testing.assert_equal(result, expected)
 
+        test_case = [[[1, 2, 4], [1, 2], [3]],
+                     [[2, 4], [1, 0, 2]],
+                     [[1, 2, 3, 4, 5]]]
+        expected = [[[1, 2, 0, 0, 0], [3, 0, 0, 0, 0]],
+                    [[2, 4, 0, 0, 0], [1, 0, 2, 0, 0]],
+                    [[1, 2, 3, 4, 5], [0, 0, 0, 0, 0]]]
+        result = pad_sequences_2d(test_case, max_len_1=2, max_len_2=None, padding='post',
+                                  truncating='pre')
+        np.testing.assert_equal(result, expected)
+
         test_case = [[[1, 2, 3, 4], [1, 2], [1], [1, 2, 3]],
                      [[1, 2, 3, 4, 5], [1, 2], [1, 2, 3, 4]]]
         expected = [[[1, 2, 3, 4, 0], [1, 2, 0, 0, 0], [1, 0, 0, 0, 0], [1, 2, 3, 0, 0]],
