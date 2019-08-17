@@ -10,7 +10,7 @@ from fancy_nlp.utils.other import pad_sequences_2d
 class NERPreprocessor(Preprocessor):
     """NER preprocessor.
     """
-    def __init__(self, train_data, train_label, min_count=3, start_index=2, use_word=False,
+    def __init__(self, train_data, train_labels, min_count=3, start_index=2, use_word=False,
                  external_word_dict=None, char_embed_type=None, word_embed_type=None,
                  max_len=None, padding_mode='post',
                  truncating_mode='post'):
@@ -18,7 +18,7 @@ class NERPreprocessor(Preprocessor):
 
         Args:
             train_data: a list of tokenized (in char level) texts
-            train_label: list of list, train_data's labels
+            train_labels: list of list, train_data's labels
             min_count: int, token whose frequency is lower than min_count will be ignored
             start_index: the starting index of tokens
             use_word: whether to use word as additional input (here we use char as main input for
@@ -32,7 +32,7 @@ class NERPreprocessor(Preprocessor):
             truncating_mode:
         """
         self.train_data = train_data
-        self.train_label = train_label
+        self.train_labels = train_labels
         self.min_count = min_count
         self.start_index = start_index
         self.use_word = use_word
@@ -46,6 +46,7 @@ class NERPreprocessor(Preprocessor):
                                                                                 self.start_index)
         self.char_embeddings = self.build_embedding(char_embed_type, self.char_vocab,
                                                     self.train_data, pad_idx=0, unk_idx=1)
+        self.char_vocab_size = len(self.char_vocab) + 2
 
         # build word vocabulary
         if self.use_word:
@@ -57,11 +58,12 @@ class NERPreprocessor(Preprocessor):
             self.word_vocab_count, self.word_vocab, self.id2word = self.build_vocab(word_corpus,
                                                                                     self.min_count,
                                                                                     self.start_index)
+            self.word_vocab_size = len(self.word_vocab) + 2
             self.word_embeddings = self.build_embedding(word_embed_type, self.word_vocab,
                                                         self.train_data, pad_idx=0, unk_idx=1)
 
         # build label vocabulary
-        _, self.label_vocab, self.id2label = self.build_label_vocab(self.train_label)
+        _, self.label_vocab, self.id2label = self.build_label_vocab(self.train_labels)
         self.num_class = len(self.label_vocab)
 
     def build_label_vocab(self, labels):
@@ -78,7 +80,7 @@ class NERPreprocessor(Preprocessor):
         and other hand-crafted features embeddings as additional input as well.
 
         Args:
-            data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
+            data: list of tokenized (in char level) texts, like ``[['我', '是', '中', '国', '人']]``
             labels: list of list of str, the corresponding label strings
 
         Returns:

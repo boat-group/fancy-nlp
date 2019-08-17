@@ -38,7 +38,7 @@ class TestNERPreprocessor:
 
     def test_prepare_input(self):
         features, y = self.preprocessor.prepare_input(self.preprocessor.train_data,
-                                                      self.preprocessor.train_label)
+                                                      self.preprocessor.train_labels)
         assert len(features) == 2
         assert features[0].shape == features[1].shape == \
                (len(self.preprocessor.train_data), self.preprocessor.max_len)
