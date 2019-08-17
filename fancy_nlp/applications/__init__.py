@@ -2,5 +2,5 @@
 
 from __future__ import absolute_import
 
-from . import ner
+from .ner import NER
 from . import text_classification
