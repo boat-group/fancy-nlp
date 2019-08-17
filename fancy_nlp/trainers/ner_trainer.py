@@ -3,6 +3,7 @@
 import os
 from absl import logging
 from keras.callbacks import *
+from seqeval import metrics
 from fancy_nlp.utils import NERGenerator
 from fancy_nlp.callbacks import NERMetric
 from fancy_nlp.callbacks import SWA
@@ -42,8 +43,6 @@ class NERTrainer(object):
             add_metric = False
 
         add_modelcheckpoint = False
-
-        # ModelCheckpoint: must add
         if 'modelcheckpoint' in callbacks_str:
             if not add_metric:
                 logging.warning('Using `ModelCheckpoint` with validation data not provided is not '
@@ -94,8 +93,6 @@ class NERTrainer(object):
 
     def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
                         batch_size=32, epochs=50, callbacks_str=None, shuffle=True):
-        print(valid_data is None)
-        print(valid_labels is None)
         callbacks, add_modelcheckpoint = self.prepare_callback(callbacks_str, valid_data,
                                                                valid_labels)
 
@@ -111,3 +108,26 @@ class NERTrainer(object):
         self.model.fit_generator(train_generator, valid_generator, epochs, callbacks)
         if add_modelcheckpoint:
             self.model.load_best_model()
+
+    def evaluate(self, data, labels):
+        """Evaluate the performance of ner model.
+
+        Args:
+            data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
+            labels: list of list of str, the corresponding label strings
+
+        """
+        features, y = self.preprocessor.prepare_input(data, labels)
+        pred_probs = self.model.model.predict(features)
+
+        lengths = [min(len(label), pred_prob.shape[0])
+                   for label, pred_prob in zip(labels, pred_probs)]
+        y_pred = self.preprocessor.label_decode(pred_probs, lengths)
+
+        r = metrics.recall_score(labels, y_pred)
+        p = metrics.precision_score(labels, y_pred)
+        f1 = metrics.f1_score(labels, y_pred)
+
+        print('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
+        print(metrics.classification_report(labels, y_pred))
+        return f1
