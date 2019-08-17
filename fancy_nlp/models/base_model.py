@@ -7,6 +7,7 @@ import os
 from absl import logging
 from keras.models import model_from_json
 
+
 class BaseModel(object):
     def __init__(self,
                  checkpoint_dir,
