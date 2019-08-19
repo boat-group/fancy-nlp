@@ -113,7 +113,8 @@ def load_pre_trained(load_filename, vocabulary=None, zero_init_indices=0, rand_i
         return emb
     else:
         logging.info('Loading Embedding from: {}, shaped: {}'.format(load_filename,
-                                                                     (len(word_vectors), embedding_dim)))
+                                                                     (len(word_vectors),
+                                                                      embedding_dim)))
         return word_vectors
 
 
@@ -147,8 +148,8 @@ def train_fasttext(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1,
         Args:
             corpus: list of tokenized texts, corpus to train on
             vocabulary: dict, a mapping of words to indices
-            zero_init_indices: int or a list, the indices which use zero-initialization. These indices
-                               usually represent padding token.
+            zero_init_indices: int or a list, the indices which use zero-initialization. These
+                               indices usually represent padding token.
             rand_init_indices: int or a list, the indices which use randomly-initialization.These
                                indices usually represent other special tokens, such as "unk" token.
             embedding_dim: int, dimensionality of embedding
