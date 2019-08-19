@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from absl import logging
 from keras.callbacks import *
 from seqeval import metrics
+
 from fancy_nlp.utils import NERGenerator
 from fancy_nlp.callbacks import NERMetric
 from fancy_nlp.callbacks import SWA

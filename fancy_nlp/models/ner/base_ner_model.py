@@ -4,6 +4,7 @@
 """
 
 import os
+
 from keras.layers import *
 from fancy_nlp.models.base_model import BaseModel
 

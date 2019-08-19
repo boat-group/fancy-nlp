@@ -3,6 +3,7 @@
 import numpy as np
 import jieba
 from keras.utils.np_utils import to_categorical
+
 from fancy_nlp.preprocessors.preprocessor import Preprocessor
 from fancy_nlp.utils.other import pad_sequences_2d
 

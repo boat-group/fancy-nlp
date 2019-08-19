@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from absl import logging
 import os
+
+from absl import logging
 import numpy as np
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors

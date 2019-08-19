@@ -2,6 +2,7 @@
 
 from absl import logging
 from keras.preprocessing.sequence import pad_sequences
+
 from ..utils import load_pre_trained, train_w2v, train_fasttext
 
 

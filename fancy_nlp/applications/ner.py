@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from absl import logging
 import pickle
+
+from absl import logging
+
 from fancy_nlp.preprocessors import NERPreprocessor
 from fancy_nlp.models.ner import *
 from fancy_nlp.trainers import NERTrainer

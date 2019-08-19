@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from keras.layers import *
 from keras_contrib.layers import CRF
 from keras_contrib.losses import crf_loss
 from keras_contrib.metrics import crf_accuracy
 from keras.models import Model
 import tensorflow as tf
+
 from fancy_nlp.models.ner.base_ner_model import BaseNERModel
 
 
