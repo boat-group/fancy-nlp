@@ -13,7 +13,7 @@ class NERPredictor(object):
 
         Args:
             ner_model: instance of ner model
-            preprocessor: `NERProcessor` instance to prepare feature input for ner model
+            preprocessor: `NERPreprocessor` instance to prepare feature input for ner model
         """
         self.ner_model = ner_model
         self.preprocessor = preprocessor
