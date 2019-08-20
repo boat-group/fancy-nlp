@@ -39,6 +39,3 @@ class NERMetric(Callback):
         logs['val_f1'] = f1
         print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
         print(metrics.classification_report(self.valid_labels, y_pred))
-
-
-
