@@ -23,9 +23,3 @@ class TestDataLoader:
         assert len(x_train[0]) > 0 and len(x_test[0]) > 0
         assert x_train[:5] != y_train[:5] and x_test[:5] != y_test[:5]
         assert x_train[:5] != x_test[:5] and y_train[:5] != y_test[:5]
-
-
-
-
-
-
