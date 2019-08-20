@@ -55,4 +55,3 @@ class TestSaveLoad:
     def teardown_class(self):
         os.remove(self.test_json_file)
         os.remove(self.test_weights_file)
-

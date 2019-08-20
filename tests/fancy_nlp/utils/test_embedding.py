@@ -29,5 +29,3 @@ class TestEmbedding:
         emb = load_pre_trained(self.embedding_file, self.test_vocab)
         assert emb.shape[0] == len(self.test_vocab) + 2 and emb.shape[1] == 200
         assert not np.any(emb[0])
-
-
