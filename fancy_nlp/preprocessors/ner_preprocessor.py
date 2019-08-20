@@ -139,4 +139,3 @@ class NERPreprocessor(Preprocessor):
         if lengths is not None:
             pred_labels = [labels[:length] for labels, length in zip(pred_labels, lengths)]
         return pred_labels
-
