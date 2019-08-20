@@ -3,8 +3,6 @@
 """Base NER model
 """
 
-import os
-
 from keras.layers import *
 from fancy_nlp.models.base_model import BaseModel
 
@@ -70,8 +68,5 @@ class BaseNERModel(BaseModel):
         input_embed = concatenate(input_embed) if len(input_embed) > 1 else input_embed[0]
         return model_inputs, input_embed
 
-    def build_model(self):
+    def build_model_arc(self):
         raise NotImplementedError
-
-
-

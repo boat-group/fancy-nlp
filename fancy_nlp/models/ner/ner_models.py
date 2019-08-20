@@ -49,7 +49,7 @@ class BiLSTMNER(BaseNERModel):
                                         dropout,
                                         cutsom_objects={'CRF': CRF} if self.use_crf else None)
 
-    def build_model(self):
+    def build_model_arc(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNLSTM(self.rnn_units, return_sequences=True))(input_embed)
@@ -107,7 +107,7 @@ class BiGRUNER(BaseNERModel):
                                        word_vocab_size, word_embed_dim, word_embed_trainable,
                                        dropout, {'CRF': CRF} if use_crf else None)
 
-    def build_model(self):
+    def build_model_arc(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNGRU(self.rnn_units, return_sequences=True))(input_embed)
@@ -170,7 +170,7 @@ class BiLSTMCNNNER(BaseNERModel):
                                            word_vocab_size, word_embed_dim, word_embed_trainable,
                                            dropout, {'CRF': CRF} if use_crf else None)
 
-    def build_model(self):
+    def build_model_arc(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNLSTM(self.rnn_units,
@@ -236,7 +236,7 @@ class BiGRUCNNNER(BaseNERModel):
                                           word_vocab_size, word_embed_dim, word_embed_trainable,
                                           dropout, cutsom_objects={'CRF': CRF} if use_crf else None)
 
-    def build_model(self):
+    def build_model_arc(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNGRU(self.rnn_units,
