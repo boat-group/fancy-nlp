@@ -52,12 +52,3 @@ def load_ner_data_and_labels(filename, split=False, split_size=0.1, seed=42):
         return x_train, y_train, x_test, y_test
     else:
         return token_seqs, label_seqs
-
-
-
-
-
-
-
-
-
