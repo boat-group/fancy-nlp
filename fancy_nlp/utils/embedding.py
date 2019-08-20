@@ -170,4 +170,3 @@ def train_fasttext(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1,
                             rand_init_indices)
     os.remove(corpus_file_path)
     return emb
-
