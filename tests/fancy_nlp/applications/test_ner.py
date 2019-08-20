@@ -25,7 +25,7 @@ class TestNER:
         # test train
         ner.fit(train_data=self.train_data, train_labels=self.train_labels,
                 valid_data=self.valid_data, valid_labels=self.valid_labels,
-                batch_size=2, epochs=10, callbacks=['modelcheckpoint', 'earlystopping', 'swa'],
+                batch_size=2, epochs=10, callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 load_swa_model=True, shuffle=True)
 
         assert not os.path.exists(self.json_file)

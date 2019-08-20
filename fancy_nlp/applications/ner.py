@@ -132,7 +132,7 @@ class NER(object):
             raise ValueError('ner_mode_type not understood: {}'.format(self.ner_model_type))
 
     def fit(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
-            epochs=50, callbacks=None, load_swa_model=False, shuffle=True):
+            epochs=50, callback_list=None, load_swa_model=False, shuffle=True):
         """Train ner model using provided data
 
         Args:
@@ -143,8 +143,9 @@ class NER(object):
             valid_labels: labels string of valid data
             batch_size: num of samples per gradient update
             epochs: num of epochs to train the model
-            callbacks: list of str, each item indicate the callback to apply during training.
-                       For example, 'earlystopping' means using 'EarlyStopping' callback.
+            callback_list: list of str, each item indicate the callback to apply during training.
+                           For example, ['earlystopping'] means using 'EarlyStopping' callback only.
+
             load_swa_model: boolean, whether to load swa model, only apply when use SWA Callback
             shuffle: whether to shuffle data after one epoch
 
@@ -169,9 +170,9 @@ class NER(object):
 
         self.trainer = NERTrainer(self.model, self.preprocessor)
         self.trainer.train_generator(train_data, train_labels, valid_data, valid_labels,
-                                     batch_size, epochs, callbacks, shuffle)
+                                     batch_size, epochs, callback_list, shuffle)
 
-        if load_swa_model and callbacks is not None and 'swa' in callbacks:
+        if load_swa_model and callback_list is not None and 'swa' in callback_list:
             self.model.load_swa_model()
 
         if valid_data is not None and valid_labels is not None:
