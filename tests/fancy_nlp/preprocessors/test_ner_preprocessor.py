@@ -63,5 +63,3 @@ class TestNERPreprocessor:
         assert len(pred_labels) == len(lengths)
         for i, length in enumerate(lengths):
             assert len(pred_labels[i]) == length
-
-
