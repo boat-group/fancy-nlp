@@ -33,14 +33,15 @@ class TestNERTrainer:
                                       word_embed_dim=self.word_embed_dim,
                                       word_embed_trainable=False,
                                       use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        self.ner_model.build_model()
         self.ner_trainer = NERTrainer(self.ner_model, self.preprocessor)
 
         self.json_file = os.path.join(self.checkpoint_dir, 'bilstm_cnn_ner.json')
         self.weights_file = os.path.join(self.checkpoint_dir, 'bilstm_cnn_ner.hdf5')
 
     def test_train(self):
-        self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+        self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
+                               self.valid_labels, batch_size=2, epochs=7)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -52,6 +53,7 @@ class TestNERTrainer:
                                  word_embed_dim=self.word_embed_dim,
                                  word_embed_trainable=False,
                                  use_crf=False, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
         ner_trainer = NERTrainer(ner_model, self.preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
                           batch_size=2, epochs=7)
@@ -65,6 +67,7 @@ class TestNERTrainer:
         ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                                  self.char_embed_dim, False, use_word=False,
                                  use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
         ner_trainer = NERTrainer(ner_model, preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
                           batch_size=2, epochs=7)
@@ -77,8 +80,8 @@ class TestNERTrainer:
         assert not os.path.exists(self.weights_file)
 
     def test_train_callbacks(self):
-        self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                               batch_size=2, epochs=7,
+        self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
+                               self.valid_labels, batch_size=2, epochs=7,
                                callbacks_str=['modelcheckpoint', 'earlystopping'])
 
         assert not os.path.exists(self.json_file)
@@ -87,9 +90,7 @@ class TestNERTrainer:
 
     def test_train_swa(self):
         self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels,
-                               batch_size=2, epochs=7,
-                               callbacks_str=['swa'])
+                               self.valid_labels, batch_size=2, epochs=7, callbacks_str=['swa'])
 
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)

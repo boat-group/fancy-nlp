@@ -64,13 +64,15 @@ class TestNER:
         assert 'chars' in results[-1] and 'entities' in results[-1]
 
         # test save
-        ner.save(self.json_file, self.weights_file, self.preprocessor_file)
+        ner.save(os.path.basename(self.preprocessor_file), os.path.basename(self.weights_file),
+                 os.path.basename(self.json_file))
         assert os.path.exists(self.json_file)
         assert os.path.exists(self.weights_file)
         assert os.path.exists(self.preprocessor_file)
 
         # test load
-        ner.load(self.json_file, self.weights_file, self.preprocessor_file)
+        ner.load(os.path.basename(self.preprocessor_file), os.path.basename(self.weights_file),
+                 os.path.basename(self.json_file))
         os.remove(self.json_file)
         os.remove(self.weights_file)
         os.remove(self.preprocessor_file)

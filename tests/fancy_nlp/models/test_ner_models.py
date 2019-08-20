@@ -27,10 +27,12 @@ class TestNerModel:
         # no CRF, no word input
         ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                                  self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model.build_model()
 
         # CRF, no word input
         ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                                  self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model.build_model()
 
         # CRF, word
         ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
@@ -39,15 +41,17 @@ class TestNerModel:
                                  word_vocab_size=self.word_vocab_size,
                                  word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
                                  use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
+
         # save and load
         json_file = os.path.join(self.checkpoint_dir, 'bilstm_cnn_ner.json')
         weights_file = os.path.join(self.checkpoint_dir, 'bilstm_cnn_ner.hdf5')
 
-        ner_model.save_model()
+        ner_model.save_model(json_file, weights_file)
         assert os.path.exists(json_file)
         assert os.path.exists(weights_file)
 
-        ner_model.load_model()
+        ner_model.load_model(json_file, weights_file)
         os.remove(json_file)
         os.remove(weights_file)
 
@@ -55,10 +59,12 @@ class TestNerModel:
         # no CRF, no word input
         ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                                 self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model.build_model()
 
         # CRF, no word input
         ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                                 self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model.build_model()
 
         # CRF, word
         ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
@@ -67,15 +73,17 @@ class TestNerModel:
                                 word_vocab_size=self.word_vocab_size,
                                 word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
                                 use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
+
         # save and load
         json_file = os.path.join(self.checkpoint_dir, 'bigru_cnn_ner.json')
         weights_file = os.path.join(self.checkpoint_dir, 'bigru_cnn_ner.hdf5')
 
-        ner_model.save_model()
+        ner_model.save_model(json_file, weights_file)
         assert os.path.exists(json_file)
         assert os.path.exists(weights_file)
 
-        ner_model.load_model()
+        ner_model.load_model(json_file, weights_file)
         os.remove(json_file)
         os.remove(weights_file)
 
@@ -83,10 +91,12 @@ class TestNerModel:
         # no CRF, no word input
         ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                               self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model.build_model()
 
         # CRF, no word input
         ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                               self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model.build_model()
 
         # CRF, word
         ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
@@ -95,15 +105,17 @@ class TestNerModel:
                               word_vocab_size=self.word_vocab_size,
                               word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
                               use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
+
         # save and load
         json_file = os.path.join(self.checkpoint_dir, 'bilstm_ner.json')
         weights_file = os.path.join(self.checkpoint_dir, 'bilstm_ner.hdf5')
 
-        ner_model.save_model()
+        ner_model.save_model(json_file, weights_file)
         assert os.path.exists(json_file)
         assert os.path.exists(weights_file)
 
-        ner_model.load_model()
+        ner_model.load_model(json_file, weights_file)
         os.remove(json_file)
         os.remove(weights_file)
 
@@ -111,10 +123,12 @@ class TestNerModel:
         # no CRF, no word input
         ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                              self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model.build_model()
 
         # CRF, no word input
         ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
                              self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model.build_model()
 
         # CRF, word
         ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
@@ -123,14 +137,16 @@ class TestNerModel:
                              word_vocab_size=self.word_vocab_size,
                              word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
                              use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model.build_model()
+
         # save and load
         json_file = os.path.join(self.checkpoint_dir, 'bigru_ner.json')
         weights_file = os.path.join(self.checkpoint_dir, 'bigru_ner.hdf5')
 
-        ner_model.save_model()
+        ner_model.save_model(json_file, weights_file)
         assert os.path.exists(json_file)
         assert os.path.exists(weights_file)
 
-        ner_model.load_model()
+        ner_model.load_model(json_file, weights_file)
         os.remove(json_file)
         os.remove(weights_file)
