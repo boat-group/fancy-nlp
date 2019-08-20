@@ -22,11 +22,11 @@ class NERTrainer(object):
         self.model = model
         self.preprocessor = preprocessor
 
-    def prepare_callback(self, callbacks_str, valid_data=None, valid_labels=None):
+    def prepare_callback(self, callback_list, valid_data=None, valid_labels=None):
         """
 
         Args:
-            callbacks_str: list of str, each item indicate the callback to apply during training.
+            callback_list: list of str, each item indicate the callback to apply during training.
                        For example, 'earlystopping' means using 'EarlyStopping' callback.
             valid_data:
             valid_labels:
@@ -35,8 +35,8 @@ class NERTrainer(object):
                  whether modelchekpoint callback is added
 
         """
-
-        callbacks_str = callbacks_str or []
+        assert not isinstance(callback_list, str)
+        callback_list = callback_list or []
         callbacks = []
         if valid_data is not None and valid_labels is not None:
             callbacks.append(NERMetric(self.preprocessor, valid_data, valid_labels))
@@ -45,7 +45,7 @@ class NERTrainer(object):
             add_metric = False
 
         add_modelcheckpoint = False
-        if 'modelcheckpoint' in callbacks_str:
+        if 'modelcheckpoint' in callback_list:
             if not add_metric:
                 logging.warning('Using `ModelCheckpoint` with validation data not provided is not '
                                 'Recommended! We will use `loss` (of training data) as monitor.')
@@ -58,7 +58,7 @@ class NERTrainer(object):
             logging.info('ModelCheckpoint Callback added')
             add_modelcheckpoint = True
 
-        if 'earlystopping' in callbacks_str:
+        if 'earlystopping' in callback_list:
             if not add_metric:
                 logging.warning('Using `Earlystopping` with validation data not provided is not '
                                 'Recommended! We will use `loss` (of training data) as monitor.')
@@ -68,7 +68,7 @@ class NERTrainer(object):
                                            verbose=1))
             logging.info('Earlystopping Callback added')
 
-        if 'swa' in callbacks_str:
+        if 'swa' in callback_list:
             callbacks.append(SWA(swa_model=self.model.build_model_arc(),
                                  checkpoint_dir=self.model.checkpoint_dir,
                                  model_name=self.model.model_name,
@@ -78,8 +78,8 @@ class NERTrainer(object):
         return callbacks, add_modelcheckpoint
 
     def train(self, train_data, train_labels, valid_data=None, valid_labels=None,
-              batch_size=32, epochs=50, callbacks_str=None):
-        callbacks, add_modelcheckpoint = self.prepare_callback(callbacks_str, valid_data,
+              batch_size=32, epochs=50, callback_list=None):
+        callbacks, add_modelcheckpoint = self.prepare_callback(callback_list, valid_data,
                                                                valid_labels)
 
         train_features, train_y = self.preprocessor.prepare_input(train_data, train_labels)
@@ -94,8 +94,8 @@ class NERTrainer(object):
             self.model.load_best_model()
 
     def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
-                        batch_size=32, epochs=50, callbacks_str=None, shuffle=True):
-        callbacks, add_modelcheckpoint = self.prepare_callback(callbacks_str, valid_data,
+                        batch_size=32, epochs=50, callback_list=None, shuffle=True):
+        callbacks, add_modelcheckpoint = self.prepare_callback(callback_list, valid_data,
                                                                valid_labels)
 
         train_generator = NERGenerator(self.preprocessor, train_data, train_labels, batch_size,

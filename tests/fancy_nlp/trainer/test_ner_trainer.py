@@ -82,7 +82,7 @@ class TestNERTrainer:
     def test_train_callbacks(self):
         self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
                                self.valid_labels, batch_size=2, epochs=7,
-                               callbacks_str=['modelcheckpoint', 'earlystopping'])
+                               callback_list=['modelcheckpoint', 'earlystopping'])
 
         assert not os.path.exists(self.json_file)
         assert os.path.exists(self.weights_file)
@@ -90,7 +90,7 @@ class TestNERTrainer:
 
     def test_train_swa(self):
         self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7, callbacks_str=['swa'])
+                               self.valid_labels, batch_size=2, epochs=7, callback_list=['swa'])
 
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
