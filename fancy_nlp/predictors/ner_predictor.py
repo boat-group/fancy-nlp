@@ -12,7 +12,7 @@ class NERPredictor(object):
         """
 
         Args:
-            ner_model: ner model
+            ner_model: instance of ner model
             preprocessor: `NERProcessor` instance to prepare feature input for ner model
         """
         self.ner_model = ner_model
@@ -33,7 +33,7 @@ class NERPredictor(object):
         else:
             assert isinstance(text, str)
             features, _ = self.preprocessor.prepare_input([list(text)])
-        pred_probs = self.ner_model.model.predict(features)
+        pred_probs = self.ner_model.predict(features)
         return pred_probs[0]
 
     def predict_prob_batch(self, texts):
@@ -53,7 +53,7 @@ class NERPredictor(object):
             assert isinstance(texts[0], str)
             char_cut_texts = [list(text) for text in texts]
             features, _ = self.preprocessor.prepare_input(char_cut_texts)
-        pred_probs = self.ner_model.model.predict(features)
+        pred_probs = self.ner_model.predict(features)
         return pred_probs
 
     def tag(self, text):

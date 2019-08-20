@@ -141,11 +141,12 @@ class NER(object):
             train_labels: labels string of train_data
             valid_data: list of tokenized (in char level) texts for training,
             valid_labels: labels string of valid data
-            batch_size:
-            epochs:
-            callbacks: ist of str, each item indicate the callback to apply during training.
+            batch_size: num of samples per gradient update
+            epochs: num of epochs to train the model
+            callbacks: list of str, each item indicate the callback to apply during training.
                        For example, 'earlystopping' means using 'EarlyStopping' callback.
-            shuffle:
+            load_swa_model: boolean, whether to load swa model, only apply when use SWA Callback
+            shuffle: whether to shuffle data after one epoch
 
         """
         self.preprocessor = NERPreprocessor(train_data=train_data,
@@ -164,6 +165,7 @@ class NER(object):
             self.model = self.get_model(num_class=self.preprocessor.num_class,
                                         char_vocab_size=self.preprocessor.char_vocab_size,
                                         char_embeddings=self.preprocessor.char_embeddings)
+        self.model.build_model()
 
         self.trainer = NERTrainer(self.model, self.preprocessor)
         self.trainer.train_generator(train_data, train_labels, valid_data, valid_labels,
@@ -173,6 +175,7 @@ class NER(object):
             self.model.load_swa_model()
 
         if valid_data is not None and valid_labels is not None:
+            logging.info('Evaluating on validation data...')
             self.score(valid_data, valid_labels)
 
         self.predictor = NERPredictor(self.model, self.preprocessor)
@@ -250,17 +253,17 @@ class NER(object):
         with open(preprocessor_file, 'wb') as writer:
             pickle.dump(self.preprocessor, writer)
 
-    @staticmethod
-    def load_preprocessor(preprocessor_file):
+    def load_preprocessor(self, preprocessor_file):
         with open(preprocessor_file, 'rb') as reader:
-            return pickle.load(reader)
+            self.preprocessor = pickle.load(reader)
 
-    def save(self, json_file, weights_file, preprocessor_file):
-        self.save_preprocessor(preprocessor_file)
-        save_keras_model(self.model.model, json_file, weights_file)
+    def save(self, preprocessor_file, weights_file, json_file):
+        self.save_preprocessor(os.path.join(self.checkpoint_dir, preprocessor_file))
+        self.model.save_model(os.path.join(self.checkpoint_dir, json_file),
+                              os.path.join(self.checkpoint_dir, weights_file))
 
-    def load(self, json_file, weights_file, preprocessor_file):
-        self.preprocessor = self.load_preprocessor(preprocessor_file)
+    def load(self, preprocessor_file, weights_file, json_file=None):
+        self.load_preprocessor(os.path.join(self.checkpoint_dir, preprocessor_file))
 
         if self.use_word:
             self.model = self.get_model(num_class=self.preprocessor.num_class,
@@ -273,7 +276,12 @@ class NER(object):
                                         char_vocab_size=self.preprocessor.char_vocab_size,
                                         char_embeddings=self.preprocessor.char_embeddings)
 
-        self.model.model = load_keras_model(json_file, weights_file,
-                                            custom_objects={'CRF': CRF} if self.use_crf else None)
+        if json_file is None:
+            self.model.build_model()
+            self.model.load_weights(os.path.join(self.checkpoint_dir, weights_file))
+        else:
+            self.model.load_model(os.path.join(self.checkpoint_dir, json_file),
+                                  os.path.join(self.checkpoint_dir, weights_file))
+
         self.trainer = NERTrainer(self.model, self.preprocessor)
         self.predictor = NERPredictor(self.model, self.preprocessor)

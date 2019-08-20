@@ -69,7 +69,7 @@ class NERTrainer(object):
             logging.info('Earlystopping Callback added')
 
         if 'swa' in callbacks_str:
-            callbacks.append(SWA(swa_model=self.model.build_model(),
+            callbacks.append(SWA(swa_model=self.model.build_model_arc(),
                                  checkpoint_dir=self.model.checkpoint_dir,
                                  model_name=self.model.model_name,
                                  swa_start=5))
@@ -120,7 +120,7 @@ class NERTrainer(object):
 
         """
         features, y = self.preprocessor.prepare_input(data, labels)
-        pred_probs = self.model.model.predict(features)
+        pred_probs = self.model.predict(features)
 
         lengths = [min(len(label), pred_prob.shape[0])
                    for label, pred_prob in zip(labels, pred_probs)]
