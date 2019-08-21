@@ -16,19 +16,19 @@ class TestNERPreprocessor:
                                             char_embed_type='word2vec', max_len=50)
 
     def test_init(self):
-        assert len(self.preprocessor.char_vocab_count) == len(self.preprocessor.char_vocab) \
+        assert len(self.preprocessor.char_vocab_count) + 2 == len(self.preprocessor.char_vocab) \
             == len(self.preprocessor.id2char)
-        assert list(self.preprocessor.id2char.keys())[0] == 2
+        assert list(self.preprocessor.id2char.keys())[0] == 0
         for cnt in self.preprocessor.char_vocab_count.values():
             assert cnt >= 3
 
-        assert self.preprocessor.char_embeddings.shape[0] == len(self.preprocessor.char_vocab) + 2
+        assert self.preprocessor.char_embeddings.shape[0] == len(self.preprocessor.char_vocab)
         assert self.preprocessor.char_embeddings.shape[1] == 300
         assert not np.any(self.preprocessor.char_embeddings[0])
 
-        assert len(self.preprocessor.word_vocab_count) == len(self.preprocessor.word_vocab) \
+        assert len(self.preprocessor.word_vocab_count) + 2 == len(self.preprocessor.word_vocab) \
             == len(self.preprocessor.id2word)
-        assert list(self.preprocessor.id2word.keys())[0] == 2
+        assert list(self.preprocessor.id2word.keys())[0] == 0
         for cnt in self.preprocessor.word_vocab_count.values():
             assert cnt >= 3
         assert self.preprocessor.word_embeddings is None
