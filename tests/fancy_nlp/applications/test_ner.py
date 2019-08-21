@@ -55,13 +55,27 @@ class TestNER:
 
         # test analyze
         result = ner.analyze(self.valid_data[0])
-        assert isinstance(result, dict) and 'chars' in result and 'entities' in result
+        assert isinstance(result, dict) and 'text' in result and 'entities' in result
 
         # test analyze_batch
         results = ner.analyze_batch(self.valid_data)
         assert isinstance(results, list) and len(results) == len(self.valid_data)
         assert isinstance(results[-1], dict)
-        assert 'chars' in results[-1] and 'entities' in results[-1]
+        assert 'text' in results[-1] and 'entities' in results[-1]
+
+        # test restrict analyze
+        result = ner.restrict_analyze(self.valid_data[0], threshold=0.85)
+        entity_types = [entity['type'] for entity in result['entities']]
+        assert len(set(entity_types)) == len(entity_types)
+        for score in [entity['score'] for entity in result['entities']]:
+            assert score >= 0.85
+
+        # test restrict analyze batch
+        results = ner.restrict_analyze_batch(self.valid_data, threshold=0.85)
+        entity_types = [entity['type'] for entity in results[-1]['entities']]
+        assert len(set(entity_types)) == len(entity_types)
+        for score in [entity['score'] for entity in results[-1]['entities']]:
+            assert score >= 0.85
 
         # test save
         ner.save(os.path.basename(self.preprocessor_file), os.path.basename(self.weights_file),
