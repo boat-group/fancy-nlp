@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
+
 import numpy as np
 from absl import logging
 from seqeval.metrics.sequence_labeling import get_entities
@@ -87,8 +89,7 @@ class NERPredictor(object):
 
     @staticmethod
     def entities(text, tag, pred_prob):
-        """Return entity according to tag sequence
-
+        """Return entities according to tag sequence
         """
         results = []
         chunks = get_entities(tag)
@@ -96,13 +97,40 @@ class NERPredictor(object):
         for chunk_type, chunk_start, chunk_end in chunks:
             chunk_end += 1
             entity = {
-                'text': ''.join(text[chunk_start: chunk_end]),
+                'name': ''.join(text[chunk_start: chunk_end]),
                 'type': chunk_type,
                 'score': float(np.average(pred_prob[chunk_start: chunk_end])),
                 'beginOffset': chunk_start,
                 'endOffset': chunk_end
             }
             results.append(entity)
+        return results
+
+    @staticmethod
+    def restrict_entities(text, tag, pred_prob, threshold=0.85):
+        """Return restricted entities according to tag sequence: only keep at most one entity for
+        each entity type
+        """
+        group_entities = defaultdict(list)
+
+        chunks = get_entities(tag)
+        for chunk_type, chunk_start, chunk_end in chunks:
+            chunk_end += 1
+            score = float(np.average(pred_prob[chunk_start: chunk_end]))
+            if score >= threshold:
+                entity = ''.join(text[chunk_start: chunk_end])
+                group_entities[chunk_type].append((entity, score, chunk_start, chunk_end))
+
+        results = []
+        for entity_type, group in group_entities.items():
+            entity = sorted(group, key=lambda x: x[0])[-1]
+            results.append({
+                'name': entity[0],
+                'type': entity_type,
+                'score': entity[1],
+                'beginOffset': entity[2],
+                'endOffset': entity[3]
+            })
         return results
 
     def pretty_tag(self, text):
@@ -120,7 +148,7 @@ class NERPredictor(object):
 
         char_cut = text if isinstance(text, list) else list(text)
         results = {
-            'chars': char_cut,
+            'text': ''.join(char_cut),
             'entities': self.entities(char_cut, tag, pred_prob)
         }
         return results
@@ -134,7 +162,42 @@ class NERPredictor(object):
         for text, tag, pred_prob in zip(texts, tags, pred_probs):
             char_cut = text if isinstance(text, list) else list(text)
             results.append({
-                'chars': char_cut,
+                'text': ''.join(char_cut),
                 'entities': self.entities(char_cut, tag, pred_prob)
+            })
+        return results
+
+    def restrict_tag(self, text, threshold=0.85):
+        """Return a restricted tag sequence for one sentence: only keep at most one entity
+        for each entity type.
+
+        Args:
+            text: can be untokenized (str) or tokenized in char level (list)
+            threshold:
+        Returns:
+
+        """
+        pred_prob = self.predict_prob(text)
+        length = min(len(text), pred_prob.shape[0])
+        tag = self.preprocessor.label_decode(np.expand_dims(pred_prob, 0), [length])
+
+        char_cut = text if isinstance(text, list) else list(text)
+        results = {
+            'text': ''.join(char_cut),
+            'entities': self.restrict_entities(char_cut, tag, pred_prob, threshold)
+        }
+        return results
+
+    def restrict_tag_batch(self, texts, threshold=0.85):
+        pred_probs = self.predict_prob_batch(texts)
+        lengths = [min(len(text), pred_prob.shape[0]) for text, pred_prob in zip(texts, pred_probs)]
+        tags = self.preprocessor.label_decode(pred_probs, lengths)
+
+        results = []
+        for text, tag, pred_prob in zip(texts, tags, pred_probs):
+            char_cut = text if isinstance(text, list) else list(text)
+            results.append({
+                'text': ''.join(char_cut),
+                'entities': self.restrict_entities(char_cut, tag, pred_prob, threshold)
             })
         return results
