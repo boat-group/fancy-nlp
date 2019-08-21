@@ -13,19 +13,21 @@ class TestEmbedding:
 
     def setup_class(self):
         self.test_corpus, _ = load_ner_data_and_labels(self.test_file)
-        self.test_vocab = dict((token, i+2) for i, token in enumerate(set(self.test_corpus[0])))
+        self.test_vocab = {'<PAD>': 0, '<UNK>': 1}
+        for token in set(self.test_corpus[0]):
+            self.test_vocab[token] = len(self.test_vocab)
 
     def test_train_w2v(self):
         emb = train_w2v(self.test_corpus, self.test_vocab, embedding_dim=10)
-        assert emb.shape[0] == len(self.test_vocab) + 2 and emb.shape[1] == 10
+        assert emb.shape[0] == len(self.test_vocab) and emb.shape[1] == 10
         assert not np.any(emb[0])
 
     def test_train_fasttext(self):
         emb = train_fasttext(self.test_corpus, self.test_vocab, embedding_dim=10)
-        assert emb.shape[0] == len(self.test_vocab) + 2 and emb.shape[1] == 10
+        assert emb.shape[0] == len(self.test_vocab) and emb.shape[1] == 10
         assert not np.any(emb[0])
 
     def test_load_pre_trained(self):
         emb = load_pre_trained(self.embedding_file, self.test_vocab)
-        assert emb.shape[0] == len(self.test_vocab) + 2 and emb.shape[1] == 200
+        assert emb.shape[0] == len(self.test_vocab) and emb.shape[1] == 200
         assert not np.any(emb[0])
