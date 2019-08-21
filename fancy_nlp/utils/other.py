@@ -58,3 +58,8 @@ def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', p
             raise ValueError('Padding type "%s" not understood' % padding)
 
     return x
+
+
+def get_most_len(corpus):
+    """Get majority len from corpus"""
+    return sorted([len(seq) for seq in corpus])[int(0.95 * len(corpus))]
