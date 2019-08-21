@@ -19,6 +19,7 @@ class BiLSTMNER(BaseNERModel):
     """
     def __init__(self,
                  num_class,
+                 checkpoint_dir,
                  char_embeddings,
                  char_vocab_size,
                  char_embed_dim,
@@ -34,7 +35,6 @@ class BiLSTMNER(BaseNERModel):
                  activation='relu',
                  use_crf=True,
                  optimizer='adam',
-                 checkpoint_dir=os.path.dirname(__file__),
                  model_name=None):
         self.num_class = num_class
         self.rnn_units = rnn_units
@@ -78,6 +78,7 @@ class BiGRUNER(BaseNERModel):
     """
     def __init__(self,
                  num_class,
+                 checkpoint_dir,
                  char_embeddings,
                  char_vocab_size,
                  char_embed_dim,
@@ -93,7 +94,6 @@ class BiGRUNER(BaseNERModel):
                  activation='relu',
                  use_crf=True,
                  optimizer='adam',
-                 checkpoint_dir = os.path.dirname(__file__),
                  model_name=None):
         self.num_class = num_class
         self.rnn_units = rnn_units
@@ -136,6 +136,7 @@ class BiLSTMCNNNER(BaseNERModel):
     """
     def __init__(self,
                  num_class,
+                 checkpoint_dir,
                  char_embeddings,
                  char_vocab_size,
                  char_embed_dim,
@@ -153,7 +154,6 @@ class BiLSTMCNNNER(BaseNERModel):
                  activation='relu',
                  use_crf=True,
                  optimizer='adam',
-                 checkpoint_dir=os.path.dirname(__file__),
                  model_name=None):
         self.num_class = num_class
         self.rnn_units = rnn_units
@@ -202,6 +202,7 @@ class BiGRUCNNNER(BaseNERModel):
     """
     def __init__(self,
                  num_class,
+                 checkpoint_dir,
                  char_embeddings,
                  char_vocab_size,
                  char_embed_dim,
@@ -219,7 +220,6 @@ class BiGRUCNNNER(BaseNERModel):
                  activation='relu',
                  use_crf=True,
                  optimizer='adam',
-                 checkpoint_dir=os.path.dirname(__file__),
                  model_name=None):
         self.num_class = num_class
         self.rnn_units = rnn_units
