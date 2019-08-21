@@ -293,6 +293,18 @@ class NER(object):
         else:
             logging.fatal('Predictor is None! Call fit() or load() to get predictor.')
 
+    def restrict_analyze(self, text, threshold=0.85):
+        if self.predictor:
+            return self.predictor.restrict_tag(text, threshold)
+        else:
+            logging.fatal('Predictor is None! Call fit() or load() to get predictor.')
+
+    def restrict_analyze_batch(self, texts, threshold=0.85):
+        if self.predictor:
+            return self.predictor.restrict_tag_batch(texts, threshold)
+        else:
+            logging.fatal('Predictor is None! Call fit() or load() to get predictor.')
+
     def save_preprocessor(self, preprocessor_file):
         with open(preprocessor_file, 'wb') as writer:
             pickle.dump(self.preprocessor, writer)
