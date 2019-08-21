@@ -45,3 +45,4 @@ Werkzeug==0.15.4
 jieba==0.39
 fasttext==0.9.1
 git+https://www.github.com/keras-team/keras-contrib.git
+keras-bert==0.73.0
