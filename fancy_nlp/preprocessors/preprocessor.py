@@ -14,6 +14,11 @@ class Preprocessor(object):
                  max_len=None,
                  padding_mode='post',
                  truncating_mode='post'):
+        self.pad_token = '<PAD>'
+        self.unk_token = '<UNK>'
+        self.cls_token = '<CLS>'
+        self.seq_token = '<SEQ>'
+
         self.max_len = max_len
         self.padding_mode = padding_mode
         self.truncating_mode = truncating_mode
@@ -35,15 +40,16 @@ class Preprocessor(object):
             corpus.append(cut_func(text))
         return corpus
 
-    @staticmethod
-    def build_vocab(corpus, min_count=3, start_index=2):
+    def build_vocab(self, corpus, min_count=3, special_token='standard'):
         """Build vocabulary using corpus.
 
         Args:
             corpus: list of tokenized texts, like ``[['我', '是', '中', '国', '人']]``
-            min_count: token whose frequency is less than min_count will be ignored
-            start_index: token's starting index, we usually set it to be 2, which means we preserve
-                         the first 2 indices: 0 for padding token, 1 for "unk" token
+            min_count: token of which frequency is less than min_count will be ignored
+            special_token: str, how to handle special tokens. If special_token is 'standard', we
+                           add 2 special tokens: [('<PAD>', 0), ('<UNK>', 1)]. If special_token is
+                           'bert', we add 4 special tokens: [('<PAD>', 0), ('<UNK>', 1),
+                           ('<CLS>', 2), ('<SEQ>', 3)]
 
         Returns: tuple(dict, dict, dict):
                  1. token_count: a mapping of tokens to frequencies
@@ -51,15 +57,29 @@ class Preprocessor(object):
                  3. id2token: a mapping of indices to tokens
 
         """
+        if special_token == 'standard':
+            token_vocab = {self.pad_token: 0,
+                           self.unk_token: 1}
+        elif special_token == 'bert':
+            token_vocab = {self.pad_token: 0,
+                           self.unk_token: 1,
+                           self.cls_token: 2,
+                           self.seq_token: 3}
+        else:
+            raise ValueError('Argument `special_token` can only be "standard" or "bert", '
+                             'got: {}'.format(special_token))
+
         token_count = {}
         for tokenized_text in corpus:
             for token in tokenized_text:
                 token_count[token] = token_count.get(token, 0) + 1
-
+        # filter out low-frequency token
         token_count = {token: count for token, count in token_count.items()
                        if count >= min_count}
-        id2token = {idx + start_index: token for idx, token in enumerate(token_count)}
-        token_vocab = {token: idx for idx, token in id2token.items()}
+
+        for token in token_count:
+            token_vocab[token] = len(token_vocab)
+        id2token = dict((idx, token) for token, idx in token_vocab.items())
 
         logging.info('Build vocabulary finished, vocabulary size: {}'.format(len(token_vocab)))
         return token_count, token_vocab, id2token
@@ -69,8 +89,8 @@ class Preprocessor(object):
         """
         raise NotImplementedError
 
-    @staticmethod
-    def build_embedding(embed_type, vocab, corpus=None, pad_idx=0, unk_idx=1):
+    def build_embedding(self, embed_type, vocab, corpus=None, embedding_dim=300,
+                        special_token='standard'):
         """Prepare embeddings for the words in vocab.
         We support loading external pre-trained embeddings as well as training on the corpus to
         obtain embeddings
@@ -80,20 +100,37 @@ class Preprocessor(object):
                         method to train on corpus
             vocab: a mapping of words to indices
             corpus: a list of tokenized texts
-            pad_idx: the index of padding token
-            unk_idx: the index of unknown token
+            embed_dim: dimensionality of embedding
+            special_token: str, how to handle special tokens. If special_token is 'standard', we
+                           add 2 special tokens: [('<PAD>', 0), ('<UNK>', 1)]. If special_token is
+                           'bert', we add 4 special tokens: [('<PAD>', 0), ('<UNK>', 1),
+                           ('<CLS>', 2), ('<SEQ>', 3)].
+                           We will use zero-initializer for '<PAD>' token and random-initializer
+                           for other special tokens.
         """
+        zero_init_indices = vocab.get(self.pad_token)
+        if special_token == 'standard':
+            rand_init_indices = vocab.get(self.unk_token)
+        elif special_token == 'bert':
+            rand_init_indices = [vocab.get(self.unk_token),
+                                 vocab.get(self.cls_token),
+                                 vocab.get(self.seq_token)]
+        else:
+            raise ValueError('Argument `special_token` can only be "standard" or "bert", '
+                             'got: {}'.format(special_token))
+
         if embed_type is None:
             return None     # do not adopt any pre-trained embeddings
         if embed_type == 'word2vec':
-            return train_w2v(corpus, vocab, pad_idx, unk_idx)
+            return train_w2v(corpus, vocab, zero_init_indices, rand_init_indices, embedding_dim)
         elif embed_type == 'fasttext':
-            return train_fasttext(corpus, vocab, pad_idx, unk_idx)
+            return train_fasttext(corpus, vocab, zero_init_indices, rand_init_indices,
+                                  embedding_dim)
         else:
             try:
-                return load_pre_trained(embed_type, vocab, pad_idx, unk_idx)
+                return load_pre_trained(embed_type, vocab, zero_init_indices, rand_init_indices)
             except FileNotFoundError:
-                raise ValueError('`embed_type` input error: {}'.format(embed_type))
+                raise ValueError('Argument `embed_type` input error: {}'.format(embed_type))
 
     def prepare_input(self, data, label=None):
         """Prepare input for neural model training, evaluating and testing
