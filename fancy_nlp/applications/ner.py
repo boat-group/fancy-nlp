@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import pickle
 
 from absl import logging
@@ -8,7 +9,6 @@ from fancy_nlp.preprocessors import NERPreprocessor
 from fancy_nlp.models.ner import *
 from fancy_nlp.trainers import NERTrainer
 from fancy_nlp.predictors import NERPredictor
-from fancy_nlp.utils import load_keras_model, save_keras_model
 
 
 class NER(object):
@@ -17,14 +17,21 @@ class NER(object):
     def __init__(self,
                  checkpoint_dir,
                  ner_model_type,
+                 use_char=True,
                  char_embed_type='word2vec',
                  char_embed_dim=300,
                  char_embed_trainable=False,
+                 use_bert=False,
+                 bert_vocab_file=None,
+                 bert_config_file=None,
+                 bert_checkpoint_file=None,
+                 bert_trainable=False,
                  use_word=False,
                  external_word_dict=None,
                  word_embed_type='word2vec',
                  word_embed_dim=300,
                  word_embed_trainable=False,
+                 max_len=None,
                  use_crf=True,
                  optimizer='adam',
                  **kwargs):
@@ -49,14 +56,21 @@ class NER(object):
         self.checkpoint_dir = checkpoint_dir
         assert isinstance(self.checkpoint_dir, str)
         self.ner_model_type = ner_model_type
+        self.use_char = use_char
         self.char_embed_type = char_embed_type
         self.char_embed_dim = char_embed_dim
         self.char_embed_trainable = char_embed_trainable
+        self.use_bert = use_bert
+        self.bert_vocab_file = bert_vocab_file
+        self.bert_config_file = bert_config_file
+        self.bert_checkpoint_file = bert_checkpoint_file
+        self.bert_trainable = bert_trainable
         self.use_word = use_word
         self.external_word_dict = external_word_dict
         self.word_embed_dim = word_embed_dim
         self.word_embed_type = word_embed_type
         self.word_embed_trainable = word_embed_trainable
+        self.max_len = max_len
         self.use_crf = use_crf
         self.optimizer = optimizer
         self.kwargs = kwargs
@@ -66,70 +80,94 @@ class NER(object):
         self.trainer = None
         self.predictor = None
 
-    def get_model(self, num_class, char_vocab_size, char_embeddings=None, word_embeddings=None,
-                  word_vocab_size=-1):
+    def get_model(self, num_class, char_embeddings=None, char_vocab_size=-1, char_embed_dim=-1,
+                  word_embeddings=None, word_vocab_size=-1, word_embed_dim=-1, max_len=None):
         if self.ner_model_type == 'bilstm':
             return BiLSTMNER(num_class=num_class,
+                             checkpoint_dir=self.checkpoint_dir,
+                             use_char=self.use_char,
                              char_embeddings=char_embeddings,
                              char_vocab_size=char_vocab_size,
-                             char_embed_dim=self.char_embed_dim,
+                             char_embed_dim=char_embed_dim,
                              char_embed_trainable=self.char_embed_trainable,
+                             use_bert=self.use_bert,
+                             bert_config_file=self.bert_config_file,
+                             bert_checkpoint_file=self.bert_checkpoint_file,
+                             bert_trainable=self.bert_trainable,
                              use_word=self.use_word,
                              word_embeddings=word_embeddings,
                              word_vocab_size=word_vocab_size,
-                             word_embed_dim=self.word_embed_dim,
+                             word_embed_dim=word_embed_dim,
                              word_embed_trainable=self.word_embed_trainable,
+                             max_len=max_len,
                              use_crf=self.use_crf,
                              optimizer=self.optimizer,
-                             checkpoint_dir=self.checkpoint_dir,
                              **self.kwargs)
         elif self.ner_model_type == 'bilstm_cnn':
             return BiLSTMCNNNER(num_class=num_class,
+                                checkpoint_dir=self.checkpoint_dir,
+                                use_char=self.use_char,
                                 char_embeddings=char_embeddings,
                                 char_vocab_size=char_vocab_size,
-                                char_embed_dim=self.char_embed_dim,
+                                char_embed_dim=char_embed_dim,
                                 char_embed_trainable=self.char_embed_trainable,
+                                use_bert=self.use_bert,
+                                bert_config_file=self.bert_config_file,
+                                bert_checkpoint_file=self.bert_checkpoint_file,
+                                bert_trainable=self.bert_trainable,
                                 use_word=self.use_word,
                                 word_embeddings=word_embeddings,
                                 word_vocab_size=word_vocab_size,
-                                word_embed_dim=self.word_embed_dim,
+                                word_embed_dim=word_embed_dim,
                                 word_embed_trainable=self.word_embed_trainable,
+                                max_len=max_len,
                                 use_crf=self.use_crf,
                                 optimizer=self.optimizer,
-                                checkpoint_dir=self.checkpoint_dir,
                                 **self.kwargs)
         elif self.ner_model_type == 'bigru':
             return BiGRUNER(num_class=num_class,
+                            checkpoint_dir=self.checkpoint_dir,
+                            use_char=self.use_char,
                             char_embeddings=char_embeddings,
                             char_vocab_size=char_vocab_size,
-                            char_embed_dim=self.char_embed_dim,
+                            char_embed_dim=char_embed_dim,
                             char_embed_trainable=self.char_embed_trainable,
+                            use_bert=self.use_bert,
+                            bert_config_file=self.bert_config_file,
+                            bert_checkpoint_file=self.bert_checkpoint_file,
+                            bert_trainable=self.bert_trainable,
                             use_word=self.use_word,
                             word_embeddings=word_embeddings,
                             word_vocab_size=word_vocab_size,
-                            word_embed_dim=self.word_embed_dim,
+                            word_embed_dim=word_embed_dim,
                             word_embed_trainable=self.word_embed_trainable,
+                            max_len=max_len,
                             use_crf=self.use_crf,
                             optimizer=self.optimizer,
-                            checkpoint_dir=self.checkpoint_dir,
                             **self.kwargs)
         elif self.ner_model_type == 'bilstm_cnn':
             return BiGRUCNNNER(num_class=num_class,
+                               checkpoint_dir=self.checkpoint_dir,
+                               use_char=self.use_char,
                                char_embeddings=char_embeddings,
                                char_vocab_size=char_vocab_size,
-                               char_embed_dim=self.char_embed_dim,
+                               char_embed_dim=char_embed_dim,
                                char_embed_trainable=self.char_embed_trainable,
+                               use_bert=self.use_bert,
+                               bert_config_file=self.bert_config_file,
+                               bert_checkpoint_file=self.bert_checkpoint_file,
+                               bert_trainable=self.bert_trainable,
                                use_word=self.use_word,
                                word_embeddings=word_embeddings,
                                word_vocab_size=word_vocab_size,
-                               word_embed_dim=self.word_embed_dim,
+                               word_embed_dim=word_embed_dim,
                                word_embed_trainable=self.word_embed_trainable,
+                               max_len=max_len,
                                use_crf=self.use_crf,
                                optimizer=self.optimizer,
-                               checkpoint_dir=self.checkpoint_dir,
                                **self.kwargs)
         else:
-            raise ValueError('ner_mode_type not understood: {}'.format(self.ner_model_type))
+            raise ValueError('`ner_model_type` not understood: {}'.format(self.ner_model_type))
 
     def fit(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
             epochs=50, callback_list=None, load_swa_model=False, shuffle=True):
@@ -152,20 +190,25 @@ class NER(object):
         """
         self.preprocessor = NERPreprocessor(train_data=train_data,
                                             train_labels=train_labels,
+                                            use_char=self.use_char,
+                                            use_bert=self.use_bert,
                                             use_word=self.use_word,
                                             external_word_dict=self.external_word_dict,
+                                            bert_vocab_file=self.bert_vocab_file,
                                             char_embed_type=self.char_embed_type,
-                                            word_embed_type=self.word_embed_type)
-        if self.use_word:
-            self.model = self.get_model(num_class=self.preprocessor.num_class,
-                                        char_vocab_size=self.preprocessor.char_vocab_size,
-                                        char_embeddings=self.preprocessor.char_embeddings,
-                                        word_embeddings=self.preprocessor.word_embeddings,
-                                        word_vocab_size=self.preprocessor.word_vocab_size)
-        else:
-            self.model = self.get_model(num_class=self.preprocessor.num_class,
-                                        char_vocab_size=self.preprocessor.char_vocab_size,
-                                        char_embeddings=self.preprocessor.char_embeddings)
+                                            char_embed_dim=self.char_embed_dim,
+                                            word_embed_type=self.word_embed_type,
+                                            word_embed_dim=self.word_embed_dim,
+                                            max_len=self.max_len)
+
+        self.model = self.get_model(num_class=self.preprocessor.num_class,
+                                    char_embeddings=self.preprocessor.char_embeddings,
+                                    char_vocab_size=self.preprocessor.char_vocab_size,
+                                    char_embed_dim=self.preprocessor.char_embed_dim,
+                                    word_embeddings=self.preprocessor.word_embeddings,
+                                    word_vocab_size=self.preprocessor.word_vocab_size,
+                                    word_embed_dim=self.preprocessor.word_embed_dim,
+                                    max_len=self.preprocessor.max_len)
         self.model.build_model()
 
         self.trainer = NERTrainer(self.model, self.preprocessor)
