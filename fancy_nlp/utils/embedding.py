@@ -61,16 +61,7 @@ def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_in
     Returns: np.array, a word embedding matrix.
 
     """
-    if isinstance(zero_init_indices, int):
-        zero_init_indices = [zero_init_indices]
-    if isinstance(rand_init_indices, int):
-        rand_init_indices = [rand_init_indices]
-    special_token_cnt = len(zero_init_indices) + len(rand_init_indices)
-
-    emb = np.zeros(shape=(len(vocabulary) + special_token_cnt, embedding_dim), dtype='float32')
-    for idx in rand_init_indices:
-        emb[idx] = np.random.normal(0, 0.05, embedding_dim)
-
+    emb = np.zeros(shape=(len(vocabulary), embedding_dim), dtype='float32')
     nb_unk = 0
     for w, i in vocabulary.items():
         if w not in trained_embedding:
@@ -78,6 +69,16 @@ def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_in
             emb[i, :] = np.random.normal(0, 0.05, embedding_dim)
         else:
             emb[i, :] = trained_embedding[w]
+
+    if isinstance(zero_init_indices, int):
+        zero_init_indices = [zero_init_indices]
+    if isinstance(rand_init_indices, int):
+        rand_init_indices = [rand_init_indices]
+    for idx in zero_init_indices:
+        emb[idx] = np.zeros(embedding_dim)
+    for idx in rand_init_indices:
+        emb[idx] = np.random.normal(0, 0.05, embedding_dim)
+
     logging.info('Embedding matrix created, shaped: {}, not found tokens: {}'.format(emb.shape,
                                                                                      nb_unk))
     return emb
