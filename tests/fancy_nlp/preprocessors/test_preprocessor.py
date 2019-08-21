@@ -33,37 +33,37 @@ class TestPreprocessor:
         char_corpus = self.preprocessor.build_corpus(self.sample_texts,
                                                      cut_func=lambda x: list(x))
         char_vocab_count, char_vocab, id2char = self.preprocessor.build_vocab(
-            char_corpus, min_count=1, start_index=0)
-        assert len(char_vocab_count) == len(char_vocab) == len(id2char)
+            char_corpus, min_count=1)
+        assert len(char_vocab_count) + 2 == len(char_vocab) == len(id2char)
         assert list(id2char.keys())[0] == 0
 
     def test_build_embedding(self):
         char_corpus = self.preprocessor.build_corpus(self.sample_texts,
                                                      cut_func=lambda x: list(x))
-        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1, start_index=2)
+        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1)
         emb = self.preprocessor.build_embedding(embed_type=None, vocab=char_vocab)
         assert emb is None
 
         emb = self.preprocessor.build_embedding(embed_type='word2vec', vocab=char_vocab,
                                                 corpus=char_corpus)
-        assert emb.shape[0] == len(char_vocab) + 2 and emb.shape[1] == 300
+        assert emb.shape[0] == len(char_vocab) and emb.shape[1] == 300
         assert not np.any(emb[0])
 
         emb = self.preprocessor.build_embedding(embed_type='fasttext', vocab=char_vocab,
                                                 corpus=char_corpus)
-        assert emb.shape[0] == len(char_vocab) + 2 and emb.shape[1] == 300
+        assert emb.shape[0] == len(char_vocab) and emb.shape[1] == 300
         assert not np.any(emb[0])
 
         emb = self.preprocessor.build_embedding(embed_type=self.embedding_file,
                                                 vocab=char_vocab,
                                                 corpus=char_corpus)
-        assert emb.shape[0] == len(char_vocab) + 2 and emb.shape[1] == 200
+        assert emb.shape[0] == len(char_vocab) and emb.shape[1] == 200
         assert not np.any(emb[0])
 
     def test_build_id_sequence(self):
         char_corpus = self.preprocessor.build_corpus(self.sample_texts,
                                                      cut_func=lambda x: list(x))
-        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1, start_index=0)
+        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1)
         sample_text = list('文献是朝阳区区长吗？')
         id_sequence = self.preprocessor.build_id_sequence(sample_text, char_vocab)
         assert len(id_sequence) == len(sample_text)
@@ -73,7 +73,7 @@ class TestPreprocessor:
         sample_texts = [list('文献是朝阳区区长吗？'), list('拳王阿里是个传奇啊！')]
         char_corpus = self.preprocessor.build_corpus(self.sample_texts,
                                                      cut_func=lambda x: list(x))
-        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1, start_index=0)
+        _, char_vocab, _ = self.preprocessor.build_vocab(char_corpus, min_count=1)
         id_matrix = self.preprocessor.build_id_matrix(sample_texts, char_vocab)
         assert len(id_matrix) == len(sample_texts)
         assert len(id_matrix[-1]) == len(sample_texts[-1])
