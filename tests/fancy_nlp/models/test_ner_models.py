@@ -25,22 +25,24 @@ class TestNerModel:
 
     def test_bilstm_cnn_model(self):
         # no CRF, no word input
-        ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                 self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                 self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                                 use_crf=False)
         ner_model.build_model()
 
         # CRF, no word input
-        ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                 self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                 self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                                 use_crf=True)
         ner_model.build_model()
 
         # CRF, word
-        ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                 self.char_embed_dim, False, use_word=True,
+        ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                 self.char_vocab_size, self.char_embed_dim, False, use_word=True,
                                  word_embeddings=self.word_embeddings,
                                  word_vocab_size=self.word_vocab_size,
                                  word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
-                                 use_crf=True, checkpoint_dir=self.checkpoint_dir)
+                                 use_crf=True)
         ner_model.build_model()
 
         # save and load
@@ -57,22 +59,24 @@ class TestNerModel:
 
     def test_bigru_cnn_model(self):
         # no CRF, no word input
-        ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model = BiGRUCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                                use_crf=False)
         ner_model.build_model()
 
         # CRF, no word input
-        ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model = BiGRUCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                                use_crf=True)
         ner_model.build_model()
 
         # CRF, word
-        ner_model = BiGRUCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                self.char_embed_dim, False, use_word=True,
+        ner_model = BiGRUCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                self.char_vocab_size, self.char_embed_dim, False, use_word=True,
                                 word_embeddings=self.word_embeddings,
                                 word_vocab_size=self.word_vocab_size,
                                 word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
-                                use_crf=True, checkpoint_dir=self.checkpoint_dir)
+                                use_crf=True)
         ner_model.build_model()
 
         # save and load
@@ -89,22 +93,24 @@ class TestNerModel:
 
     def test_bilstm_model(self):
         # no CRF, no word input
-        ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                              self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model = BiLSTMNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                              self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                              use_crf=False)
         ner_model.build_model()
 
         # CRF, no word input
-        ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                              self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model = BiLSTMNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                              self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                              use_crf=True)
         ner_model.build_model()
 
         # CRF, word
-        ner_model = BiLSTMNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                              self.char_embed_dim, False, use_word=True,
+        ner_model = BiLSTMNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                              self.char_vocab_size, self.char_embed_dim, False, use_word=True,
                               word_embeddings=self.word_embeddings,
                               word_vocab_size=self.word_vocab_size,
                               word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
-                              use_crf=True, checkpoint_dir=self.checkpoint_dir)
+                              use_crf=True)
         ner_model.build_model()
 
         # save and load
@@ -121,22 +127,24 @@ class TestNerModel:
 
     def test_bigru_model(self):
         # no CRF, no word input
-        ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                             self.char_embed_dim, False, use_word=False, use_crf=False)
+        ner_model = BiGRUNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                             self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                             use_crf=False)
         ner_model.build_model()
 
         # CRF, no word input
-        ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                             self.char_embed_dim, False, use_word=False, use_crf=True)
+        ner_model = BiGRUNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                             self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                             use_crf=True)
         ner_model.build_model()
 
         # CRF, word
-        ner_model = BiGRUNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                             self.char_embed_dim, False, use_word=True,
+        ner_model = BiGRUNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                             self.char_vocab_size, self.char_embed_dim, False, use_word=True,
                              word_embeddings=self.word_embeddings,
                              word_vocab_size=self.word_vocab_size,
                              word_embed_dim=self.word_embed_dim, word_embed_trainable=False,
-                             use_crf=True, checkpoint_dir=self.checkpoint_dir)
+                             use_crf=True)
         ner_model.build_model()
 
         # save and load

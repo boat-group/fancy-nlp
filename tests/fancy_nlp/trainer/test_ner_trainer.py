@@ -26,13 +26,13 @@ class TestNERTrainer:
         self.word_embed_dim = self.word_embeddings.shape[1]
         self.checkpoint_dir = os.path.dirname(__file__)
 
-        self.ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                      self.char_embed_dim, False, use_word=True,
-                                      word_embeddings=self.word_embeddings,
+        self.ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                      self.char_vocab_size, self.char_embed_dim, False,
+                                      use_word=True, word_embeddings=self.word_embeddings,
                                       word_vocab_size=self.word_vocab_size,
                                       word_embed_dim=self.word_embed_dim,
                                       word_embed_trainable=False,
-                                      use_crf=True, checkpoint_dir=self.checkpoint_dir)
+                                      use_crf=True)
         self.ner_model.build_model()
         self.ner_trainer = NERTrainer(self.ner_model, self.preprocessor)
 
@@ -46,13 +46,13 @@ class TestNERTrainer:
         assert not os.path.exists(self.weights_file)
 
     def test_train_no_crf(self):
-        ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                 self.char_embed_dim, False, use_word=True,
+        ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                 self.char_vocab_size, self.char_embed_dim, False, use_word=True,
                                  word_embeddings=self.word_embeddings,
                                  word_vocab_size=self.word_vocab_size,
                                  word_embed_dim=self.word_embed_dim,
                                  word_embed_trainable=False,
-                                 use_crf=False, checkpoint_dir=self.checkpoint_dir)
+                                 use_crf=False)
         ner_model.build_model()
         ner_trainer = NERTrainer(ner_model, self.preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
@@ -64,9 +64,9 @@ class TestNERTrainer:
         preprocessor = NERPreprocessor(self.train_data+self.valid_data,
                                        self.valid_data+self.valid_labels, use_word=False,
                                        char_embed_type='word2vec')
-        ner_model = BiLSTMCNNNER(self.num_class, self.char_embeddings, self.char_vocab_size,
-                                 self.char_embed_dim, False, use_word=False,
-                                 use_crf=True, checkpoint_dir=self.checkpoint_dir)
+        ner_model = BiLSTMCNNNER(self.num_class, self.checkpoint_dir, self.char_embeddings,
+                                 self.char_vocab_size, self.char_embed_dim, False, use_word=False,
+                                 use_crf=True)
         ner_model.build_model()
         ner_trainer = NERTrainer(ner_model, preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
