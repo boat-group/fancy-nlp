@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pickle
 import codecs
 
 import numpy as np
@@ -15,7 +16,7 @@ from fancy_nlp.utils.other import pad_sequences_2d, get_most_len
 class NERPreprocessor(Preprocessor):
     """NER preprocessor.
     """
-    def __init__(self, train_data, train_labels, min_count=3, use_char=True, use_bert=False,
+    def __init__(self, train_data, train_labels, min_count=2, use_char=True, use_bert=False,
                  use_word=False, external_word_dict=None, bert_vocab_file=None,
                  char_embed_type=None, char_embed_dim=300, word_embed_type=None, word_embed_dim=300,
                  max_len=None, padding_mode='post',
@@ -49,6 +50,7 @@ class NERPreprocessor(Preprocessor):
         self.use_char = use_char
         self.use_bert = use_bert
         self.use_word = use_word
+        self.external_word_dict = external_word_dict
         self.char_embed_type = char_embed_type
         self.word_embed_type = word_embed_type
 
@@ -84,11 +86,11 @@ class NERPreprocessor(Preprocessor):
 
         # build word vocabulary and word embedding
         if self.use_word:
-            if external_word_dict:
-                for word in external_word_dict:
-                    jieba.add_word(word, freq=1000000)
+            self.load_word_dict()
+
             untokenized_texts = [''.join(text) for text in self.train_data]
             word_corpus = self.build_corpus(untokenized_texts, cut_func=lambda x: jieba.lcut(x))
+
             self.word_vocab_count, self.word_vocab, self.id2word = \
                 self.build_vocab(word_corpus, self.min_count, special_token)
             self.word_vocab_size = len(self.word_vocab)
@@ -113,6 +115,11 @@ class NERPreprocessor(Preprocessor):
             # max_len must be provided when use bert as input!
             # We will reset max_len from train_data when max_len is not provided.
             self.max_len = get_most_len(self.train_data)
+
+    def load_word_dict(self):
+        if self.external_word_dict:
+            for word in self.external_word_dict:
+                jieba.add_word(word, freq=1000000)
 
     def build_label_vocab(self, labels):
         """Build label vocabulary
@@ -230,3 +237,12 @@ class NERPreprocessor(Preprocessor):
         if lengths is not None:
             pred_labels = [labels[:length] for labels, length in zip(pred_labels, lengths)]
         return pred_labels
+
+    def save(self, preprocessor_file):
+        pickle.dump(self, open(preprocessor_file, 'wb'))
+
+    @classmethod
+    def load(cls, preprocessor_file):
+        p = pickle.load(open(preprocessor_file, 'rb'))
+        p.load_word_dict()  # reload external word dict into jieba
+        return p
