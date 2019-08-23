@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
-
 from absl import logging
 from keras.callbacks import *
 from seqeval import metrics
@@ -16,23 +14,83 @@ class NERTrainer(object):
         """
 
         Args:
-            model: instance of NER Model
+            model: instance of keras Model
             preprocessor: instance of NERPreporcessor
         """
         self.model = model
         self.preprocessor = preprocessor
 
-    def prepare_callback(self, callback_list, valid_data=None, valid_labels=None):
+    def train(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
+              epochs=50, callback_list=None, checkpoint_dir=None, model_name=None, swa_model=None,
+              load_swa_model=False):
+        callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
+                                          model_name, swa_model)
+
+        train_features, train_y = self.preprocessor.prepare_input(train_data, train_labels)
+        if valid_data is not None and valid_labels is not None:
+            valid_features, valid_y = self.preprocessor.prepare_input(valid_data, valid_labels)
+            valid_data = (valid_features, valid_y)
+        else:
+            valid_data = None
+
+        logging.info('Training start...')
+        self.model.fit(x=train_features, y=train_y, batch_size=batch_size, epochs=epochs,
+                       validation_data=valid_data, callbacks=callbacks)
+        logging.info('Training end...')
+
+        if load_swa_model and callback_list is not None and 'swa' in callback_list:
+            logging.info('Loading swa model after using SWA callback')
+            self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+
+        elif callback_list is not None and 'mdeolcheckpoint' in callback_list:
+            logging.info('Loading best model after using ModelCheckpoint callback...')
+            self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
+
+    def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
+                        batch_size=32, epochs=50, callback_list=None, checkpoint_dir=None,
+                        model_name=None, swa_model=None, load_swa_model=False):
+        callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
+                                          model_name, swa_model)
+
+        train_generator = NERGenerator(self.preprocessor, train_data, train_labels, batch_size)
+
+        if valid_data and valid_labels:
+            valid_generator = NERGenerator(self.preprocessor, valid_data, valid_labels,
+                                           batch_size)
+        else:
+            valid_generator = None
+
+        print('Training start...')
+        self.model.fit_generator(generator=train_generator, epochs=epochs,
+                                 validation_data=valid_generator, callbacks=callbacks)
+        print('Training end...')
+
+        if load_swa_model and callback_list is not None and 'swa' in callback_list:
+            logging.info('Loading swa model after using SWA callback')
+            self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+
+        elif callback_list is not None and 'mdeolcheckpoint' in callback_list:
+            logging.info('Loading best model after using ModelCheckpoint callback...')
+            self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
+
+    def prepare_callback(self, callback_list, valid_data=None, valid_labels=None,
+                         checkpoint_dir=None, model_name=None, swa_model=None):
         """
 
         Args:
             callback_list: list of str, each item indicate the callback to apply during training.
                        For example, 'earlystopping' means using 'EarlyStopping' callback.
-            valid_data:
-            valid_labels:
+            valid_data: list of tokenized (in char level) texts for evaluation
+            valid_labels: labels string of valid data
+            checkpoint_dir: str, directory to save ner model, must be provided when using
+                            `ModelCheckpoint` or `SWA` callback.
+            model_name: str, prefix of ner model's weights filem must be provided when using
+                        `ModelCheckpoint` or `SWA` callback.
+                        For example, if checkpoint_dir is 'ckpt' and model_name is 'model', the
+                        weights of ner model saved by `ModelCheckpoint` callback will be
+                        'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'
 
-        Returns: a list of `keras.callbacks.Callback` instances and a boolean variable indicate
-                 whether modelchekpoint callback is added
+        Returns: a list of `keras.callbacks.Callback` instances
 
         """
         assert not isinstance(callback_list, str)
@@ -44,19 +102,23 @@ class NERTrainer(object):
         else:
             add_metric = False
 
-        add_modelcheckpoint = False
         if 'modelcheckpoint' in callback_list:
             if not add_metric:
                 logging.warning('Using `ModelCheckpoint` with validation data not provided is not '
                                 'Recommended! We will use `loss` (of training data) as monitor.')
-            callbacks.append(ModelCheckpoint(filepath=self.model.weights_file,
+
+            assert checkpoint_dir is not None, \
+                '"checkpoint_dir" must must be provided when using "ModelCheckpoint" callback'
+            assert model_name is not None, \
+                '"model_name" must must be provided when using "ModelCheckpoint" callback'
+            callbacks.append(ModelCheckpoint(filepath=os.path.join(checkpoint_dir,
+                                                                   f'{model_name}.hdf5'),
                                              monitor='val_f1' if add_metric else 'loss',
                                              save_best_only=True,
                                              save_weights_only=True,
                                              mode='max' if add_metric else 'min',
                                              verbose=1))
             logging.info('ModelCheckpoint Callback added')
-            add_modelcheckpoint = True
 
         if 'earlystopping' in callback_list:
             if not add_metric:
@@ -69,47 +131,18 @@ class NERTrainer(object):
             logging.info('Earlystopping Callback added')
 
         if 'swa' in callback_list:
-            callbacks.append(SWA(swa_model=self.model.build_model_arc(),
-                                 checkpoint_dir=self.model.checkpoint_dir,
-                                 model_name=self.model.model_name,
-                                 swa_start=5))
+            assert checkpoint_dir is not None, \
+                '"checkpoint_dir" must must be provided when using "SWA" callback'
+            assert model_name is not None, \
+                '"model_name" must must be provided when using "SWA" callback'
+            callbacks.append(SWA(swa_model=swa_model, checkpoint_dir=checkpoint_dir,
+                                 model_name=model_name, swa_start=5))
             logging.info('SWA Callback added')
 
-        return callbacks, add_modelcheckpoint
+        return callbacks
 
-    def train(self, train_data, train_labels, valid_data=None, valid_labels=None,
-              batch_size=32, epochs=50, callback_list=None):
-        callbacks, add_modelcheckpoint = self.prepare_callback(callback_list, valid_data,
-                                                               valid_labels)
-
-        train_features, train_y = self.preprocessor.prepare_input(train_data, train_labels)
-        if valid_data is not None and valid_labels is not None:
-            valid_features, valid_y = self.preprocessor.prepare_input(valid_data, valid_labels)
-        else:
-            valid_features, valid_y = None, None
-
-        self.model.fit(train_features, train_y, valid_features, valid_y, batch_size,
-                       epochs, callbacks)
-        if add_modelcheckpoint:
-            self.model.load_best_model()
-
-    def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
-                        batch_size=32, epochs=50, callback_list=None, shuffle=True):
-        callbacks, add_modelcheckpoint = self.prepare_callback(callback_list, valid_data,
-                                                               valid_labels)
-
-        train_generator = NERGenerator(self.preprocessor, train_data, train_labels, batch_size,
-                                       shuffle)
-
-        if valid_data and valid_labels:
-            valid_generator = NERGenerator(self.preprocessor, valid_data, valid_labels,
-                                           batch_size, shuffle)
-        else:
-            valid_generator = None
-
-        self.model.fit_generator(train_generator, valid_generator, epochs, callbacks)
-        if add_modelcheckpoint:
-            self.model.load_best_model()
+    def load_model_weights(self, weights_file):
+        self.model.load_weights(weights_file)
 
     def evaluate(self, data, labels):
         """Evaluate the performance of ner model.
