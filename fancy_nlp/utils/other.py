@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from keras_contrib.layers import CRF
+from keras_bert import get_custom_objects as get_custom_objects_for_bert
+
+
+from fancy_nlp.layers import NonMaskingLayer
 
 
 def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', padding='post',
@@ -63,3 +68,10 @@ def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', p
 def get_most_len(corpus):
     """Get majority len from corpus"""
     return sorted([len(seq) for seq in corpus])[int(0.95 * len(corpus))]
+
+
+def get_custom_objects():
+    """Get all custom objects for loading saved ner models."""
+    custom_objects = {'CRF': CRF, 'NonMaskingLayer': NonMaskingLayer}
+    custom_objects.update(get_custom_objects_for_bert())     # bert
+    return custom_objects
