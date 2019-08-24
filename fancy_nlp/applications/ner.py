@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 from absl import logging
 from keras.models import model_from_json
-from keras_bert.layers import TokenEmbedding
+from keras.utils import get_file
 
 from fancy_nlp.preprocessors import NERPreprocessor
 from fancy_nlp.models.ner import *
@@ -19,6 +21,8 @@ class NER(object):
         self.model = None
         self.trainer = None
         self.predictor = None
+
+        self.load_pretrained_model()
 
     def fit(self,
             train_data,
@@ -285,7 +289,6 @@ class NER(object):
 
         custom_objects = custom_objects or {}
         custom_objects.update(get_custom_objects())
-        print(custom_objects)
         with open(json_file, 'r') as reader:
             self.model = model_from_json(reader.read(), custom_objects=custom_objects)
         logging.info('Load model architecture from {}'.format(json_file))
@@ -405,3 +408,20 @@ class NER(object):
             raise ValueError('`ner_model_type` not understood: {}'.format(ner_model_type))
 
         return ner_model.build_model()
+
+    def load_pretrained_model(self):
+        cache_subdir = 'pretrained_models'
+
+        prefix = 'https://fancy-nlp-1253403094.cos.ap-shanghai.myqcloud.com/pretrained_models/'
+
+        preprocessor_file = get_file(fname='msra_ner_bilstm_cnn_crf_preprocessor.pkl',
+                                     origin=prefix+'msra_ner_bilstm_cnn_crf_preprocessor.pkl',
+                                     cache_subdir=cache_subdir)
+        json_file = get_file(fname='msra_ner_bilstm_cnn_crf.json',
+                             origin=prefix+'msra_ner_bilstm_cnn_crf.json',
+                             cache_subdir=cache_subdir)
+        weights_file = get_file(fname='msra_ner_bilstm_cnn_crf.hdf5',
+                                origin=prefix+'msra_ner_bilstm_cnn_crf.hdf5',
+                                cache_subdir=cache_subdir)
+
+        self.load(preprocessor_file, json_file, weights_file)
