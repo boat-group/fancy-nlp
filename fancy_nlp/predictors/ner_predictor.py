@@ -10,14 +10,14 @@ from seqeval.metrics.sequence_labeling import get_entities
 class NERPredictor(object):
     """NER predictor for evaluating ner model, output predictive probabilities and predictive tag
     sequences for input sentence"""
-    def __init__(self, ner_model, preprocessor):
+    def __init__(self, model, preprocessor):
         """
 
         Args:
-            ner_model: instance of ner model
+            model: instance of keras model
             preprocessor: `NERPreprocessor` instance to prepare feature input for ner model
         """
-        self.ner_model = ner_model
+        self.model = model
         self.preprocessor = preprocessor
 
     def predict_prob(self, text):
@@ -35,7 +35,7 @@ class NERPredictor(object):
         else:
             assert isinstance(text, str)
             features, _ = self.preprocessor.prepare_input([list(text)])
-        pred_probs = self.ner_model.predict(features)
+        pred_probs = self.model.predict(features)
         return pred_probs[0]
 
     def predict_prob_batch(self, texts):
@@ -55,7 +55,7 @@ class NERPredictor(object):
             assert isinstance(texts[0], str)
             char_cut_texts = [list(text) for text in texts]
             features, _ = self.preprocessor.prepare_input(char_cut_texts)
-        pred_probs = self.ner_model.predict(features)
+        pred_probs = self.model.predict(features)
         return pred_probs
 
     def tag(self, text):

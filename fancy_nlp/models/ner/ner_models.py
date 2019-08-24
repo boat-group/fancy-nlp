@@ -12,12 +12,13 @@ from fancy_nlp.models.ner.base_ner_model import BaseNERModel
 
 class BiLSTMNER(BaseNERModel):
     """Bidirectional LSTM model for NER.
-    Support using CUDANNLSTM for acceleration when gpu is available.
-    Support using CRF layer.
+       1. Support using CuDNNLSTM for acceleration when gpu is available. You will have to install
+          a gpu version of tensorflow to do so. Note that model using CuDNNLSTM can only be deployed
+          to machines with GPU for practical use.
+       2. Support using CRF layer.
     """
     def __init__(self,
                  num_class,
-                 checkpoint_dir,
                  use_char=True,
                  char_embeddings=None,
                  char_vocab_size=-1,
@@ -36,25 +37,22 @@ class BiLSTMNER(BaseNERModel):
                  dropout=0.2,
                  rnn_units=150,
                  fc_dim=100,
-                 activation='relu',
+                 activation='tanh',
                  use_crf=True,
-                 optimizer='adam',
-                 model_name=None):
+                 optimizer='adam'):
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_fim = fc_dim
         self.activation = activation
         self.use_crf = use_crf
         self.optimizer = optimizer
-        super(BiLSTMNER, self).__init__(checkpoint_dir, model_name if model_name else 'bilstm_ner',
-                                        use_char, char_embeddings, char_vocab_size, char_embed_dim,
+        super(BiLSTMNER, self).__init__(use_char, char_embeddings, char_vocab_size, char_embed_dim,
                                         char_embed_trainable, use_bert, bert_config_file,
                                         bert_checkpoint_file, bert_trainable, use_word,
                                         word_embeddings, word_vocab_size, word_embed_dim,
-                                        word_embed_trainable, max_len, dropout,
-                                        {'CRF': CRF} if use_crf else None)
+                                        word_embed_trainable, max_len, dropout)
 
-    def build_model_arc(self):
+    def build_model(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNLSTM(self.rnn_units, return_sequences=True))(input_embed)
@@ -78,12 +76,13 @@ class BiLSTMNER(BaseNERModel):
 
 class BiGRUNER(BaseNERModel):
     """Bidirectional GRU model for NER.
-        Support using CUDANNGRU for acceleration when gpu is available.
-        Support using CRF layer.
+       1. Support using CuDNNGRU for acceleration when gpu is available. You will have to install
+          a gpu version of tensorflow to do so. Note that model using CuDNNGRU can only be deployed
+          to machines with GPU for practical use.
+       2. Support using CRF layer.
     """
     def __init__(self,
                  num_class,
-                 checkpoint_dir,
                  use_char=True,
                  char_embeddings=None,
                  char_vocab_size=-1,
@@ -102,25 +101,22 @@ class BiGRUNER(BaseNERModel):
                  dropout=0.2,
                  rnn_units=150,
                  fc_dim=100,
-                 activation='relu',
+                 activation='tanh',
                  use_crf=True,
-                 optimizer='adam',
-                 model_name=None):
+                 optimizer='adam'):
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_fim = fc_dim
         self.activation = activation
         self.use_crf = use_crf
         self.optimizer = optimizer
-        super(BiGRUNER, self).__init__(checkpoint_dir, model_name if model_name else 'bigru_ner',
-                                       use_char, char_embeddings, char_vocab_size, char_embed_dim,
+        super(BiGRUNER, self).__init__(use_char, char_embeddings, char_vocab_size, char_embed_dim,
                                        char_embed_trainable, use_bert, bert_config_file,
                                        bert_checkpoint_file, bert_trainable, use_word,
                                        word_embeddings, word_vocab_size, word_embed_dim,
-                                       word_embed_trainable, max_len, dropout,
-                                       {'CRF': CRF} if use_crf else None)
+                                       word_embed_trainable, max_len, dropout)
 
-    def build_model_arc(self):
+    def build_model(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNGRU(self.rnn_units, return_sequences=True))(input_embed)
@@ -144,12 +140,13 @@ class BiGRUNER(BaseNERModel):
 
 class BiLSTMCNNNER(BaseNERModel):
     """Bidirectional LSTM + CNN model for NER.
-        Support using CUDANNLSTM for acceleration when gpu is available.
-        Support using CRF layer.
+       1. Support using CuDNNLSTM for acceleration when gpu is available. You will have to install
+          a gpu version of tensorflow to do so. Note that model using CuDNNLSTM can only be deployed
+          to machines with GPU for practical use.
+       2. Support using CRF layer.
     """
     def __init__(self,
                  num_class,
-                 checkpoint_dir,
                  use_char=True,
                  char_embeddings=None,
                  char_vocab_size=-1,
@@ -170,10 +167,9 @@ class BiLSTMCNNNER(BaseNERModel):
                  cnn_filters=300,
                  cnn_kernel_size=3,
                  fc_dim=100,
-                 activation='relu',
+                 activation='tanh',
                  use_crf=True,
-                 optimizer='adam',
-                 model_name=None):
+                 optimizer='adam'):
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.cnn_filters = cnn_filters
@@ -182,17 +178,14 @@ class BiLSTMCNNNER(BaseNERModel):
         self.activation = activation
         self.use_crf = use_crf
         self.optimizer = optimizer
-        super(BiLSTMCNNNER, self).__init__(checkpoint_dir,
-                                           model_name if model_name else 'bilstm_cnn_ner',
-                                           use_char, char_embeddings, char_vocab_size,
+        super(BiLSTMCNNNER, self).__init__(use_char, char_embeddings, char_vocab_size,
                                            char_embed_dim, char_embed_trainable,
                                            use_bert, bert_config_file, bert_checkpoint_file,
                                            bert_trainable, use_word, word_embeddings,
                                            word_vocab_size, word_embed_dim, word_embed_trainable,
-                                           max_len, dropout,
-                                           custom_objects={'CRF': CRF} if use_crf else None)
+                                           max_len, dropout)
 
-    def build_model_arc(self):
+    def build_model(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNLSTM(self.rnn_units,
@@ -219,12 +212,13 @@ class BiLSTMCNNNER(BaseNERModel):
 
 class BiGRUCNNNER(BaseNERModel):
     """Bidirectional GRU + CNN model for NER.
-       Support using CUDANNGRU for acceleration when gpu is available.
-       Support using CRF layer.
+       1. Support using CuDNNGRU for acceleration when gpu is available. You will have to install
+          a gpu version of tensorflow to do so. Note that model using CuDNNGRU can only be deployed
+          to machines with GPU for practical use.
+       2. Support using CRF layer.
     """
     def __init__(self,
                  num_class,
-                 checkpoint_dir,
                  use_char=True,
                  char_embeddings=None,
                  char_vocab_size=-1,
@@ -245,10 +239,9 @@ class BiGRUCNNNER(BaseNERModel):
                  cnn_filters=300,
                  cnn_kernel_size=3,
                  fc_dim=100,
-                 activation='relu',
+                 activation='tanh',
                  use_crf=True,
-                 optimizer='adam',
-                 model_name=None):
+                 optimizer='adam'):
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.cnn_filters = cnn_filters
@@ -257,17 +250,14 @@ class BiGRUCNNNER(BaseNERModel):
         self.activation = activation
         self.use_crf = use_crf
         self.optimizer = optimizer
-        super(BiGRUCNNNER, self).__init__(checkpoint_dir,
-                                          model_name if model_name else 'bigru_cnn_ner',
-                                          use_char, char_embeddings, char_vocab_size,
+        super(BiGRUCNNNER, self).__init__(use_char, char_embeddings, char_vocab_size,
                                           char_embed_dim, char_embed_trainable,
                                           use_bert, bert_config_file, bert_checkpoint_file,
                                           bert_trainable, use_word, word_embeddings,
                                           word_vocab_size, word_embed_dim, word_embed_trainable,
-                                          max_len, dropout,
-                                          custom_objects={'CRF': CRF} if use_crf else None)
+                                          max_len, dropout)
 
-    def build_model_arc(self):
+    def build_model(self):
         model_inputs, input_embed = self.build_input()
         if tf.test.is_gpu_available(cuda_only=True):
             input_encode = Bidirectional(CuDNNGRU(self.rnn_units,
@@ -293,38 +283,34 @@ class BiGRUCNNNER(BaseNERModel):
 
 
 class BertNER(BaseNERModel):
-    """Bidirectional LSTM model for NER.
-        Support using CUDANNLSTM for acceleration when gpu is available.
-        Support using CRF layer.
-        """
+    """Bert model for NER. Support using CRF layer.
+    We suggest you to train bert on machines with GPU cause it will be very slow to be trained with
+    cpu. You will have to re-install a gpu version of tensorflow to do so.
+    """
 
     def __init__(self,
                  num_class,
-                 checkpoint_dir,
                  bert_config_file,
                  bert_checkpoint_file,
                  bert_trainable,
                  max_len,
                  dropout=0.2,
                  fc_dim=100,
-                 activation='relu',
+                 activation='tanh',
                  use_crf=True,
-                 optimizer='adam',
-                 model_name=None):
+                 optimizer='adam'):
         self.num_class = num_class
         self.fc_fim = fc_dim
         self.activation = activation
         self.use_crf = use_crf
         self.optimizer = optimizer
-        super(BertNER, self).__init__(checkpoint_dir, model_name if model_name else 'bilstm_ner',
-                                      use_char=False, use_bert=True,
+        super(BertNER, self).__init__(use_char=False, use_bert=True,
                                       bert_config_file=bert_config_file,
                                       bert_checkpoint_file=bert_checkpoint_file,
                                       bert_trainable=bert_trainable, use_word=False,
-                                      max_len=max_len, dropout=dropout,
-                                      custom_objects={'CRF': CRF} if use_crf else None)
+                                      max_len=max_len, dropout=dropout)
 
-    def build_model_arc(self):
+    def build_model(self):
         model_inputs, input_embed = self.build_input()
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_embed)
 

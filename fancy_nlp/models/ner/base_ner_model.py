@@ -6,13 +6,12 @@
 from keras.layers import *
 from keras_bert import load_trained_model_from_checkpoint
 
+from fancy_nlp.layers import NonMaskingLayer
 from fancy_nlp.models.base_model import BaseModel
 
 
 class BaseNERModel(BaseModel):
     def __init__(self,
-                 checkpoint_dir,
-                 model_name,
                  use_char=True,
                  char_embeddings=None,
                  char_vocab_size=-1,
@@ -28,9 +27,7 @@ class BaseNERModel(BaseModel):
                  word_embed_dim=-1,
                  word_embed_trainable=False,
                  max_len=None,
-                 dropout=0.2,
-                 custom_objects=None):
-        super(BaseNERModel, self).__init__(checkpoint_dir, model_name, custom_objects)
+                 dropout=0.2):
 
         self.use_char = use_char
         self.char_embeddings = char_embeddings
@@ -74,10 +71,12 @@ class BaseNERModel(BaseModel):
         if self.use_bert:
             bert_model = load_trained_model_from_checkpoint(self.bert_config_file,
                                                             self.bert_checkpoint_file,
-                                                            self.bert_trainable,
-                                                            self.max_len)
-            model_inputs.append(bert_model.inputs)
-            input_embed.append(SpatialDropout1D(0.2)(bert_model.output))
+                                                            trainable=self.bert_trainable,
+                                                            output_layer_num=1,
+                                                            seq_len=self.max_len)
+            model_inputs.extend(bert_model.inputs)
+            bert_embed = NonMaskingLayer()(bert_model.output)
+            input_embed.append(SpatialDropout1D(0.2)(bert_embed))
 
         if self.use_word:
             if self.word_embeddings is not None:
@@ -95,5 +94,5 @@ class BaseNERModel(BaseModel):
         input_embed = concatenate(input_embed) if len(input_embed) > 1 else input_embed[0]
         return model_inputs, input_embed
 
-    def build_model_arc(self):
+    def build_model(self):
         raise NotImplementedError

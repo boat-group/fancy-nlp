@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import math
 
 from absl import logging
-import keras.backend as K
 from keras.callbacks import Callback
 
-from fancy_nlp.utils import save_keras_model
 
 '''
 Applying ensemble during a single training process
