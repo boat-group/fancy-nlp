@@ -61,7 +61,7 @@ class BiLSTMNER(BaseNERModel):
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_encode)
 
         if self.use_crf:
-            crf = CRF(units=self.num_class)
+            crf = CRF(units=self.num_class, learn_mode='marginal')
             ner_tag = crf(input_encode)
             ner_loss = crf_loss
             ner_metrics = crf_accuracy
@@ -125,7 +125,7 @@ class BiGRUNER(BaseNERModel):
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_encode)
 
         if self.use_crf:
-            crf = CRF(units=self.num_class)
+            crf = CRF(units=self.num_class, learn_mode='marginal')
             ner_tag = crf(input_encode)
             ner_loss = crf_loss
             ner_metrics = crf_accuracy
@@ -197,7 +197,7 @@ class BiLSTMCNNNER(BaseNERModel):
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_encode)
 
         if self.use_crf:
-            crf = CRF(units=self.num_class)
+            crf = CRF(units=self.num_class, learn_mode='marginal')
             ner_tag = crf(input_encode)
             ner_loss = crf_loss
             ner_metrics = crf_accuracy
@@ -269,7 +269,7 @@ class BiGRUCNNNER(BaseNERModel):
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_encode)
 
         if self.use_crf:
-            crf = CRF(units=self.num_class)
+            crf = CRF(units=self.num_class, learn_mode='marginal')
             ner_tag = crf(input_encode)
             ner_loss = crf_loss
             ner_metrics = crf_accuracy
@@ -315,7 +315,7 @@ class BertNER(BaseNERModel):
         input_encode = TimeDistributed(Dense(self.fc_fim, activation=self.activation))(input_embed)
 
         if self.use_crf:
-            crf = CRF(units=self.num_class)
+            crf = CRF(units=self.num_class, learn_mode='marginal')
             ner_tag = crf(input_encode)
             ner_loss = crf_loss
             ner_metrics = crf_accuracy
