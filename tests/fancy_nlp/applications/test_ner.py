@@ -42,7 +42,7 @@ class TestNER:
                 use_word=True,
                 max_len=16,
                 batch_size=2,
-                epochs=10,
+                epochs=7,
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir=self.checkpoint_dir,
                 model_name=self.model_name,
