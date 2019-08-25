@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/boat-group/fancy-nlp/badge.svg?branch=master)](https://coveralls.io/github/boat-group/fancy-nlp?branch=master)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-`fancy-nlp` 是一套易用的自然语言处理工具，其直接面向应用场景，满足用户对自然语言处理任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对自然语言文本来完成多种NLP任务，实现所想即所得！
+`fancy-nlp` 是一套易用的自然语言处理工具，其直接面向应用场景，满足用户对自然语言处理任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
 
 ## fancy是什么寓意？
 
@@ -22,9 +22,9 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 
 ## 使用指引
 
-### 使用基础模型
+### 基础模型
 
-当前fancy-nlp中默认加载了使用MSRA数据集训练的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）进行识别。当前的基础模型仅为便于用户直接体验，暂未进行深度的模型调用。当前你可以使用后续的**自定义模型**，来构建你的实体提取系统。
+当前fancy-nlp中默认加载了使用MSRA NER数据集训练的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）进行识别。当前的基础模型仅为便于用户直接体验，暂未进行深度的模型调优。目前，你可以根据后续的**自定义模型**使用介绍，来构建你的实体提取系统。
 
 *注：我们将在随后不断优化多种场景（不同标注数据）的实体识别模型，以供用户直接使用*
 
@@ -95,8 +95,8 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
  'I-PER']
 ``` 
 
-### 使用自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，包括商品的品牌、类别、型号，已经品牌+类别、品牌+类别+型号所组成的商品SKU。使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取，以及商品类别的分类
+### 自定义模型
+在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，包括商品的品牌、类别、型号，以及品牌+类别、品牌+类别+型号所组成的商品SKU。使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取，以及商品类别的分类
 
 在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**，商品分类准确率可以达到**0.8428**。
 
@@ -221,16 +221,16 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 ## Acknowledgement
 
 - 本项目在**2019腾讯广告犀牛鸟专项研究计划**的支持下，由AMS-PTP-创意优化组allene与同济大学大数据处理与智能分析实验室联合开发
-- `fancy-nlp`在**CCKS 2019——中文短文本的实体链指**评测竞赛中取得了初赛第三名，复赛[第五名](https://biendata.com/competition/ccks_2019_el/final-leaderboard/)的成绩，且获得了该评测竞赛唯一的一项[技术创新奖](https://biendata.com/competition/ccks_2019_el/winners/)，原始可复现流程，请参考原始[repo](https://github.com/AlexYangLi/ccks2019_el)。
+- `fancy-nlp`在**CCKS 2019——中文短文本的实体链指**评测竞赛中取得了初赛第三名，复赛[第五名](https://biendata.com/competition/ccks_2019_el/final-leaderboard/)的成绩，且获得了该评测竞赛唯一的一项[技术创新奖](https://biendata.com/competition/ccks_2019_el/winners/)，可复现流程指引，请参考原始[repo](https://github.com/AlexYangLi/ccks2019_el)。
 
 ## Contribution
 
-- 项目的代码规范符合PEP8标准，且每次提交会自动触发CI，并计算单测覆盖率
+- 项目的代码规范符合PEP8标准，且每次提交会自动触发CI，并计算单元测试覆盖率
 - 所有的代码提交请遵循[约定式提交规范](https://www.conventionalcommits.org/zh/v1.0.0-beta.4/)
-- 所有的功能性代码请编写相应的单测模块
+- 为项目添加新的核心代码，请编写相应的单元测试模块
 
 ## Reference
-本项目的灵感来自于众多的优秀的开源项目，尤其是Keras，正如Keras的slogan：**Deep learning for human**，我们希望`fancy-nlp`是**NLP for human**，尤其在中文领域。
+本项目的灵感来自于众多的优秀的开源项目，尤其是Keras，正如Keras的slogan: **Deep learning for human** 所说，我们希望`fancy-nlp`是**NLP for human**，尤其在中文领域。
 
 - Keras: <https://github.com/keras-team/keras>
 - anoGo: <https://github.com/Hironsan/anago>
