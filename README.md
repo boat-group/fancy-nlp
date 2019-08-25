@@ -228,3 +228,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 - 项目的代码规范符合PEP8标准，且每次提交会自动触发CI，并计算单测覆盖率
 - 所有的代码提交请遵循[约定式提交规范](https://www.conventionalcommits.org/zh/v1.0.0-beta.4/)
 - 所有的功能性代码请编写相应的单测模块
+
+## Reference
+本项目的灵感来自于众多的优秀的开源项目，尤其是Keras，正如Keras的slogan：**Deep learning for human**，我们希望`fancy-nlp`是**NLP for human**，尤其在中文领域。
+
+- Keras: <https://github.com/keras-team/keras>
+- anoGo: <https://github.com/Hironsan/anago>
+- Kashgari: <https://github.com/BrikerMan/Kashgari>
+
