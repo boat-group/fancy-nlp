@@ -78,7 +78,7 @@ class TestNERTrainer:
 
     def test_train(self):
         self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7)
+                               self.valid_labels, batch_size=2, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -102,7 +102,7 @@ class TestNERTrainer:
 
         ner_trainer = NERTrainer(ner_model, self.preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+                          batch_size=2, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -133,7 +133,7 @@ class TestNERTrainer:
 
         ner_trainer = NERTrainer(ner_model, preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+                          batch_size=2, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -158,18 +158,18 @@ class TestNERTrainer:
 
         ner_trainer = NERTrainer(ner_model, preprocessor)
         ner_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+                          batch_size=2, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
     def test_train_no_valid_data(self):
-        self.ner_trainer.train(self.train_data, self.train_labels, batch_size=2, epochs=7)
+        self.ner_trainer.train(self.train_data, self.train_labels, batch_size=2, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
     def test_train_callbacks(self):
         self.ner_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7,
+                               self.valid_labels, batch_size=2, epochs=2,
                                callback_list=['modelcheckpoint', 'earlystopping'],
                                checkpoint_dir=os.path.dirname(__file__),
                                model_name='bilstm_cnn_ner')
@@ -199,7 +199,7 @@ class TestNERTrainer:
 
     def test_generator(self):
         self.ner_trainer.train_generator(self.train_data, self.train_labels,
-                                         self.valid_data, self.valid_labels, batch_size=2, epochs=7)
+                                         self.valid_data, self.valid_labels, batch_size=2, epochs=2)
 
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
