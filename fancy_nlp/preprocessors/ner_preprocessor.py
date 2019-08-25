@@ -188,7 +188,7 @@ class NERPreprocessor(Preprocessor):
                     label_str = [self.cls_token] + labels[i] + [self.seq_token]
                 else:
                     label_str = labels[i]
-                label_ids = [self.label_vocab[l] for l in label_str]
+                label_ids = [self.label_vocab.get(l, 0) for l in label_str]
                 label_ids = to_categorical(label_ids, self.num_class).astype(int)
                 batch_label_ids.append(label_ids)
 
