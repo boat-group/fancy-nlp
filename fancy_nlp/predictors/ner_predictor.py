@@ -146,6 +146,7 @@ class NERPredictor(object):
         length = min(len(text), pred_prob.shape[0])
         tag = self.preprocessor.label_decode(np.expand_dims(pred_prob, 0), [length])
 
+        pred_prob = np.max(pred_prob, axis=-1)
         char_cut = text if isinstance(text, list) else list(text)
         results = {
             'text': ''.join(char_cut),
@@ -158,6 +159,7 @@ class NERPredictor(object):
         lengths = [min(len(text), pred_prob.shape[0]) for text, pred_prob in zip(texts, pred_probs)]
         tags = self.preprocessor.label_decode(pred_probs, lengths)
 
+        pred_probs = np.max(pred_probs, axis=-1)
         results = []
         for text, tag, pred_prob in zip(texts, tags, pred_probs):
             char_cut = text if isinstance(text, list) else list(text)
@@ -181,6 +183,7 @@ class NERPredictor(object):
         length = min(len(text), pred_prob.shape[0])
         tag = self.preprocessor.label_decode(np.expand_dims(pred_prob, 0), [length])
 
+        pred_prob = np.max(pred_prob, axis=-1)
         char_cut = text if isinstance(text, list) else list(text)
         results = {
             'text': ''.join(char_cut),
@@ -193,6 +196,7 @@ class NERPredictor(object):
         lengths = [min(len(text), pred_prob.shape[0]) for text, pred_prob in zip(texts, pred_probs)]
         tags = self.preprocessor.label_decode(pred_probs, lengths)
 
+        pred_probs = np.max(pred_probs, axis=-1)
         results = []
         for text, tag, pred_prob in zip(texts, tags, pred_probs):
             char_cut = text if isinstance(text, list) else list(text)
