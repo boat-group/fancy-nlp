@@ -95,7 +95,7 @@ class NERPreprocessor(Preprocessor):
                 self.build_vocab(word_corpus, self.min_count, special_token)
             self.word_vocab_size = len(self.word_vocab)
             self.word_embeddings = self.build_embedding(word_embed_type, self.word_vocab,
-                                                        self.train_data, word_embed_dim,
+                                                        word_corpus, word_embed_dim,
                                                         special_token)
             if self.word_embeddings is not None:
                 self.word_embed_dim = self.word_embeddings.shape[1]
@@ -165,9 +165,11 @@ class NERPreprocessor(Preprocessor):
         for i, char_text in enumerate(data):
             if self.use_char:
                 if self.use_bert:
-                    char_text = [self.cls_token] + char_text + [self.seq_token]
+                    text_for_char_input = [self.cls_token] + char_text + [self.seq_token]
+                else:
+                    text_for_char_input = char_text
                 char_ids = [self.char_vocab.get(token, self.char_vocab[self.unk_token])
-                            for token in char_text]
+                            for token in text_for_char_input]
                 batch_char_ids.append(char_ids)
 
             if self.use_bert:
