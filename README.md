@@ -22,6 +22,74 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 
 ## 使用指引
 
+### 自定义模型
+在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，包括商品的品牌、类别、型号，以及品牌+类别、品牌+类别+型号所组成的商品SKU。使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取，以及商品类别的分类
+
+在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**，商品分类准确率可以达到**0.8428**。
+
+```python
+>>> from fancy_nlp.application import NER
+# 获取NER实例
+>>> ner_app = applications.NER()
+# 加载你的训练集和验证集
+>>> from fancy_nlp.utils import load_ner_data_and_labels
+>>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
+>>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+# 开始训练模型
+>>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+               ner_model_type='bilstm_cnn',
+               char_embed_trainable=True,
+               callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+               checkpoint_dir='pretrained_models',
+               model_name='dpa_ner_bilstm_cnn_crf',
+               load_swa_model=True)
+# 使用测试集评估模型效果
+>>> test_data, test_labels = load_ner_data_and_labels('./your/path/to/test.txt')
+>>> ner_app.score(test_data, test_labels)
+Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.8692437745364932
+...
+>>> ner_app.restrict_analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
+{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
+ 'entities': [{'name': '小米',
+   'type': '品牌',
+   'score': 0.9986118674278259,
+   'beginOffset': 0,
+   'endOffset': 2},
+  {'name': '骁龙712',
+   'type': '型号',
+   'score': 0.9821863174438477,
+   'beginOffset': 5,
+   'endOffset': 10},
+  {'name': '手机',
+   'type': '类别',
+   'score': 0.9981447458267212,
+   'beginOffset': 30,
+   'endOffset': 32}]}
+>>> ner_app.analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
+{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
+ 'entities': [{'name': '小米',
+   'type': '品牌',
+   'score': 0.9986118674278259,
+   'beginOffset': 0,
+   'endOffset': 2},
+  {'name': '9SE',
+   'type': '型号',
+   'score': 0.8843186497688293,
+   'beginOffset': 2,
+   'endOffset': 5},
+  {'name': '骁龙712',
+   'type': '型号',
+   'score': 0.9821863174438477,
+   'beginOffset': 5,
+   'endOffset': 10},
+  {'name': '手机',
+   'type': '类别',
+   'score': 0.9981447458267212,
+   'beginOffset': 30,
+   'endOffset': 32}]}
+
+``` 
+
 ### 基础模型
 
 当前fancy-nlp中默认加载了使用MSRA NER数据集训练的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）进行识别。当前的基础模型仅为便于用户直接体验，暂未进行深度的模型调优。目前，你可以根据后续的**自定义模型**使用介绍，来构建你的实体提取系统。
@@ -94,75 +162,6 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
  'B-PER',
  'I-PER']
 ``` 
-
-### 自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，包括商品的品牌、类别、型号，以及品牌+类别、品牌+类别+型号所组成的商品SKU。使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取，以及商品类别的分类
-
-在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**，商品分类准确率可以达到**0.8428**。
-
-```python
->>> from fancy_nlp.application import NER
-# 获取NER实例
->>> ner_app = applications.NER()
-# 加载你的训练集和验证集
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
->>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
-# 开始训练模型
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-               ner_model_type='bilstm_cnn',
-               char_embed_trainable=True,
-               callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-               checkpoint_dir='pretrained_models',
-               model_name='dpa_ner_bilstm_cnn_crf',
-               load_swa_model=True)
-# 使用测试集评估模型效果
->>> test_data, test_labels = load_ner_data_and_labels('./your/path/to/test.txt')
->>> ner_app.score(test_data, test_labels)
-Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.8692437745364932
-...
->>> ner_app.restrict_analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
-{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
- 'entities': [{'name': '小米',
-   'type': '品牌',
-   'score': 0.9986118674278259,
-   'beginOffset': 0,
-   'endOffset': 2},
-  {'name': '骁龙712',
-   'type': '型号',
-   'score': 0.9821863174438477,
-   'beginOffset': 5,
-   'endOffset': 10},
-  {'name': '手机',
-   'type': '类别',
-   'score': 0.9981447458267212,
-   'beginOffset': 30,
-   'endOffset': 32}]}
->>> ner_app.analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
-{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
- 'entities': [{'name': '小米',
-   'type': '品牌',
-   'score': 0.9986118674278259,
-   'beginOffset': 0,
-   'endOffset': 2},
-  {'name': '9SE',
-   'type': '型号',
-   'score': 0.8843186497688293,
-   'beginOffset': 2,
-   'endOffset': 5},
-  {'name': '骁龙712',
-   'type': '型号',
-   'score': 0.9821863174438477,
-   'beginOffset': 5,
-   'endOffset': 10},
-  {'name': '手机',
-   'type': '类别',
-   'score': 0.9981447458267212,
-   'beginOffset': 30,
-   'endOffset': 32}]}
-
-``` 
-
 
 ## 模型架构
 ### 知识实体识别
