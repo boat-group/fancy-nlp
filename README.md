@@ -220,7 +220,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 
 ## Acknowledgement
 
-- 本项目在**2019腾讯广告犀牛鸟专项研究计划**的支持下，由AMS-PTP-创意优化组allene与同济大学大数据处理与智能分析实验室联合开发
+- 本项目所属2019腾讯广告犀牛鸟专项研究计划，并与同济大学大数据处理与智能分析实验室与联合开发
 - `fancy-nlp`在**CCKS 2019——中文短文本的实体链指**评测竞赛中取得了初赛第三名，复赛[第五名](https://biendata.com/competition/ccks_2019_el/final-leaderboard/)的成绩，且获得了该评测竞赛唯一的一项[技术创新奖](https://biendata.com/competition/ccks_2019_el/winners/)，可复现流程指引，请参考原始[repo](https://github.com/AlexYangLi/ccks2019_el)。
 
 ## Contribution
