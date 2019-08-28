@@ -28,6 +28,8 @@ class TestEmbedding:
         assert not np.any(emb[0])
 
     def test_load_pre_trained(self):
-        emb = load_pre_trained(self.embedding_file, self.test_vocab)
+        emb = load_pre_trained(load_filename=self.embedding_file,
+                               embedding_dim=200,
+                               vocabulary=self.test_vocab)
         assert emb.shape[0] == len(self.test_vocab) and emb.shape[1] == 200
         assert not np.any(emb[0])
