@@ -8,41 +8,33 @@ from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 from fasttext import train_unsupervised
 
+from fancy_nlp.config import CACHE_DIR
 
-def load_glove_format(filename):
+
+def load_glove_format(filename, embedding_dim):
     """Load pre-trained embedding from a file in glove-embedding-like format
 
     Args:
         filename: str, file path to pre-trained embedding
-
+        embedding_dim: int, dimensionality of embedding
     Returns:
         word_vector: dict(str, np.array), a mapping of words to embeddings;
-        embeddings_dim: int, dimensionality of embedding
 
     """
     word_vectors = {}
-    embeddings_dim = -1
-    with open(filename, 'r') as f:
-        for line in f:
+    with open(filename, 'r') as reader:
+        for i, line in enumerate(reader):
             line = line.strip().split()
+            word = line[0]
+            word_vector = np.array([float(v) for v in line[1:]])
 
-            try:
-                word = line[0]
-                word_vector = np.array([float(v) for v in line[1:]])
-            except ValueError:
-                continue
-
-            if embeddings_dim == -1:
-                embeddings_dim = len(word_vector)
-
-            if len(word_vector) != embeddings_dim:
-                continue
+            if word_vector.shape[0] != embedding_dim:
+                raise ValueError(f'Format error at line {i}! The size of word embedding dose not '
+                                 f'equal {embedding_dim}')
 
             word_vectors[word] = word_vector
 
-    assert all(len(vw) == embeddings_dim for vw in word_vectors.values())
-
-    return word_vectors, embeddings_dim
+    return word_vectors
 
 
 def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_indices=0,
@@ -84,11 +76,14 @@ def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_in
     return emb
 
 
-def load_pre_trained(load_filename, vocabulary=None, zero_init_indices=0, rand_init_indices=1):
+def load_pre_trained(load_filename, embedding_dim=None, vocabulary=None, zero_init_indices=0,
+                     rand_init_indices=1):
     """Load pre-trained embedding and fit into vocabulary if provided
 
     Args:
         load_filename: str, pre-trained embedding file, in word2vec-like format or glove-like format
+        embedding_dim: int, dimensionality of embeddings in the embedding file, must be provided when
+                       the file is in glove-like format.
         vocabulary: dict. a mapping of words to indices
         zero_init_indices: int or a list, the indices which use zero-initialization. These indices
                            usually represent padding token.
@@ -100,22 +95,28 @@ def load_pre_trained(load_filename, vocabulary=None, zero_init_indices=0, rand_i
     """
     word_vectors = {}
     try:
+        # load word2vec-like format pre-trained embedding file
         model = KeyedVectors.load_word2vec_format(load_filename)
         weights = model.wv.vectors
-        embedding_dim = weights.shape[1]
+        word_embed_dim = weights.shape[1]
         for k, v in model.wv.vocab.items():
             word_vectors[k] = weights[v.index, :]
     except ValueError:
-        word_vectors, embedding_dim = load_glove_format(load_filename)
+        # load glove-like format pre-trained embedding file
+        if embedding_dim is None:
+            raise ValueError('`embedding_dim` must be provided when pre-trained embedding file is'
+                             'in glove-like format!')
+        word_vectors = load_glove_format(load_filename, embedding_dim)
+        word_embed_dim = embedding_dim
 
     if vocabulary is not None:
-        emb = filter_embeddings(word_vectors, embedding_dim, vocabulary, zero_init_indices,
+        emb = filter_embeddings(word_vectors, word_embed_dim, vocabulary, zero_init_indices,
                                 rand_init_indices)
         return emb
     else:
         logging.info('Loading Embedding from: {}, shaped: {}'.format(load_filename,
                                                                      (len(word_vectors),
-                                                                      embedding_dim)))
+                                                                      word_embed_dim)))
         return word_vectors
 
 
@@ -158,7 +159,12 @@ def train_fasttext(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1,
         Returns: np.array, a word embedding matrix.
 
         """
-    corpus_file_path = 'fasttext_tmp_corpus.txt'
+    corpus_file = 'fasttext_tmp_corpus.txt'
+    datadir_base = os.path.expanduser(CACHE_DIR)
+    datadir = os.path.join(datadir_base, 'corpus')
+    if not os.path.exists(datadir):
+        os.makedirs(datadir)
+    corpus_file_path = os.path.join(datadir, corpus_file)
     with open(corpus_file_path, 'w', encoding='utf8')as writer:
         for sentence in corpus:
             writer.write(' '.join(sentence) + '\n')
