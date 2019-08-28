@@ -7,10 +7,9 @@ import numpy as np
 import jieba
 from absl import logging
 from keras.utils.np_utils import to_categorical
-from keras_bert import Tokenizer
 
 from fancy_nlp.preprocessors.preprocessor import Preprocessor
-from fancy_nlp.utils.other import pad_sequences_2d, get_most_len
+from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTokenizer
 
 
 class NERPreprocessor(Preprocessor):
@@ -82,7 +81,7 @@ class NERPreprocessor(Preprocessor):
                 for line in reader:
                     token = line.strip()
                     self.bert_vocab[token] = len(self.bert_vocab)
-            self.bert_tokenizer = Tokenizer(self.bert_vocab)
+            self.bert_tokenizer = ChineseBertTokenizer(self.bert_vocab)
 
         # build word vocabulary and word embedding
         if self.use_word:
@@ -114,7 +113,7 @@ class NERPreprocessor(Preprocessor):
         if self.use_bert and self.max_len is None:
             # max_len must be provided when use bert as input!
             # We will reset max_len from train_data when max_len is not provided.
-            self.max_len = get_most_len(self.train_data)
+            self.max_len = get_len_from_corpus(self.train_data)
 
     def load_word_dict(self):
         if self.external_word_dict:
@@ -127,19 +126,23 @@ class NERPreprocessor(Preprocessor):
         Args:
             labels: list of list of str, the label strings
         """
-        if self.use_bert:
-            label_vocab = {self.cls_token: 0,
-                           self.seq_token: 1}
-        else:
-            label_vocab = {}
-
         label_count = {}
         for sequence in labels:
             for label in sequence:
                 label_count[label] = label_count.get(label, 0) + 1
 
-        for label in label_count:
+        # sorted by frequency, so that the label with the highest frequency will be given
+        # id of 0, which is the default id for unknown labels
+        sorted_label_count = sorted(label_count.items(), key=lambda x: x[1], reverse=True)
+        sorted_label_count = dict(sorted_label_count)
+
+        label_vocab = {}
+        for label in sorted_label_count:
             label_vocab[label] = len(label_vocab)
+        if self.use_bert:
+            label_vocab[self.cls_token] = len(label_vocab)
+            label_vocab[self.seq_token] = len(label_vocab)
+
         id2label = dict((idx, label) for label, idx in label_vocab.items())
 
         logging.info('Build label vocabulary finished, '
@@ -173,9 +176,7 @@ class NERPreprocessor(Preprocessor):
                 batch_char_ids.append(char_ids)
 
             if self.use_bert:
-                # to avoid non-chinese token being seg into subtokens
-                text_with_space = ' '.join(char_text)
-                indices, segments = self.bert_tokenizer.encode(first=text_with_space,
+                indices, segments = self.bert_tokenizer.encode(first=''.join(char_text),
                                                                max_len=self.max_len)
                 batch_bert_ids.append(indices)
                 batch_bert_seg_ids.append(segments)
