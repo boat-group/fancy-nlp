@@ -5,15 +5,16 @@ import codecs
 from sklearn.model_selection import train_test_split
 
 
-def load_ner_data_and_labels(filename, split=False, split_size=0.1, seed=42):
+def load_ner_data_and_labels(filename, delimiter='\t', split=False, split_size=0.1, seed=42):
     """Load ner data and label from a file.
 
     The file should follow CoNLL format:
-    Each line is a token and its label separated by tab, or a blank line indicating the end of
+    Each line is a token and its label separated by 'delimiter', or a blank line indicating the end of
     a sentence.
 
     Args:
         filename: str, path to ner file
+        delimiter: str, delimiter to split token and label
         split: bool, whether to split into train and test subsets
         split_size: float, the proportion of test subset, between 0.0 and 1.0
         seed: int, random seed
@@ -26,16 +27,17 @@ def load_ner_data_and_labels(filename, split=False, split_size=0.1, seed=42):
     with codecs.open(filename, 'r', encoding='utf8') as reader:
         token_seqs, label_seqs = [], []
         tokens, labels = [], []
-        for line in reader:
+        for i, line in enumerate(reader):
             line = line.rstrip()
             if line:
-                line_split = line.split('\t')
+                line_split = line.split(delimiter)
                 if len(line_split) == 2:
                     token, label = line_split
                     tokens.append(token)
                     labels.append(label)
                 else:
-                    raise Exception('Format Error! Input file should follow CoNLL format.')
+                    raise Exception(f'Format Error at line {i}!'
+                                    f' Input file should follow CoNLL format.')
             else:
                 if tokens:
                     token_seqs.append(tokens)
