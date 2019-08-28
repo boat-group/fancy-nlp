@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
-
 from absl import logging
 from keras.models import model_from_json
 from keras.utils import get_file
@@ -11,6 +9,7 @@ from fancy_nlp.models.ner import *
 from fancy_nlp.trainers import NERTrainer
 from fancy_nlp.predictors import NERPredictor
 from fancy_nlp.utils import get_custom_objects
+from fancy_nlp.config import CACHE_DIR
 
 
 class NER(object):
@@ -416,12 +415,12 @@ class NER(object):
 
         preprocessor_file = get_file(fname='msra_ner_bilstm_cnn_crf_preprocessor.pkl',
                                      origin=prefix+'msra_ner_bilstm_cnn_crf_preprocessor.pkl',
-                                     cache_subdir=cache_subdir)
+                                     cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
         json_file = get_file(fname='msra_ner_bilstm_cnn_crf.json',
                              origin=prefix+'msra_ner_bilstm_cnn_crf.json',
-                             cache_subdir=cache_subdir)
+                             cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
         weights_file = get_file(fname='msra_ner_bilstm_cnn_crf.hdf5',
                                 origin=prefix+'msra_ner_bilstm_cnn_crf.hdf5',
-                                cache_subdir=cache_subdir)
+                                cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
 
         self.load(preprocessor_file, json_file, weights_file)
