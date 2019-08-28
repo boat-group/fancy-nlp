@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import math
+
 import numpy as np
 from keras_contrib.layers import CRF
 from keras_bert import get_custom_objects as get_custom_objects_for_bert
+from keras_bert import Tokenizer
 
 
 from fancy_nlp.layers import NonMaskingLayer
@@ -65,13 +68,36 @@ def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', p
     return x
 
 
-def get_most_len(corpus):
-    """Get majority len from corpus"""
-    return sorted([len(seq) for seq in corpus])[int(0.95 * len(corpus))]
+def get_len_from_corpus(corpus, mode='most'):
+    """Get sequence len from corpus"""
+    lengths = [len(seq) for seq in corpus]
+    if mode == 'avg':
+        return math.ceil(np.mean(lengths))
+    elif mode == 'median':
+        return math.ceil(np.median(lengths))
+    elif mode == 'max':
+        return np.max(lengths)
+    elif mode == 'most':
+        return sorted(lengths)[int(0.95 * len(corpus))]
+    else:
+        raise ValueError(f'`mode` not understood: {mode}')
 
 
 def get_custom_objects():
     """Get all custom objects for loading saved ner models."""
     custom_objects = {'CRF': CRF, 'NonMaskingLayer': NonMaskingLayer}
-    custom_objects.update(get_custom_objects_for_bert())     # bert
+    custom_objects.update(get_custom_objects_for_bert())  # custom objects of bert models
     return custom_objects
+
+
+class ChineseBertTokenizer(Tokenizer):
+    def _tokenize(self, text):
+        result = []
+        for ch in text:
+            if ch in self._token_dict:
+                result.append(ch)
+            elif self._is_space(ch):
+                result.append('[unused1]')
+            else:
+                result.append('[UNK]')
+        return result
