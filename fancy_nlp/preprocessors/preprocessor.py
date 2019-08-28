@@ -100,7 +100,7 @@ class Preprocessor(object):
                         method to train on corpus
             vocab: a mapping of words to indices
             corpus: a list of tokenized texts
-            embed_dim: dimensionality of embedding
+            embedding_dim: dimensionality of embedding
             special_token: str, how to handle special tokens. If special_token is 'standard', we
                            add 2 special tokens: [('<PAD>', 0), ('<UNK>', 1)]. If special_token is
                            'bert', we add 4 special tokens: [('<PAD>', 0), ('<UNK>', 1),
@@ -128,7 +128,8 @@ class Preprocessor(object):
                                   embedding_dim)
         else:
             try:
-                return load_pre_trained(embed_type, vocab, zero_init_indices, rand_init_indices)
+                return load_pre_trained(embed_type, embedding_dim, vocab,
+                                        zero_init_indices, rand_init_indices)
             except FileNotFoundError:
                 raise ValueError('Argument `embed_type` input error: {}'.format(embed_type))
 
