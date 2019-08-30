@@ -28,6 +28,8 @@ class NERMetric(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         pred_probs = self.model.predict(self.valid_features)
+        if self.preprocessor.use_bert:
+            pred_probs = pred_probs[:, 1:-1, :]     # remove <CLS> and <SEQ>
         y_pred = self.preprocessor.label_decode(pred_probs, self.get_lengths(pred_probs))
 
         r = metrics.recall_score(self.valid_labels, y_pred)
@@ -37,5 +39,5 @@ class NERMetric(Callback):
         logs['val_r'] = r
         logs['val_p'] = p
         logs['val_f1'] = f1
-        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
+        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch+1, r, p, f1))
         print(metrics.classification_report(self.valid_labels, y_pred))
