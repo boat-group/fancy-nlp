@@ -2,6 +2,8 @@
 
 from keras.callbacks import Callback
 from seqeval import metrics
+from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
+import numpy as np
 
 
 class NERMetric(Callback):
@@ -39,3 +41,36 @@ class NERMetric(Callback):
         logs['val_f1'] = f1
         print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
         print(metrics.classification_report(self.valid_labels, y_pred))
+
+
+class TextClassificationMetric(Callback):
+    """
+    callback for evaluating text classification model
+    """
+    def __init__(self, preprocessor, valid_data, valid_labels):
+        """
+        Args:
+            preprocessor: `TextClassificationPreprocessor` instance to help prepare input for ner model
+            valid_data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
+            valid_labels: list of str, the corresponding label strings
+        """
+        self.preprocessor = preprocessor
+        self.valid_data = valid_data
+        self.valid_labels = valid_labels
+        self.valid_features, self.valid_y = self.preprocessor.prepare_input(valid_data,
+                                                                            valid_labels)
+        super(TextClassificationMetric, self).__init__()
+
+    def on_epoch_end(self, epoch, logs=None):
+        pred_probs = self.model.predict(self.valid_features)
+        y_pred = self.preprocessor.label_decode(pred_probs)
+
+        r = recall_score(self.valid_labels, y_pred, average='macro')
+        p = precision_score(self.valid_labels, y_pred, average='macro')
+        f1 = f1_score(self.valid_labels, y_pred, average='macro')
+
+        logs['val_r'] = r
+        logs['val_p'] = p
+        logs['val_f1'] = f1
+        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
+        print(classification_report(self.valid_labels, y_pred))
