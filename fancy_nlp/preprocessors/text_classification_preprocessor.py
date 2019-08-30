@@ -16,9 +16,9 @@ class TextClassificationPreprocessor(Preprocessor):
     """NER preprocessor.
     """
     def __init__(self, train_data, train_labels, min_count=2, use_char=True, use_bert=False,
-                 use_word=False, external_word_dict=None, bert_vocab_file=None,
-                 char_embed_type=None, char_embed_dim=300, word_embed_type=None, word_embed_dim=300,
-                 max_len=None, padding_mode='post',
+                 use_word=False, external_word_dict=None, label_dict_file=None,
+                 bert_vocab_file=None, char_embed_type=None, char_embed_dim=300,
+                 word_embed_type=None, word_embed_dim=300, max_len=None, padding_mode='post',
                  truncating_mode='post'):
         """
 
@@ -30,6 +30,9 @@ class TextClassificationPreprocessor(Preprocessor):
             use_bert: whether to use bert embedding as input
             use_word: whether to use word embedding as additional input
             external_word_dict: external word dictionary, only apply when use_word is True
+            label_dict_file: a file with two columns separated by tab, the first column is raw
+                             label name, and the second column is the corresponding name which is
+                             meaningful
             bert_vocab_file: vocabulary file of pre-trained bert model, only apply when use_bert is
                              True
             char_embed_type: str, can be a pre-trained embedding filename or pre-trained embedding
@@ -52,6 +55,8 @@ class TextClassificationPreprocessor(Preprocessor):
         self.external_word_dict = external_word_dict
         self.char_embed_type = char_embed_type
         self.word_embed_type = word_embed_type
+
+        self.label_dict = self.load_label_dict(label_dict_file)
 
         assert self.use_char or self.use_bert, "must use char or bert embedding as main input"
         special_token = 'bert' if self.use_bert else 'standard'
@@ -119,6 +124,18 @@ class TextClassificationPreprocessor(Preprocessor):
         if self.external_word_dict:
             for word in self.external_word_dict:
                 jieba.add_word(word, freq=1000000)
+
+    @staticmethod
+    def load_label_dict(label_dict_file):
+        result_dict = dict()
+        if label_dict_file:
+            with codecs.open(label_dict_file, encoding='utf-8') as f_label_dict:
+                for line in f_label_dict:
+                    line_items = line.strip().split('\t')
+                    result_dict[line_items[0]] = line_items[1]
+            return result_dict
+        else:
+            return None
 
     def build_label_vocab(self, labels):
         """Build label vocabulary
@@ -201,7 +218,7 @@ class TextClassificationPreprocessor(Preprocessor):
         if len(features) == 1:
             features = features[0]
 
-        if not batch_label_ids:
+        if not list(batch_label_ids):
             return features, None
         else:
             y = batch_label_ids
@@ -227,9 +244,11 @@ class TextClassificationPreprocessor(Preprocessor):
                        [self.word_vocab[self.seq_token]]
         return word_ids
 
-    def label_decode(self, pred_probs):
+    def label_decode(self, pred_probs, label_dict=None):
         pred_ids = np.argmax(pred_probs, axis=-1)
         pred_labels = [self.id2label[pred_id] for pred_id in pred_ids]
+        if label_dict:
+            pred_labels = [label_dict[raw_label] for raw_label in pred_labels]
         return pred_labels
 
     def save(self, preprocessor_file):

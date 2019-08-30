@@ -172,7 +172,7 @@ class Preprocessor(object):
         return pad_sequences(sequence_list, maxlen=self.max_len, padding=self.padding_mode,
                              truncating=self.truncating_mode)
 
-    def label_decode(self, predictions):
+    def label_decode(self, predictions, label_dict):
         """Decode model predictions to labels
         """
         raise NotImplementedError
