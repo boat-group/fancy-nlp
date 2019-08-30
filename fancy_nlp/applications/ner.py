@@ -15,13 +15,14 @@ from fancy_nlp.config import CACHE_DIR
 class NER(object):
     """NER application"""
 
-    def __init__(self):
+    def __init__(self, use_pretrained=True):
         self.preprocessor = None
         self.model = None
         self.trainer = None
         self.predictor = None
 
-        self.load_pretrained_model()
+        if use_pretrained:
+            self.load_pretrained_model()
 
     def fit(self,
             train_data,
@@ -80,7 +81,8 @@ class NER(object):
             max_len: int, max sequence len. If None, we dynamically use the max length of one batch
                      as max_len. However, max_len must be provided when using bert as input.
             use_crf: boolean, whether to use crf layer
-            optimizer: str, optimizer to use during training
+            optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                       use during training
             batch_size: num of samples per gradient update
             epochs: num of epochs to train the model
             callback_list: list of str, each item indicates the callback to apply during training
