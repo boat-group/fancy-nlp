@@ -42,7 +42,7 @@ class NERTrainer(object):
             logging.info('Loading swa model after using SWA callback')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 
-        elif callback_list is not None and 'mdeolcheckpoint' in callback_list:
+        elif callback_list is not None and 'modelcheckpoint' in callback_list:
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
@@ -69,7 +69,7 @@ class NERTrainer(object):
             logging.info('Loading swa model after using SWA callback')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 
-        elif callback_list is not None and 'mdeolcheckpoint' in callback_list:
+        elif callback_list is not None and 'modelcheckpoint' in callback_list:
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
@@ -154,6 +154,8 @@ class NERTrainer(object):
         """
         features, y = self.preprocessor.prepare_input(data, labels)
         pred_probs = self.model.predict(features)
+        if self.preprocessor.use_bert:
+            pred_probs = pred_probs[:, 1:-1, :]     # remove <CLS> and <SEQ>
 
         lengths = [min(len(label), pred_prob.shape[0])
                    for label, pred_prob in zip(labels, pred_probs)]

@@ -163,6 +163,91 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
  'I-PER']
 ``` 
 
+### BERT 
+
+`fancy-nlp`提供了各种使用bert的方法: 1) 直接微调bert模型完成NLP任务；2) 使用bert模型输出的向量作为下游任务模型的特征输入；3) 结合bert模型输出的向量与其他特征向量作为下游任务模型的特征输入。要在`fancy-nlp`使用bert，你只需要下载好预训练的bert模型（如google的中文[bert](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度的[ernie](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈工大的[bert_wwm](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)），然后在`fit`方法中传入bert模型的词表文件、配置文件、模型文件的路径。
+
+1. **微调bert**  
+```python
+>>> from keras.optimizers import Adam
+>>> from fancy_nlp.application import NER
+# 获取NER实例
+>>> ner_app = applications.NER()
+# 加载你的训练集和验证集
+>>> from fancy_nlp.utils import load_ner_data_and_labels
+>>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
+>>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+# 开始训练模型
+>>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+                ner_model_type='bert',  # 设置ner模型类型为'bert'
+			    use_char=False,       
+                use_bert=True,  # 设置只使用bert输入
+                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='/your/path/to/bert_config.json',
+	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_trainable=True,  # 设置bert可训练
+                use_word=False,
+                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir='pretrained_models',
+                model_name='ner_bert_crf',
+                load_swa_model=True)
+``` 
+
+2. **使用bert输出作为下游任务模型的特征输入 ** 
+```python
+>>> from keras.optimizers import Adam
+>>> from fancy_nlp.application import NER
+# 获取NER实例
+>>> ner_app = applications.NER()
+# 加载你的训练集和验证集
+>>> from fancy_nlp.utils import load_ner_data_and_labels
+>>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
+>>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+# 开始训练模型
+>>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+                ner_model_type='bilstm_cnn',  # 设置任一ner模型
+			    use_char=False,       
+                use_bert=True,  # 设置只使用bert向量作为特征输入
+                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='/your/path/to/bert_config.json',
+	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
+                use_word=False,
+                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir='pretrained_models',
+                model_name='ner_bilstm_cnn_bert_crf',
+                load_swa_model=True)
+``` 
+3. **结合bert输出以及其他特征**  
+```python
+>>> from keras.optimizers import Adam
+>>> from fancy_nlp.application import NER
+# 获取NER实例
+>>> ner_app = applications.NER()
+# 加载你的训练集和验证集
+>>> from fancy_nlp.utils import load_ner_data_and_labels
+>>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
+>>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+# 开始训练模型，设置只使用bert输入，传入bert模型各文件的路径，设置bert可训练，
+# 同时设置一个学习率较小的优化器
+>>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+                ner_model_type='bilstm_cnn',  # 设置任一ner模型
+			    use_char=True,         
+                use_bert=True,  # 结合字向量以及bert向量作为特征输入
+                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='/your/path/to/bert_config.json',
+	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
+                use_word=False,
+                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir='pretrained_models',
+                model_name='ner_bilstm_cnn_char_bert_crf',
+                load_swa_model=True)
+``` 
+
 ## 模型架构
 ### 知识实体识别
 对于知识实体识别，我们使用字向量序列作为基础输入，并在此基础上：

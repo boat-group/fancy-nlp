@@ -79,7 +79,7 @@ class TestNER:
         valid_tag = ner.predict(self.valid_data[0])
         assert isinstance(valid_tag, list) and isinstance(valid_tag[0], str)
         assert len(valid_tag) == len(self.valid_data[0]) or \
-               len(valid_tag) == ner.preprocessor.max_len
+               len(valid_tag) == ner.preprocessor.max_len - 2
 
         # test predict_batch
         valid_tags = ner.predict_batch(self.valid_data)
@@ -87,7 +87,7 @@ class TestNER:
         assert isinstance(valid_tags[-1][0], str)
         assert len(valid_tags) == len(self.valid_data)
         assert len(valid_tags[-1]) == len(self.valid_data[-1]) or \
-               len(valid_tags[-1]) == ner.preprocessor.max_len
+               len(valid_tags[-1]) == ner.preprocessor.max_len - 2
 
         # test analyze
         result = ner.analyze(self.valid_data[0])

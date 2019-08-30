@@ -6,6 +6,7 @@ from keras_contrib.layers import CRF
 from keras_contrib.losses import crf_loss
 from keras_contrib.metrics import crf_accuracy
 from keras.models import Model
+from keras.optimizers import Adam
 
 from fancy_nlp.models.ner.base_ner_model import BaseNERModel
 
@@ -298,7 +299,7 @@ class BertNER(BaseNERModel):
                  fc_dim=100,
                  activation='tanh',
                  use_crf=True,
-                 optimizer='adam'):
+                 optimizer=Adam(lr=1e-5)):  # use a small learning rate for bert
         self.num_class = num_class
         self.fc_fim = fc_dim
         self.activation = activation

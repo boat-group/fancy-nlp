@@ -36,7 +36,11 @@ class NERPredictor(object):
             assert isinstance(text, str)
             features, _ = self.preprocessor.prepare_input([list(text)])
         pred_probs = self.model.predict(features)
-        return pred_probs[0]
+
+        if self.preprocessor.use_bert:
+            return pred_probs[0, 1:-1, :]
+        else:
+            return pred_probs[0]
 
     def predict_prob_batch(self, texts):
         """Return probabilities for a batch sentences
@@ -56,7 +60,11 @@ class NERPredictor(object):
             char_cut_texts = [list(text) for text in texts]
             features, _ = self.preprocessor.prepare_input(char_cut_texts)
         pred_probs = self.model.predict(features)
-        return pred_probs
+
+        if self.preprocessor.use_bert:
+            return pred_probs[:, 1:-1, :]
+        else:
+            return pred_probs
 
     def tag(self, text):
         """Return tag sequence for one sentence
