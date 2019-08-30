@@ -21,7 +21,7 @@ class TextClassificationTrainer(object):
         self.preprocessor = preprocessor
 
     def train(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
-              epochs=50, callback_list=None, checkpoint_dir=None, model_name=None, swa_model=None,
+              epochs=5, callback_list=None, checkpoint_dir=None, model_name=None, swa_model=None,
               load_swa_model=False):
         callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
                                           model_name, swa_model)
@@ -158,9 +158,9 @@ class TextClassificationTrainer(object):
 
         y_pred = self.preprocessor.label_decode(pred_probs)
 
-        r = recall_score(labels, y_pred)
-        p = precision_score(labels, y_pred)
-        f1 = f1_score(labels, y_pred)
+        r = recall_score(labels, y_pred, average='macro')
+        p = precision_score(labels, y_pred, average='macro')
+        f1 = f1_score(labels, y_pred, average='macro')
 
         print('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
         print(classification_report(labels, y_pred))
