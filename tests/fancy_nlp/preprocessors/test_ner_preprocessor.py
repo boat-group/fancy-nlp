@@ -50,7 +50,6 @@ class TestNERPreprocessor:
         assert self.preprocessor.id2word[features[0][0][0]] == self.preprocessor.cls_token
         assert y.shape == (len(self.preprocessor.train_data), self.preprocessor.max_len,
                            self.preprocessor.num_class)
-        assert self.preprocessor.id2label[np.argmax(y[0][0])] == self.preprocessor.cls_token
 
     def test_get_word_ids(self):
         example_text = ''.join(self.preprocessor.train_data[0])
