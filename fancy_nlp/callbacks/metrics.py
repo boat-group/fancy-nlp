@@ -72,5 +72,5 @@ class TextClassificationMetric(Callback):
         logs['val_r'] = r
         logs['val_p'] = p
         logs['val_f1'] = f1
-        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
+        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch + 1, r, p, f1))
         print(classification_report(self.valid_labels, y_pred))
