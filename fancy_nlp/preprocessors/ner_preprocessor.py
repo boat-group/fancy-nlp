@@ -18,8 +18,7 @@ class NERPreprocessor(Preprocessor):
     def __init__(self, train_data, train_labels, min_count=2, use_char=True, use_bert=False,
                  use_word=False, external_word_dict=None, bert_vocab_file=None,
                  char_embed_type=None, char_embed_dim=300, word_embed_type=None, word_embed_dim=300,
-                 max_len=None, padding_mode='post',
-                 truncating_mode='post'):
+                 max_len=None, padding_mode='post', truncating_mode='post'):
         """
 
         Args:
@@ -139,9 +138,6 @@ class NERPreprocessor(Preprocessor):
         label_vocab = {}
         for label in sorted_label_count:
             label_vocab[label] = len(label_vocab)
-        if self.use_bert:
-            label_vocab[self.cls_token] = len(label_vocab)
-            label_vocab[self.seq_token] = len(label_vocab)
 
         id2label = dict((idx, label) for label, idx in label_vocab.items())
 
@@ -188,10 +184,10 @@ class NERPreprocessor(Preprocessor):
 
             if labels is not None:
                 if self.use_bert:
-                    label_str = [self.cls_token] + labels[i] + [self.seq_token]
+                    label_str = [self.cls_token] + labels[i] + [self.cls_token]
                 else:
                     label_str = labels[i]
-                label_ids = [self.label_vocab.get(l, 0) for l in label_str]
+                label_ids = [self.label_vocab.get(l, self.get_unk_label_id()) for l in label_str]
                 label_ids = to_categorical(label_ids, self.num_class).astype(int)
                 batch_label_ids.append(label_ids)
 
@@ -240,6 +236,22 @@ class NERPreprocessor(Preprocessor):
         if lengths is not None:
             pred_labels = [labels[:length] for labels, length in zip(pred_labels, lengths)]
         return pred_labels
+
+    def get_unk_label_id(self):
+        """return a default id for label that does not exist in the label vocab
+
+        Args:
+            label: str
+
+        Returns: int
+
+        """
+        if 'O' in self.label_vocab:
+            return self.label_vocab['O']
+        elif 'o' in self.label_vocab:
+            return self.label_vocab['o']
+        else:
+            return 0
 
     def save(self, preprocessor_file):
         pickle.dump(self, open(preprocessor_file, 'wb'))
