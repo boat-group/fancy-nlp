@@ -165,7 +165,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 
 ### BERT 
 
-`fancy-nlp`提供了各种使用bert的方法: 1) 直接微调bert模型完成NLP任务；2) 使用bert模型输出的向量作为下游任务模型的特征输入；3) 结合bert模型输出的向量与其他特征向量作为下游任务模型的特征输入。要在`fancy-nlp`使用bert，你只需要下载好预训练的bert模型（如google的中文[bert](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度的[ernie](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈工大的[bert_wwm](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)），然后在`fit`方法中传入bert模型的词表文件、配置文件、模型文件的路径。
+`fancy-nlp` 提供了各种使用 bert 的方法: 1) 直接微调 bert 模型完成 NLP 任务；2) 使用 bert 模型输出的向量作为下游任务模型的特征输入；3) 结合 bert 模型输出的向量与其他特征向量作为下游任务模型的特征输入。要想在 `fancy-nlp` 使用 bert，你只需要下载好预训练的 bert 模型（如 google 的中文 [bert](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度的 [ernie](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈工大的 [bert_wwm](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)），然后在 `fit` 方法中传入 bert 模型的词表文件、配置文件、模型文件的路径。下面给出三种使用方法的例子。
 
 1. **微调bert**  
 ```python
@@ -194,7 +194,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
                 load_swa_model=True)
 ``` 
 
-2. **使用bert输出作为下游任务模型的特征输入**   
+2. **使用bert输出向量作为下游任务模型的特征输入**   
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.application import NER
@@ -220,7 +220,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
                 model_name='ner_bilstm_cnn_bert_crf',
                 load_swa_model=True)
 ``` 
-3. **结合bert输出以及其他特征**  
+3. **结合bert输出向量以及其他特征向量**  
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.application import NER
@@ -230,8 +230,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
 >>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
-# 开始训练模型，设置只使用bert输入，传入bert模型各文件的路径，设置bert可训练，
-# 同时设置一个学习率较小的优化器
+# 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bilstm_cnn',  # 设置任一ner模型
 			    use_char=True,         
