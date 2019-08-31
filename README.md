@@ -20,10 +20,10 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 ```
 
 
-## 使用指引
+## 知识实体识别使用指引
 
 ### 自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，包括商品的品牌、类别、型号，以及品牌+类别、品牌+类别+型号所组成的商品SKU。使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取，以及商品类别的分类
+在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取。
 
 在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**，商品分类准确率可以达到**0.8428**。
 
@@ -248,6 +248,66 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
                 load_swa_model=True)
 ``` 
 
+## 文本分类使用指引
+
+### 自定义模型
+在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，使用一行代码，实现对商品类目的获取。
+
+```python
+>>> from fancy_nlp.utils import load_text_classification_data_and_labels
+# 加载自定义业务数据集，并将其拆分为train、valid以及test
+>>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels = load_text_classification_data_and_labels(
+    '/path/to/your/data.txt',
+    label_index=1,
+    text_index=3,
+    delimiter='_!_',
+    split_mode=2,
+    split_size=0.3)
+
+>>> from fancy_nlp import applications
+# 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
+>>> text_classification_app = applications.TextClassification(use_pretrained=False)
+
+text_classification_app.fit(train_data, train_labels, valid_data, valid_labels,
+            text_classification_model_type='rcnn',
+            char_embed_trainable=True,
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir='pretrained_models',
+            model_name='text_classification_rcnn',
+            label_dict_file='/your/path/to/label_dict.txt',
+            max_len=60,
+            epochs=50,
+            load_swa_model=True)
+...
+...
+...
+# 训练完毕后，可以评估模型在测试集中的得分
+>>> text_classification_app.score(test_data, test_labels)
+# 使用一行代码对输入文本进行商品类目的预测
+>>> text_classification_app.predict('亿色(ESR)红米k20/红米k20pro钢化膜 全屏覆盖防指纹 自营无白边小米Redmi k20pro防爆手机贴膜保护膜 高清')
+'手机通讯|手机配件|手机贴膜'
+# 输出结果中附带预测的概率值
+>>> text_classification_app.analyze('亿色(ESR)红米k20/红米k20pro钢化膜 全屏覆盖防指纹 自营无白边小米Redmi k20pro防爆手机贴膜保护膜 高清')
+('手机通讯|手机配件|手机贴膜', 0.9966506)
+```
+
+### 基础模型
+
+fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集训练得到的文本分类模型，其能够针对新闻标题文本，预测其所属的新闻类别。
+
+```python
+>>> from fancy_nlp import applications
+>>> text_classification_app = applications.TextClassification()
+>>> text_classification_app.predict('苹果iOS占移动互联网流量份额逾65% 位居第一')
+'科技'
+>>> text_classification_app.analyze('苹果iOS占移动互联网流量份额逾65% 位居第一')
+('科技', 0.9981864)
+```
+
+### Bert
+
+文本分类模型和知识实体识别模型一样，支持对Bert Embedding的使用，具体使用方式可以参照知识实体识别指引中的介绍。
+
 ## 模型架构
 ### 知识实体识别
 对于知识实体识别，我们使用字向量序列作为基础输入，并在此基础上：
@@ -258,17 +318,6 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 ![知识实体识别模型架构](./img/entity_extract.png)
 
 与基于词序列输入和基于字序列输入的模型相比，本实体识别方法可以显式利用句子中词的语义信息，同时还不会受分词错误的影响。
-
-### 知识实体链接（待融合至代码库中）
-对于实体链接模型，我们先使用基于注意力机制的Bi-LSTM模型抽取实体指称的语义特征，同时融合多种消歧特征：
-
-- 文本相似度特征；
-- 实体类型匹配特征；
-- 基于文本中所有候选实体所构成的知识子图的多实体联合消歧特征，之后使用排序学习方法对候选实体列表进行排序，得到最佳匹配实体。
-
-![实体链接模型架构](./img/entity_linking.png)
-
-与传统方法相比，该链接模型融合多种消歧特征，能有效解决短文本上下文语境不丰富问题，提高泛化能力。
 
 模型在多种特征组合场景的效果对比如下，数据集来自于[**CCKS 2019——中文短文本的实体链指**](https://biendata.com/competition/ccks_2019_el/)：
 
@@ -284,7 +333,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 | 32    | c2v      | fix       | BIOES  | bigru_cnn    | True|0.7685 |
 
 
-### 文本分类模型（待融合至代码库）
+### 文本分类模型
 对于文本分类模型，我们集成了当前常用的文本分类模型，并进行了对比试验，效果如下：
 
 | 序号 |    模型名   | Precision |  Recal | Macro-F1 | Accuracy | Time(s)/60015个样本 |
@@ -300,7 +349,25 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 |   9  | CNN-Bi-LSTM |   0.7486  | 0.7411 |  0.7422  |  0.8563  |        3.4688       |
 |  10  |   FastText  |   0.7313  | 0.7270 |  0.7274  |  0.8400  |        1.1811       |
 
-效果最优的是RCNN模型，这也是我们当前实际采用的模型。若从模型速度和性能兼顾的角度来考虑，可以采用CNN或FastText模型。
+效果最优的是RCNN模型，这也是我们当前实际采用的模型。若从模型速度和性能兼顾的角度来考虑，也可采用基础的TextCNN模型，其在一般的业务场景中，在训练数据足够的情况下，也足以满足业务需求
+
+## Comming up
+
+### 知识实体链接
+对于实体链接模型，我们先使用基于注意力机制的Bi-LSTM模型抽取实体指称的语义特征，同时融合多种消歧特征：
+
+- 文本相似度特征；
+- 实体类型匹配特征；
+- 基于文本中所有候选实体所构成的知识子图的多实体联合消歧特征，之后使用排序学习方法对候选实体列表进行排序，得到最佳匹配实体。
+
+![实体链接模型架构](./img/entity_linking.png)
+
+与传统方法相比，该链接模型融合多种消歧特征，能有效解决短文本上下文语境不丰富问题，提高泛化能力。
+
+### 文本相似匹配
+
+TBD.
+
 
 ## Acknowledgement
 
