@@ -1,10 +1,25 @@
 # fancy-nlp
+
+![fancy-nlp logo](./img/fancy-nlp.jpg)
+
 [![Build Status](https://travis-ci.org/boat-group/fancy-nlp.svg?branch=master)](https://travis-ci.org/boat-group/fancy-nlp)
 ![PyPI](https://img.shields.io/pypi/v/fancy-nlp)
 [![Coverage Status](https://coveralls.io/repos/github/boat-group/fancy-nlp/badge.svg?branch=master)](https://coveralls.io/github/boat-group/fancy-nlp?branch=master)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-`fancy-nlp` 是一套易用的自然语言处理工具，其直接面向应用场景，满足用户对自然语言处理任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
+
+## 基本介绍
+
+fancy-nlp 是由腾讯广告 AMS 创意优化组团队构建的用于建设商品画像的文本知识挖掘工具，其支持诸如实体提取、文本分类等多种常见NLP任务。与当前业界常用框架相比，其能够支持用户快速的功能迭代：既可以满足高阶用户对模型进行深度定制，也可以让普通用户快速利用预训练的模型进行功能使用。在当前的商品广告业务场景中，我们利用fancy-nlp快速挖掘海量商品数据的特征，从而支持广告商品推荐等业务需求场景中。项目的初衷是希望提供一套面向文本的、易用的自然语言处理工具，其直接面向业务场景，满足用户对自然语言处理任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
+
+### Highlight
+
+* 实体提取
+* 文本分类
+* 快速迭代
+* 一键式Predict
+* 预训练模型加载
+
 
 ## fancy是什么寓意？
 
@@ -19,13 +34,12 @@ pip install fancy-nlp
 pip install git+https://www.github.com/keras-team/keras-contrib.git
 ```
 
-
 ## 知识实体识别使用指引
 
 ### 自定义模型
 在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取。
 
-在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**，商品分类准确率可以达到**0.8428**。
+在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**。
 
 ```python
 >>> from fancy_nlp.application import NER
@@ -251,7 +265,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 ## 文本分类使用指引
 
 ### 自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，使用一行代码，实现对商品类目的获取。
+在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，使用一行代码，实现对商品类目的获取。在目前的实际业务场景中，商品分类准确率可以达到**0.8428**。
 
 ```python
 >>> from fancy_nlp.utils import load_text_classification_data_and_labels
@@ -351,7 +365,7 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 
 效果最优的是RCNN模型，这也是我们当前实际采用的模型。若从模型速度和性能兼顾的角度来考虑，也可采用基础的TextCNN模型，其在一般的业务场景中，在训练数据足够的情况下，也足以满足业务需求
 
-## Comming up
+## Comming soon
 
 ### 知识实体链接
 对于实体链接模型，我们先使用基于注意力机制的Bi-LSTM模型抽取实体指称的语义特征，同时融合多种消歧特征：
@@ -366,7 +380,15 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 
 ### 文本相似匹配
 
-TBD.
+文本相似度匹配，根据给定的两段文本，得到文本间的相似程度。相似度匹配模型通过各种方法将词向量编码为文本对应的句子向量，并计算出句子向量间的匹配得分。除了基本的孪生结构的CNN和Bi-LSTM模型外，将实现融合注意力机制的ESIM、BiMPM等模型。
+
+- ESIM：交互注意力机制
+- BiMPM：多视角的相似度匹配
+- Bert：微调Bert模型
+
+![文本相似匹配模型架构](./img/text_matching.png)
+
+文本匹配模型可用于文本相似度计算、问答、自然语言推理等多项匹配任务中。
 
 
 ## Acknowledgement
@@ -376,7 +398,7 @@ TBD.
 
 ## Contribution
 
-- 项目的代码规范符合PEP8标准，且每次提交会自动触发CI，并计算单元测试覆盖率
+- 项目的代码规范符合PEP8标准
 - 所有的代码提交请遵循[约定式提交规范](https://www.conventionalcommits.org/zh/v1.0.0-beta.4/)
 - 为项目添加新的核心代码，请编写相应的单元测试模块
 
