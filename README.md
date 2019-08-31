@@ -194,7 +194,7 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
                 load_swa_model=True)
 ``` 
 
-2. **使用bert输出作为下游任务模型的特征输入 ** 
+2. **使用bert输出作为下游任务模型的特征输入**   
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.application import NER
