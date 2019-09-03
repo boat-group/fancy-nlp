@@ -340,50 +340,24 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 
 模型在各种基准数据集（如 [Chinese Daily](https://github.com/zjy-ucas/ChineseNER/tree/master/data)、 [MSRA](https://github.com/Determined22/zh-NER-TF/tree/master/data_path)、 [Weibo NER](https://github.com/hltcoe/golden-horse/tree/master/data)、 [CCKS 2019中文短文本实体链接](https://biendata.com/competition/ccks_2019_el/)）训练的效果对比如下：  
 
-|data |model_type |CRF  |char_embed| trainable|word_embed| trainable| bert | trainable| f1    | swa   |
-|:---:|:---------:|:---:|:--------:|:--------:|:--------:|:--------:|:----:|:--------:|:-----:|:-----:|
-|daily|bilstm     |False| rand     | True     |          |          |      |          |0.80140|0.82053|
-|daily|bilstm     |False|word2vec  | True     |          |          |      |          |0.80482|0.82269|
-|daily|bilstm     |False|word2vec  | False    |          |          |      |          |0.80843|0.82774|
-|daily|bilstm     |False|fasttext  | True     |          |          |      |          |0.80526|0.82244|
-|daily|bilstm     |False|fasttext  | False    |          |          |      |          |0.80497|0.82571|
-|daily|bilstm     |True | rand     | True     |          |          |      |          |0.82445|0.84154|
-|daily|bilstm     |True |word2vec  | False    |          |          |      |          |0.82847|0.84509|
-|daily|bilstm     |True |fasttext  | True     |          |          |      |          |0.82823|0.84156|
-|daily|bilstm     |True |fasttext  | False    |          |          |      |          |0.82115|0.84233|
-|daily|bilstm\_cnn|False| rand     | True     |          |          |      |          |0.83256|0.84731|
-|daily|bilstm\_cnn|False|word2vec  | True     |          |          |      |          |0.83877|0.85942|
-|daily|bilstm\_cnn|False|word2vec  | False    |          |          |      |          |0.83001|0.85069|
-|daily|bilstm\_cnn|False|fasttext  | True     |          |          |      |          |0.83200|0.84780|
-|daily|bilstm\_cnn|False|fasttext  | False    |          |          |      |          |0.83891|0.85398|
-|daily|bilstm\_cnn|True | rand     | True     |          |          |      |          |0.84165|0.85701|
-|daily|bilstm\_cnn|True |word2vec  | True     |          |          |      |          |0.84370|0.85651|
-|daily|bilstm\_cnn|True |word2vec  | False    |          |          |      |          |0.83595|0.85390|
-|daily|bilstm\_cnn|True |fasttext  | True     |          |          |      |          |0.84728|0.86270|
-|daily|bilstm\_cnn|True |fasttext  | False    |          |          |      |          |0.84580|0.86395|
-|daily|bigru      |False| rand     | True     |          |          |      |          |0.82386|0.83529|
-|daily|bigru      |False|word2vec  | True     |          |          |      |          |0.82042|0.83695|
-|daily|bigru      |False|word2vec  | False    |          |          |      |          |0.81293|0.83096|
-|daily|bigru      |False|fasttext  | True     |          |          |      |          |0.80096|0.82491|
-|daily|bigru      |False|fasttext  | False    |          |          |      |          |0.81980|0.83353|
-|daily|bigru      |True | rand     | True     |          |          |      |          |0.82517|0.84106|
-|daily|bigru      |True |word2vec  | True     |          |          |      |          |0.81950|0.84066|
-|daily|bigru      |True |word2vec  | False    |          |          |      |          |0.82575|0.84733|
-|daily|bigru      |True |fasttext  | True     |          |          |      |          |0.82439|0.84403|
-|daily|bigru      |True |fasttext  | False    |          |          |      |          |0.82762|0.84478|
-|daily|bigru\_cnn |False| rand     | True     |          |          |      |          |0.82932|0.85203|
-|daily|bigru\_cnn |False|word2vec  | True     |          |          |      |          |0.82440|0.85122|
-|daily|bigru\_cnn |False|word2vec  | False    |          |          |      |          |0.82674|0.85411|
-|daily|bigru\_cnn |False|fasttext  | True     |          |          |      |          |0.81840|0.84868|
-|daily|bigru\_cnn |False|fasttext  | False    |          |          |      |          |0.83256|0.85224|
-|daily|bigru\_cnn |True | rand     | True     |          |          |      |          |0.84782|0.86690|
-|daily|bigru\_cnn |True |word2vec  | True     |          |          |      |          |0.84210|0.85768|
-|daily|bigru\_cnn |True |word2vec  | False    |          |          |      |          |0.84198|0.85962|
-|daily|bigru\_cnn |True |fasttext  | True     |          |          |      |          |0.83833|0.86439|
-|daily|bigru\_cnn |True |fasttext  | False    |          |          |      |          |0.84731|0.86559|
-|msra |bilstm_cnn |True |word2vec  | True     |          |          |      |          |0.83563|0.8521 |
-|ccks |bilstm_cnn |True |word2vec  | False    |word2vec  | False    |      |          |0.80761|0.8102 |
-
+| dataset       | model        | F1    | F1_SWA |
+|:-------------:|:------------:|:-----:|:------:|
+|Chinese Daily  |BiLSTM_CRF    |0.82847|0.84509 |
+|Chinese Daily  |BiLSTM_CNN_CRF|0.84728|0.86270 |
+|Chinese Daily  |BiGRU_CRF     |0.82762|0.84478 |
+|Chinese Daily  |BiGRU_CNN_CRF |0.84731|0.86559 |
+|MSRA           |BiLSTM_CRF    |0.83133|0.84293 |
+|MSRA           |BiLSTM_CNN_CRF|0.83899|0.86246 |
+|MSRA           |BiGRU_CRF     |0.81850|0.83567 |
+|MSRA           |BiGRU_CNN_CRF |0.82936|0.84943 |
+|Weibo NER      |BiLSTM_CRF    |0.37027|0.36693 |
+|Weibo NER      |BiLSTM_CNN_CRF|0.37301|0.37750 |
+|Weibo NER      |BiGRU_CRF     |0.37337|0.40049 |
+|Weibo NER      |BiGRU_CNN_CRF |0.39173|0.41147 |
+|CCKS2019 Task 2|BiLSTM_CRF    |0.75963|0.76012 |
+|CCKS2019 Task 2|BiLSTM_CNN_CRF|0.76575|0.76437 |
+|CCKS2019 Task 2|BiGRU_CRF     |0.75507|0.75530 |
+|CCKS2019 Task 2|BiGRU_CNN_CRF |0.75954|0.76268 |
 
 ### 文本分类模型
 对于文本分类模型，我们集成了当前常用的文本分类模型，并进行了对比试验，效果如下：
