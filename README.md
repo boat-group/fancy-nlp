@@ -46,7 +46,7 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 ```python
 >>> from fancy_nlp.applications import NER
 # 获取NER实例
->>> ner_app = applications.NER()
+>>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
@@ -113,9 +113,9 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 *注：我们将在随后不断优化多种场景（不同标注数据）的实体识别模型，以供用户直接使用*
 
 ```python
->>> from fancy_nlp.application import NER
+>>> from fancy_nlp.applications import NER
 # 获取NER实例
->>> ner_app = applications.NER()
+>>> ner_app = NER()
 # analyze: 输出文本中的实体信息
 >>> ner_app.analyze('同济大学位于上海市杨浦区，校长为陈杰')
 {'text': '同济大学位于上海市杨浦区，校长为陈杰',
@@ -186,9 +186,9 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 1. **微调bert**  
 ```python
 >>> from keras.optimizers import Adam
->>> from fancy_nlp.application import NER
+>>> from fancy_nlp.applications import NER
 # 获取NER实例
->>> ner_app = applications.NER()
+>>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
@@ -213,9 +213,9 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 2. **使用bert输出向量作为下游任务模型的特征输入**   
 ```python
 >>> from keras.optimizers import Adam
->>> from fancy_nlp.application import NER
+>>> from fancy_nlp.applications import NER
 # 获取NER实例
->>> ner_app = applications.NER()
+>>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
@@ -239,9 +239,9 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 3. **结合bert输出向量以及其他特征向量**  
 ```python
 >>> from keras.optimizers import Adam
->>> from fancy_nlp.application import NER
+>>> from fancy_nlp.applications import NER
 # 获取NER实例
->>> ner_app = applications.NER()
+>>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
