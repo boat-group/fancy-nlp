@@ -44,7 +44,7 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**。
 
 ```python
->>> from fancy_nlp.application import NER
+>>> from fancy_nlp.applications import NER
 # 获取NER实例
 >>> ner_app = applications.NER()
 # 加载你的训练集和验证集
