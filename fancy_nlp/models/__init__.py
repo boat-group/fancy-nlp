@@ -2,3 +2,4 @@
 
 from . import ner
 from . import text_classification
+from . import spm
