@@ -52,7 +52,8 @@ class TextClassificationMetric(Callback):
     def __init__(self, preprocessor, valid_data, valid_labels):
         """
         Args:
-            preprocessor: `TextClassificationPreprocessor` instance to help prepare input for ner model
+            preprocessor: `TextClassificationPreprocessor` instance to help prepare input for
+            text classification model
             valid_data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
             valid_labels: list of str, the corresponding label strings
         """
@@ -76,3 +77,37 @@ class TextClassificationMetric(Callback):
         logs['val_f1'] = f1
         print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch + 1, r, p, f1))
         print(classification_report(self.valid_labels, y_pred))
+
+
+class SPMMetric(Callback):
+    """
+    callback for evaluating spm model
+    """
+    def __init__(self, preprocessor, valid_data, valid_labels):
+        """
+        Args:
+            preprocessor: `SPMPreprocessor` instance to help prepare input for spm model
+            valid_data: list of text pairs (, like ``[['我是中国人', ...], ['我爱中国', ...]]``
+            valid_labels: list of str, the corresponding label strings
+        """
+        self.preprocessor = preprocessor
+        self.valid_data = valid_data
+        self.valid_labels = valid_labels
+        self.valid_features, self.valid_y = self.preprocessor.prepare_input(valid_data,
+                                                                            valid_labels)
+        super(SPMMetric, self).__init__()
+
+    def on_epoch_end(self, epoch, logs=None):
+        pred_probs = self.model.predict(self.valid_features)
+        y_pred = np.argmax(pred_probs, axis=-1)
+        y_true = np.argmax(self.valid_y, axis=-1)
+
+        r = recall_score(y_true, y_pred, average='macro')
+        p = precision_score(y_true, y_pred, average='macro')
+        f1 = f1_score(y_true, y_pred, average='macro')
+
+        logs['val_r'] = r
+        logs['val_p'] = p
+        logs['val_f1'] = f1
+        print('Epoch {}: val_r: {}, val_p: {}, val_f1: {}'.format(epoch, r, p, f1))
+        print(classification_report(y_true, y_pred))
