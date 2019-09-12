@@ -323,6 +323,62 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 
 文本分类模型和知识实体识别模型一样，支持对Bert Embedding的使用，具体使用方式可以参照知识实体识别指引中的介绍。
 
+## 文本相似度匹配使用指引
+
+### 自定义模型
+使用`fancy-nlp`可以基于文本对信息，使用一行代码，实现对文本间相似程度的判断。
+
+```python
+>>> from fancy_nlp.utils import load_spm_data_and_labels
+# 加载自定义数据集，并将其拆分为train、valid以及test
+>>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels = load_spm_data_and_labels(
+    '/path/to/your/data.txt',
+    split_mode=2,
+    split_size=0.3)
+
+>>> from fancy_nlp import applications
+# 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
+>>> spm_app = applications.SPM(use_pretrained=False)
+
+spm_app.fit(train_data, train_labels, valid_data, valid_labels,
+            spm_model_type='siamese_cnn',
+            word_embed_trainable=True,
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir='pretrained_models',
+            model_name='spm_siamese_cnn',
+            label_dict_file='/your/path/to/label_dict.txt',
+            max_len=60,
+            epochs=50,
+            load_swa_model=True)
+...
+...
+...
+# 训练完毕后，可以评估模型在测试集中的F1得分
+>>> spm_app.score(test_data, test_labels)
+# 使用一行代码对输入文本对进行匹配度的预测
+>>> spm_app.predict(['Text_A', 'Text_B'])
+# 输出结果中附带预测的概率值
+>>> spm_app.analyze(['Text_A', 'Text_B'])
+```
+
+### 基础模型
+
+fancy-nlp中默认加载了在当前公开的微众银行客服问句匹配数据集训练得到的文本相似度匹配模型，其能够针对问句文本对，预测其是否表达相同意图。
+
+```python
+>>> from fancy_nlp import applications
+>>> spm_app = applications.SPM()
+# 预测问题对是否表达相同意图（'1'：相同意图，'0'：不同意图）
+>>> spm_app.predict(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
+'1'
+>>> spm_app.analyze(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
+('1', [0.0000325, 0.9999675])
+```
+
+### Bert
+文本相似度匹配模型和知识实体识别模型一样，支持对微调Bert和Bert Embedding的使用，具体使用方式可以参照知识实体识别指引中的介绍。
+其中Bert Embedding只能与字符向量共同使用，不能与词向量共同使用。
+
 ## 模型架构
 ### 知识实体识别
 对于知识实体识别，我们使用字向量序列作为基础输入，并在此基础上：
@@ -362,7 +418,7 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 ### 文本分类模型
 对于文本分类模型，我们集成了当前常用的文本分类模型，并进行了对比试验，效果如下：
 
-| 序号 |    模型名   | Precision |  Recal | Macro-F1 | Accuracy | Time(s)/60015个样本 |
+| 序号 |    模型名   | Precision |  Recall | Macro-F1 | Accuracy | Time(s)/60015个样本 |
 |:----:|:-----------:|:---------:|:------:|:--------:|:--------:|:-------------------:|
 |   1  |     CNN     |   0.7532  | 0.7453 |  0.7462  |  0.8636  |        4.7972       |
 |   2  |     LSTM    |   0.7446  | 0.7339 |  0.7389  |  0.8599  |        4.8093       |
@@ -376,6 +432,17 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 |  10  |   FastText  |   0.7313  | 0.7270 |  0.7274  |  0.8400  |        1.1811       |
 
 效果最优的是RCNN模型，这也是我们当前实际采用的模型。若从模型速度和性能兼顾的角度来考虑，也可采用基础的TextCNN模型，其在一般的业务场景中，在训练数据足够的情况下，也足以满足业务需求
+
+### 文本相似度匹配模型
+对于文本相似度匹配模型，我们实现了当前常用的文本相似度匹配模型，并在CCKS 2018微众银行智能问句匹配任务[WeBank](https://biendata.com/competition/CCKS2018_3/)中进行了对比试验，效果如下：
+
+| 序号 |     模型名    | Precision |  Recall | Macro-F1 | Accuracy |
+|:----:|:-------------:|:---------:|:------:|:--------:|:--------:|
+|   1  |  Siamese_CNN  |   0.7954  | 0.7604 |  0.7775  |  0.7824  |
+|   2  |  Siamese_LSTM |   0.7760  | 0.8119 |  0.7935  |  0.7981  |
+|   3  |      ESIM     |   0.8288  | 0.7814 |  0.8044  |  0.8100  |
+|   4  |      BiMPM    |   0.8066  | 0.8202 |  0.8134  |  0.8149  |
+|   5  |      Bert     |   0.8678  | 0.8102 |  0.8380  |  0.8434  |
 
 ## Comming soon
 
