@@ -26,7 +26,7 @@ class TestNER:
         self.preprocessor_file = os.path.join(self.checkpoint_dir, 'siamese_cnn_preprocessor.pkl')
 
     def test_spm(self):
-        spm = SPM()
+        spm = SPM(use_pretrained=False)
 
         # test train word and char
         spm.fit(train_data=self.train_data,
@@ -109,8 +109,6 @@ class TestNER:
         # test predict
         valid_label = spm.predict([self.valid_data[0][0], self.valid_data[1][0]])
         assert isinstance(valid_label, str)
-        print([self.valid_data[0][0], self.valid_data[1][0]])
-        print(valid_label)
 
         # test predict_batch
         valid_labels = spm.predict_batch(self.valid_data)
@@ -122,8 +120,6 @@ class TestNER:
         valid_label = spm.analyze([self.valid_data[0][0], self.valid_data[1][0]])
         assert isinstance(valid_label, tuple)
         assert len(valid_label) == spm.preprocessor.num_class
-        print(valid_label)
-        print(self.valid_labels[0])
 
         # test analyze_batch
         valid_labels = spm.analyze_batch(self.valid_data)
