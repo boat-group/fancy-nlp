@@ -8,7 +8,8 @@ from keras_bert import get_custom_objects as get_custom_objects_for_bert
 from keras_bert import Tokenizer
 
 
-from fancy_nlp.layers import NonMaskingLayer
+from fancy_nlp.layers import NonMaskingLayer, FullMatching, MaxPoolingMatching, \
+    AttentiveMatching, MaxAttentiveMatching
 
 
 def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', padding='post',
@@ -85,7 +86,12 @@ def get_len_from_corpus(corpus, mode='most'):
 
 def get_custom_objects():
     """Get all custom objects for loading saved ner models."""
-    custom_objects = {'CRF': CRF, 'NonMaskingLayer': NonMaskingLayer}
+    custom_objects = {'CRF': CRF,
+                      'NonMaskingLayer': NonMaskingLayer,
+                      'FullMatching': FullMatching,
+                      'MaxPoolingMatching': MaxPoolingMatching,
+                      'AttentiveMatching': AttentiveMatching,
+                      'MaxAttentiveMatching': MaxAttentiveMatching}
     custom_objects.update(get_custom_objects_for_bert())  # custom objects of bert models
     return custom_objects
 
