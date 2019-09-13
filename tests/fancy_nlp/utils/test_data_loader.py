@@ -44,7 +44,7 @@ class TestSpmDataLoader:
 
     def test_load_spm_split2(self):
         x_train, y_train, x_valid, y_valid, x_test, y_test = \
-            load_spm_data_and_labels(self.test_file, split_mode=2)
+            load_spm_data_and_labels(self.test_file, split_mode=2, split_size=0.4)
         assert len(x_train[0]) == len(x_train[1]) == len(y_train)
         assert len(x_valid[0]) == len(x_valid[1]) == len(y_valid)
         assert len(x_test[0]) == len(x_test[1]) == len(y_test)
