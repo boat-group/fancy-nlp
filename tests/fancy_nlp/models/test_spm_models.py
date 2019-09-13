@@ -24,7 +24,7 @@ class TestSpmModel:
         self.preprocessor = SPMPreprocessor(x_train, y_train, use_word=True, use_char=True, use_bert=False,
                                             bert_vocab_file=self.bert_vocab_file,
                                             char_embed_type='word2vec', word_embed_type='word2vec',
-                                            max_len=16)
+                                            max_len=10)
         self.num_class = self.preprocessor.num_class
         self.char_embeddings = self.preprocessor.char_embeddings
         self.char_vocab_size = self.preprocessor.char_vocab_size
@@ -36,15 +36,6 @@ class TestSpmModel:
         self.checkpoint_dir = os.path.dirname(__file__)
 
     def test_siamese_cnn_model(self):
-        # word
-        spm_model = SiameseCNN(num_class=self.num_class,
-                               use_word=True,
-                               word_embeddings=self.word_embeddings,
-                               word_vocab_size=self.word_vocab_size,
-                               word_embed_dim=self.word_embed_dim,
-                               word_embed_trainable=False,
-                               use_char=False, use_bert=False).build_model()
-
         # word, char
         spm_model = SiameseCNN(num_class=self.num_class,
                                use_word=True,
@@ -58,18 +49,7 @@ class TestSpmModel:
                                char_embed_dim=self.char_embed_dim,
                                char_embed_trainable=False,
                                use_bert=False,
-                               max_len=16).build_model()
-
-        # char
-        spm_model = SiameseCNN(num_class=self.num_class,
-                               use_word=False,
-                               use_char=True,
-                               char_embeddings=self.char_embeddings,
-                               char_vocab_size=self.char_vocab_size,
-                               char_embed_dim=self.char_embed_dim,
-                               char_embed_trainable=False,
-                               use_bert=False,
-                               max_len=16).build_model()
+                               max_len=10).build_model()
 
         # char, bert
         spm_model = SiameseCNN(num_class=self.num_class,
@@ -82,18 +62,7 @@ class TestSpmModel:
                                use_bert=True,
                                bert_config_file=self.bert_config_file,
                                bert_checkpoint_file=self.bert_model_file,
-                               bert_trainable=True,
-                               max_len=16).build_model()
-
-        # bert
-        spm_model = SiameseCNN(num_class=self.num_class,
-                               use_word=False,
-                               use_char=False,
-                               use_bert=True,
-                               bert_config_file=self.bert_config_file,
-                               bert_checkpoint_file=self.bert_model_file,
-                               bert_trainable=True,
-                               max_len=16).build_model()
+                               max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'siamese_cnn_spm.json')
@@ -110,16 +79,6 @@ class TestSpmModel:
         assert not os.path.exists(weights_file)
 
     def test_siamese_bilstm_model(self):
-        # word
-        spm_model = SiameseBiLSTM(num_class=self.num_class,
-                                  use_word=True,
-                                  word_embeddings=self.word_embeddings,
-                                  word_vocab_size=self.word_vocab_size,
-                                  word_embed_dim=self.word_embed_dim,
-                                  word_embed_trainable=False,
-                                  use_char=False, use_bert=False,
-                                  max_len=16).build_model()
-
         # word, char
         spm_model = SiameseBiLSTM(num_class=self.num_class,
                                   use_word=True,
@@ -133,18 +92,7 @@ class TestSpmModel:
                                   char_embed_dim=self.char_embed_dim,
                                   char_embed_trainable=False,
                                   use_bert=False,
-                                  max_len=16).build_model()
-
-        # char
-        spm_model = SiameseBiLSTM(num_class=self.num_class,
-                                  use_word=False,
-                                  use_char=True,
-                                  char_embeddings=self.char_embeddings,
-                                  char_vocab_size=self.char_vocab_size,
-                                  char_embed_dim=self.char_embed_dim,
-                                  char_embed_trainable=False,
-                                  use_bert=False,
-                                  max_len=16).build_model()
+                                  max_len=10).build_model()
 
         # char, bert
         spm_model = SiameseBiLSTM(num_class=self.num_class,
@@ -157,18 +105,7 @@ class TestSpmModel:
                                   use_bert=True,
                                   bert_config_file=self.bert_config_file,
                                   bert_checkpoint_file=self.bert_model_file,
-                                  bert_trainable=True,
-                                  max_len=16).build_model()
-
-        # bert
-        spm_model = SiameseBiLSTM(num_class=self.num_class,
-                                  use_word=False,
-                                  use_char=False,
-                                  use_bert=True,
-                                  bert_config_file=self.bert_config_file,
-                                  bert_checkpoint_file=self.bert_model_file,
-                                  bert_trainable=True,
-                                  max_len=16).build_model()
+                                  max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'siamese_bilstm_spm.json')
@@ -185,16 +122,6 @@ class TestSpmModel:
         assert not os.path.exists(weights_file)
 
     def test_siamese_bigru_model(self):
-        # word
-        spm_model = SiameseBiGRU(num_class=self.num_class,
-                                 use_word=True,
-                                 word_embeddings=self.word_embeddings,
-                                 word_vocab_size=self.word_vocab_size,
-                                 word_embed_dim=self.word_embed_dim,
-                                 word_embed_trainable=False,
-                                 use_char=False, use_bert=False,
-                                 max_len=16).build_model()
-
         # word, char
         spm_model = SiameseBiGRU(num_class=self.num_class,
                                  use_word=True,
@@ -208,18 +135,7 @@ class TestSpmModel:
                                  char_embed_dim=self.char_embed_dim,
                                  char_embed_trainable=False,
                                  use_bert=False,
-                                 max_len=16).build_model()
-
-        # char
-        spm_model = SiameseBiGRU(num_class=self.num_class,
-                                 use_word=False,
-                                 use_char=True,
-                                 char_embeddings=self.char_embeddings,
-                                 char_vocab_size=self.char_vocab_size,
-                                 char_embed_dim=self.char_embed_dim,
-                                 char_embed_trainable=False,
-                                 use_bert=False,
-                                 max_len=16).build_model()
+                                 max_len=10).build_model()
 
         # char, bert
         spm_model = SiameseBiGRU(num_class=self.num_class,
@@ -232,18 +148,7 @@ class TestSpmModel:
                                  use_bert=True,
                                  bert_config_file=self.bert_config_file,
                                  bert_checkpoint_file=self.bert_model_file,
-                                 bert_trainable=True,
-                                 max_len=16).build_model()
-
-        # bert
-        spm_model = SiameseBiGRU(num_class=self.num_class,
-                                 use_word=False,
-                                 use_char=False,
-                                 use_bert=True,
-                                 bert_config_file=self.bert_config_file,
-                                 bert_checkpoint_file=self.bert_model_file,
-                                 bert_trainable=True,
-                                 max_len=16).build_model()
+                                 max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'siamese_bigru_spm.json')
@@ -260,16 +165,6 @@ class TestSpmModel:
         assert not os.path.exists(weights_file)
 
     def test_esim_model(self):
-        # word
-        spm_model = ESIM(num_class=self.num_class,
-                         use_word=True,
-                         word_embeddings=self.word_embeddings,
-                         word_vocab_size=self.word_vocab_size,
-                         word_embed_dim=self.word_embed_dim,
-                         word_embed_trainable=False,
-                         use_char=False, use_bert=False,
-                         max_len=16).build_model()
-
         # word, char
         spm_model = ESIM(num_class=self.num_class,
                          use_word=True,
@@ -283,18 +178,7 @@ class TestSpmModel:
                          char_embed_dim=self.char_embed_dim,
                          char_embed_trainable=False,
                          use_bert=False,
-                         max_len=16).build_model()
-
-        # char
-        spm_model = ESIM(num_class=self.num_class,
-                         use_word=False,
-                         use_char=True,
-                         char_embeddings=self.char_embeddings,
-                         char_vocab_size=self.char_vocab_size,
-                         char_embed_dim=self.char_embed_dim,
-                         char_embed_trainable=False,
-                         use_bert=False,
-                         max_len=16).build_model()
+                         max_len=10).build_model()
 
         # char, bert
         spm_model = ESIM(num_class=self.num_class,
@@ -307,18 +191,7 @@ class TestSpmModel:
                          use_bert=True,
                          bert_config_file=self.bert_config_file,
                          bert_checkpoint_file=self.bert_model_file,
-                         bert_trainable=True,
-                         max_len=16).build_model()
-
-        # bert
-        spm_model = ESIM(num_class=self.num_class,
-                         use_word=False,
-                         use_char=False,
-                         use_bert=True,
-                         bert_config_file=self.bert_config_file,
-                         bert_checkpoint_file=self.bert_model_file,
-                         bert_trainable=True,
-                         max_len=16).build_model()
+                         max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'esim_spm.json')
@@ -335,16 +208,6 @@ class TestSpmModel:
         assert not os.path.exists(weights_file)
 
     def test_bimpm_model(self):
-        # word
-        spm_model = BiMPM(num_class=self.num_class,
-                          use_word=True,
-                          word_embeddings=self.word_embeddings,
-                          word_vocab_size=self.word_vocab_size,
-                          word_embed_dim=self.word_embed_dim,
-                          word_embed_trainable=False,
-                          use_char=False, use_bert=False,
-                          max_len=16).build_model()
-
         # word, char
         spm_model = BiMPM(num_class=self.num_class,
                           use_word=True,
@@ -358,18 +221,7 @@ class TestSpmModel:
                           char_embed_dim=self.char_embed_dim,
                           char_embed_trainable=False,
                           use_bert=False,
-                          max_len=16).build_model()
-
-        # char
-        spm_model = BiMPM(num_class=self.num_class,
-                          use_word=False,
-                          use_char=True,
-                          char_embeddings=self.char_embeddings,
-                          char_vocab_size=self.char_vocab_size,
-                          char_embed_dim=self.char_embed_dim,
-                          char_embed_trainable=False,
-                          use_bert=False,
-                          max_len=16).build_model()
+                          max_len=10).build_model()
 
         # char, bert
         spm_model = BiMPM(num_class=self.num_class,
@@ -382,18 +234,7 @@ class TestSpmModel:
                           use_bert=True,
                           bert_config_file=self.bert_config_file,
                           bert_checkpoint_file=self.bert_model_file,
-                          bert_trainable=True,
-                          max_len=16).build_model()
-
-        # bert
-        spm_model = BiMPM(num_class=self.num_class,
-                          use_word=False,
-                          use_char=False,
-                          use_bert=True,
-                          bert_config_file=self.bert_config_file,
-                          bert_checkpoint_file=self.bert_model_file,
-                          bert_trainable=True,
-                          max_len=16).build_model()
+                          max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'bimpm_spm.json')
@@ -414,7 +255,7 @@ class TestSpmModel:
                             bert_config_file=self.bert_config_file,
                             bert_checkpoint_file=self.bert_model_file,
                             bert_trainable=True,
-                            max_len=16).build_model()
+                            max_len=10).build_model()
 
         # test save and load
         json_file = os.path.join(self.checkpoint_dir, 'bert_spm.json')
