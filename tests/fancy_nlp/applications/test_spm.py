@@ -5,7 +5,7 @@ from fancy_nlp.utils import load_spm_data_and_labels
 from fancy_nlp.applications import SPM
 
 
-class TestNER:
+class TestSPM:
     test_file = os.path.join(os.path.dirname(__file__), '../../../data/spm/webank/example.txt')
     bert_vocab_file = os.path.join(os.path.dirname(__file__),
                                    '../../../data/embeddings/bert_sample_model/vocab.txt')
@@ -16,7 +16,7 @@ class TestNER:
 
     def setup_class(self):
         self.train_data, self.train_labels, self.valid_data, self.valid_labels = \
-            load_spm_data_and_labels(self.test_file, split_mode=1)
+            load_spm_data_and_labels(self.test_file, split_mode=1, split_size=0.3)
 
         self.checkpoint_dir = os.path.dirname(__file__)
         self.model_name = 'siamese_cnn_spm'
@@ -26,7 +26,9 @@ class TestNER:
         self.preprocessor_file = os.path.join(self.checkpoint_dir, 'siamese_cnn_preprocessor.pkl')
 
     def test_spm(self):
-        spm = SPM(use_pretrained=False)
+        spm = SPM()
+        spm.predict(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
+        spm.analyze(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
 
         # test train word and char
         spm.fit(train_data=self.train_data,
@@ -41,15 +43,12 @@ class TestNER:
                 bert_vocab_file=self.bert_vocab_file,
                 bert_config_file=self.bert_config_file,
                 bert_checkpoint_file=self.bert_model_file,
-                # max_len=16,
-                # max_word_len=5,
-                batch_size=2,
-                epochs=10,
+                batch_size=6,
+                epochs=2,
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir=self.checkpoint_dir,
                 model_name=self.model_name,
                 load_swa_model=True)
-        print(spm.preprocessor.max_len, spm.preprocessor.max_word_len)
 
         # test train char and bert
         spm.fit(train_data=self.train_data,
@@ -63,10 +62,9 @@ class TestNER:
                 bert_vocab_file=self.bert_vocab_file,
                 bert_config_file=self.bert_config_file,
                 bert_checkpoint_file=self.bert_model_file,
-                max_len=16,
-                max_word_len=5,
-                batch_size=2,
-                epochs=10,
+                max_len=10,
+                batch_size=6,
+                epochs=2,
                 callback_list=['modelcheckpoint', 'earlystopping'],
                 checkpoint_dir=self.checkpoint_dir,
                 model_name=self.model_name,
@@ -84,11 +82,10 @@ class TestNER:
                 bert_vocab_file=self.bert_vocab_file,
                 bert_config_file=self.bert_config_file,
                 bert_checkpoint_file=self.bert_model_file,
-                bert_output_layer_num=4,
-                max_len=16,
-                max_word_len=5,
-                batch_size=2,
-                epochs=10,
+                bert_output_layer_num=2,
+                max_len=10,
+                batch_size=6,
+                epochs=2,
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir=self.checkpoint_dir,
                 model_name=self.model_name,
