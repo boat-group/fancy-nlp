@@ -103,7 +103,7 @@ def load_text_classification_data_and_labels(
         return token_seqs, label_seqs
 
 
-def load_spm_data_and_labels(filename, delimiter='\t', split_mode=0, split_size=0.1, seed=42):
+def load_spm_data_and_labels(filename, delimiter='\t', split_mode=0, split_size=0.2, seed=42):
     """Load spm data and label from a file.
 
     The file should follow fixed format:

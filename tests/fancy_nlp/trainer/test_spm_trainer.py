@@ -27,7 +27,7 @@ class TestSPMTrainer:
                                             bert_vocab_file=self.bert_vocab_file,
                                             word_embed_type='word2vec',
                                             char_embed_type='word2vec',
-                                            max_len=16)
+                                            max_len=10)
         self.num_class = self.preprocessor.num_class
         self.char_embeddings = self.preprocessor.char_embeddings
         self.char_vocab_size = self.preprocessor.char_vocab_size
@@ -81,7 +81,7 @@ class TestSPMTrainer:
 
     def test_train(self):
         self.spm_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7)
+                               self.valid_labels, batch_size=6, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -94,7 +94,7 @@ class TestSPMTrainer:
                                        use_bert=True,
                                        bert_vocab_file=self.bert_vocab_file,
                                        char_embed_type='word2vec',
-                                       max_len=16)
+                                       max_len=10)
         self.num_class = preprocessor.num_class
         self.char_embeddings = preprocessor.char_embeddings
         self.char_vocab_size = preprocessor.char_vocab_size
@@ -110,12 +110,11 @@ class TestSPMTrainer:
                                use_bert=True,
                                bert_config_file=self.bert_config_file,
                                bert_checkpoint_file=self.bert_model_file,
-                               bert_trainable=True,
                                max_len=preprocessor.max_len).build_model()
 
         spm_trainer = SPMTrainer(spm_model, preprocessor)
         spm_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+                          batch_size=6, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
@@ -128,7 +127,7 @@ class TestSPMTrainer:
                                        use_bert=True,
                                        use_bert_model=True,
                                        bert_vocab_file=self.bert_vocab_file,
-                                       max_len=16)
+                                       max_len=10)
         spm_model = BertSPM(num_class=self.num_class,
                             bert_config_file=self.bert_config_file,
                             bert_checkpoint_file=self.bert_model_file,
@@ -137,18 +136,18 @@ class TestSPMTrainer:
 
         spm_trainer = SPMTrainer(spm_model, preprocessor)
         spm_trainer.train(self.train_data, self.train_labels, self.valid_data, self.valid_labels,
-                          batch_size=2, epochs=7)
+                          batch_size=6, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
     def test_train_no_valid_data(self):
-        self.spm_trainer.train(self.train_data, self.train_labels, batch_size=2, epochs=7)
+        self.spm_trainer.train(self.train_data, self.train_labels, batch_size=6, epochs=2)
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
 
     def test_train_callbacks(self):
         self.spm_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7,
+                               self.valid_labels, batch_size=6, epochs=2,
                                callback_list=['modelcheckpoint', 'earlystopping'],
                                checkpoint_dir=os.path.dirname(__file__),
                                model_name='siamese_cnn_spm')
@@ -160,7 +159,7 @@ class TestSPMTrainer:
 
     def test_train_swa(self):
         self.spm_trainer.train(self.train_data, self.train_labels, self.valid_data,
-                               self.valid_labels, batch_size=2, epochs=7, callback_list=['swa'],
+                               self.valid_labels, batch_size=6, epochs=5, callback_list=['swa'],
                                checkpoint_dir=os.path.dirname(__file__),
                                model_name='siamese_cnn_spm',
                                swa_model=self.swa_model,
@@ -178,7 +177,7 @@ class TestSPMTrainer:
 
     def test_generator(self):
         self.spm_trainer.train_generator(self.train_data, self.train_labels,
-                                         self.valid_data, self.valid_labels, batch_size=2, epochs=7)
+                                         self.valid_data, self.valid_labels, batch_size=6, epochs=2)
 
         assert not os.path.exists(self.json_file)
         assert not os.path.exists(self.weights_file)
