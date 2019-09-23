@@ -29,13 +29,13 @@ class TextClassificationTrainer(object):
         train_features, train_y = self.preprocessor.prepare_input(train_data, train_labels)
         if valid_data is not None and valid_labels is not None:
             valid_features, valid_y = self.preprocessor.prepare_input(valid_data, valid_labels)
-            valid_data = (valid_features, valid_y)
+            validation_data = (valid_features, valid_y)
         else:
-            valid_data = None
+            validation_data = None
 
         logging.info('Training start...')
         self.model.fit(x=train_features, y=train_y, batch_size=batch_size, epochs=epochs,
-                       validation_data=valid_data, callbacks=callbacks)
+                       validation_data=validation_data, callbacks=callbacks)
         logging.info('Training end...')
 
         if load_swa_model and callback_list is not None and 'swa' in callback_list:
