@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
-
 from absl import logging
 import numpy as np
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
-from fasttext import train_unsupervised
-
-from fancy_nlp.config import CACHE_DIR
+from gensim.models import FastText
 
 
 def load_glove_format(filename, embedding_dim):
@@ -159,21 +155,22 @@ def train_fasttext(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1,
         Returns: np.array, a word embedding matrix.
 
         """
-    corpus_file = 'fasttext_tmp_corpus.txt'
-    datadir_base = os.path.expanduser(CACHE_DIR)
-    datadir = os.path.join(datadir_base, 'corpus')
-    if not os.path.exists(datadir):
-        os.makedirs(datadir)
-    corpus_file_path = os.path.join(datadir, corpus_file)
-    with open(corpus_file_path, 'w', encoding='utf8')as writer:
-        for sentence in corpus:
-            writer.write(' '.join(sentence) + '\n')
+    model = FastText(size=embedding_dim, min_count=1, window=5, sg=1, word_ngrams=1)
+    model.build_vocab(sentences=corpus)
+    model.train(sentences=corpus, total_examples=len(corpus), epochs=10)
 
-    model = train_unsupervised(input=corpus_file_path, model='skipgram', epoch=10, minCount=1,
-                               wordNgrams=3, dim=embedding_dim)
-    model_vocab = model.get_words()
-    word_vectors = dict((w, model.get_word_vector(w)) for w in model_vocab)
-    emb = filter_embeddings(word_vectors, embedding_dim, vocabulary, zero_init_indices,
-                            rand_init_indices)
-    os.remove(corpus_file_path)
+    emb = np.zeros(shape=(len(vocabulary), embedding_dim), dtype='float32')
+
+    for w, i in vocabulary.items():
+        emb[i, :] = model.wv[w]  # note that oov words can still have word vectors
+
+    if isinstance(zero_init_indices, int):
+        zero_init_indices = [zero_init_indices]
+    if isinstance(rand_init_indices, int):
+        rand_init_indices = [rand_init_indices]
+    for idx in zero_init_indices:
+        emb[idx] = np.zeros(embedding_dim)
+    for idx in rand_init_indices:
+        emb[idx] = np.random.normal(0, 0.05, embedding_dim)
+
     return emb
