@@ -50,7 +50,7 @@ class TestPreprocessor:
         assert not np.any(emb[0])
 
         emb = self.preprocessor.build_embedding(embed_type='fasttext', vocab=char_vocab,
-                                                corpus=char_corpus)
+                                                corpus=char_corpus, embedding_dim=20)
         assert emb.shape[0] == len(char_vocab) and emb.shape[1] == 300
         assert not np.any(emb[0])
 
