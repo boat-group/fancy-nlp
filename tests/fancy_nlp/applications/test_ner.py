@@ -114,13 +114,13 @@ class TestNER:
             assert score >= 0.85
 
         # test save
-        ner.save(self.preprocessor_file, self.weights_file, self.json_file)
+        ner.save(self.preprocessor_file, self.json_file, self.weights_file)
         assert os.path.exists(self.json_file)
         assert os.path.exists(self.weights_file)
         assert os.path.exists(self.preprocessor_file)
 
         # test load
-        ner.load(self.preprocessor_file, self.weights_file, self.json_file)
+        ner.load(self.preprocessor_file, self.json_file, self.weights_file)
         os.remove(self.json_file)
         os.remove(self.weights_file)
         os.remove(self.preprocessor_file)
