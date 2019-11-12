@@ -1,11 +1,12 @@
-# fancy-nlp
+# Fancy-NLP
 
 ![fancy-nlp logo](./img/fancy-nlp.jpg)
 
+![GitHub stars](https://img.shields.io/github/stars/boat-group/fancy-nlp?style=social)
+![GitHub forks](https://img.shields.io/github/forks/boat-group/fancy-nlp?style=social)
+
 [![Build Status](https://travis-ci.org/boat-group/fancy-nlp.svg?branch=master)](https://travis-ci.org/boat-group/fancy-nlp)
 ![PyPI](https://img.shields.io/pypi/v/fancy-nlp)
-[![star this repo](http://githubbadges.com/star.svg?user=boat-group&repo=fancy-nlp&style=flat)](https://github.com/boat-group/fancy-nlp)
-[![fork this repo](http://githubbadges.com/fork.svg?user=boat-group&repo=fancy-nlp&style=flat)](https://github.com/boat-group/fancy-nlp/fork)
 [![Coverage Status](https://coveralls.io/repos/github/boat-group/fancy-nlp/badge.svg?branch=master)](https://coveralls.io/github/boat-group/fancy-nlp?branch=master)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
