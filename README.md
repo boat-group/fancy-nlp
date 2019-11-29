@@ -54,12 +54,12 @@ pip install git+https://www.github.com/keras-team/keras-contrib.git
 >>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-               ner_model_type='bilstm_cnn',
-               char_embed_trainable=True,
-               callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-               checkpoint_dir='pretrained_models',
-               model_name='dpa_ner_bilstm_cnn_crf',
-               load_swa_model=True)
+                ner_model_type='bilstm_cnn',
+                char_embed_trainable=True,
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir='pretrained_models',
+                model_name='dpa_ner_bilstm_cnn_crf',
+                load_swa_model=True)
 # 使用测试集评估模型效果
 >>> test_data, test_labels = load_ner_data_and_labels('./your/path/to/test.txt')
 >>> ner_app.score(test_data, test_labels)
@@ -120,7 +120,8 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # analyze: 输出文本中的实体信息
 >>> ner_app.analyze('同济大学位于上海市杨浦区，校长为陈杰')
 {'text': '同济大学位于上海市杨浦区，校长为陈杰',
- 'entities': [{'name': '同济大学',
+ 'entities': [
+  {'name': '同济大学',
    'type': 'ORG',
    'score': 1.0,
    'beginOffset': 0,
@@ -143,7 +144,8 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # restrict_analyze: 限制输出结果中，每种实体只保留一个实体，取得分最高的实体
 >>> ner_app.restrict_analyze('同济大学位于上海市杨浦区，校长为陈杰')
 {'text': '同济大学位于上海市杨浦区，校长为陈杰',
- 'entities': [{'name': '同济大学',
+ 'entities': [
+  {'name': '同济大学',
    'type': 'ORG',
    'score': 1.0,
    'beginOffset': 0,
@@ -197,11 +199,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bert',  # 设置ner模型类型为'bert'
-			    use_char=False,       
+                use_char=False,       
                 use_bert=True,  # 设置只使用bert输入
                 bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
                 bert_cofig_file='/your/path/to/bert_config.json',
-	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
                 bert_trainable=True,  # 设置bert可训练
                 use_word=False,
                 optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
@@ -224,11 +226,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bilstm_cnn',  # 设置任一ner模型
-			    use_char=False,       
+		use_char=False,       
                 use_bert=True,  # 设置只使用bert向量作为特征输入
                 bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
                 bert_cofig_file='/your/path/to/bert_config.json',
-	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
                 bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
                 use_word=False,
                 optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
@@ -250,11 +252,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bilstm_cnn',  # 设置任一ner模型
-			    use_char=True,         
+		use_char=True,         
                 use_bert=True,  # 结合字向量以及bert向量作为特征输入
                 bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
                 bert_cofig_file='/your/path/to/bert_config.json',
-	            bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
                 bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
                 use_word=False,
                 optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
@@ -284,19 +286,16 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 # 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
 >>> text_classification_app = applications.TextClassification(use_pretrained=False)
 
-text_classification_app.fit(train_data, train_labels, valid_data, valid_labels,
-            text_classification_model_type='rcnn',
-            char_embed_trainable=True,
-            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-            checkpoint_dir='pretrained_models',
-            model_name='text_classification_rcnn',
-            label_dict_file='/your/path/to/label_dict.txt',
-            max_len=60,
-            epochs=50,
-            load_swa_model=True)
-...
-...
-...
+>>> text_classification_app.fit(train_data, train_labels, valid_data, valid_labels,
+                                text_classification_model_type='rcnn',
+                                char_embed_trainable=True,
+                                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                                checkpoint_dir='pretrained_models',
+                                model_name='text_classification_rcnn',
+                                label_dict_file='/your/path/to/label_dict.txt',
+                                max_len=60,
+                                epochs=50,
+                                load_swa_model=True)
 # 训练完毕后，可以评估模型在测试集中的得分
 >>> text_classification_app.score(test_data, test_labels)
 # 使用一行代码对输入文本进行商品类目的预测
@@ -341,19 +340,16 @@ fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集�
 # 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
 >>> spm_app = applications.SPM(use_pretrained=False)
 
-spm_app.fit(train_data, train_labels, valid_data, valid_labels,
-            spm_model_type='siamese_cnn',
-            word_embed_trainable=True,
-            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-            checkpoint_dir='pretrained_models',
-            model_name='spm_siamese_cnn',
-            label_dict_file='/your/path/to/label_dict.txt',
-            max_len=60,
-            epochs=50,
-            load_swa_model=True)
-...
-...
-...
+>>> spm_app.fit(train_data, train_labels, valid_data, valid_labels,
+                spm_model_type='siamese_cnn',
+                word_embed_trainable=True,
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir='pretrained_models',
+                model_name='spm_siamese_cnn',
+                label_dict_file='/your/path/to/label_dict.txt',
+                max_len=60,
+                epochs=50,
+                load_swa_model=True)
 # 训练完毕后，可以评估模型在测试集中的F1得分
 >>> spm_app.score(test_data, test_labels)
 # 使用一行代码对输入文本对进行匹配度的预测
