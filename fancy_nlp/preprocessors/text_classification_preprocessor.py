@@ -119,6 +119,7 @@ class TextClassificationPreprocessor(Preprocessor):
             # max_len must be provided when use bert as input!
             # We will reset max_len from train_data when max_len is not provided.
             self.max_len = get_len_from_corpus(self.train_data)
+            self.max_len = min(self.max_len + 2, 512)  # make sure max_len is shorted than bert's max length (512)
 
     def load_word_dict(self):
         if self.external_word_dict:

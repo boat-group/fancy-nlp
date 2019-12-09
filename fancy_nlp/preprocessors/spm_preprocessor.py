@@ -143,10 +143,12 @@ class SPMPreprocessor(Preprocessor):
             # We will reset max_len from train_data when max_len is not provided.
             self.max_len = get_len_from_corpus([list(a) + list(b) for a, b in zip(train_data_a,
                                                                                   train_data_b)])
+            self.max_len += 3  # consider 3 more special tokens: <CLS> <SEQ> <SEQ>
         elif not self.use_word and self.use_bert and self.max_len is None:
             # max_len should be provided when use bert as input!
             # We will reset max_len from train_data when max_len is not provided.
             self.max_len = get_len_from_corpus(train_data)
+            self.max_len += 2  # consider 2 more special tokens: <CLS> <SEQ>
 
         if self.use_bert:
             # max length is 512 for bert
