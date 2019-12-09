@@ -100,6 +100,13 @@ class NER(object):
             load_swa_model: boolean, whether to load swa model, only apply when using SWA Callback.
             **kwargs: other argument for building ner model, such as "rnn_units", "fc_dim" etc.
         """
+        # whether to use traditional bert model for prediction
+        use_bert_model = ner_model_type == 'bert'
+        # add assertion for checking input
+        assert not (use_bert_model and use_word), 'when using bert model, `use_word` must be False'
+        assert not (use_bert_model and use_char), 'when using bert model, `use_char` must be False'
+        assert not (use_bert_model and not use_bert), 'when using bert model, `use_bert` must be True'
+
         self.preprocessor = NERPreprocessor(train_data=train_data,
                                             train_labels=train_labels,
                                             use_char=use_char,
