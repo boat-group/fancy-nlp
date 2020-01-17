@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from fancy_nlp.utils import load_ner_data_and_labels
 from fancy_nlp.applications import NER
 from fancy_nlp.config import CACHE_DIR
@@ -124,3 +125,8 @@ class TestNER:
         os.remove(self.json_file)
         os.remove(self.weights_file)
         os.remove(self.preprocessor_file)
+
+
+test_ner = TestNER()
+test_ner.setup_class()
+test_ner.test_ner()

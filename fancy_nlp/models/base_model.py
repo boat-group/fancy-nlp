@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-"""Base model with Keras
+"""Base model with tf.Keras
 """
 
 
 class BaseModel(object):
     def build_input(self):
-        """We build input and embedding layer for keras model here"""
+        """We build input and embedding layer for tf.keras model here"""
         raise NotImplementedError
 
     def build_model(self):
-        """We build keras model here"""
+        """We build tf.keras model here"""
         raise NotImplementedError

@@ -3,13 +3,12 @@
 import math
 
 import numpy as np
-from keras_contrib.layers import CRF
 from keras_bert import get_custom_objects as get_custom_objects_for_bert
 from keras_bert import Tokenizer
 
 
 from fancy_nlp.layers import NonMaskingLayer, FullMatching, MaxPoolingMatching, \
-    AttentiveMatching, MaxAttentiveMatching
+    AttentiveMatching, MaxAttentiveMatching, CRF
 
 
 def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', padding='post',

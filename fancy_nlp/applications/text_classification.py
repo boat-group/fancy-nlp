@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from absl import logging
-from keras.models import model_from_json
-from keras.utils import get_file
 
 from fancy_nlp.preprocessors import TextClassificationPreprocessor
 from fancy_nlp.models.text_classification import *
@@ -289,7 +287,8 @@ class TextClassification(object):
         custom_objects = custom_objects or {}
         custom_objects.update(get_custom_objects())
         with open(json_file, 'r') as reader:
-            self.model = model_from_json(reader.read(), custom_objects=custom_objects)
+            self.model = tf.keras.models.model_from_json(reader.read(),
+                                                         custom_objects=custom_objects)
         logging.info('Load model architecture from {}'.format(json_file))
 
         self.model.load_weights(weights_file)
@@ -365,15 +364,15 @@ class TextClassification(object):
     def load_pretrained_model(self):
         cache_subdir = 'pretrained_models'
 
-        preprocessor_file = get_file(
+        preprocessor_file = tf.keras.utils.get_file(
             fname='toutiao_text_classification_cnn_preprocessor.pkl',
             origin=MODEL_STORAGE_PREFIX + 'toutiao_text_classification_cnn_preprocessor.pkl',
             cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
-        json_file = get_file(
+        json_file = tf.keras.utils.get_file(
             fname='toutiao_text_classification_cnn.json',
             origin=MODEL_STORAGE_PREFIX + 'toutiao_text_classification_cnn.json',
             cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
-        weights_file = get_file(
+        weights_file = tf.keras.utils.get_file(
             fname='toutiao_text_classification_cnn.hdf5',
             origin=MODEL_STORAGE_PREFIX + 'toutiao_text_classification_cnn.hdf5',
             cache_subdir=cache_subdir, cache_dir=CACHE_DIR)

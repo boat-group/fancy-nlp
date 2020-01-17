@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-from keras.layers import *
-from keras.models import Model
 
 from fancy_nlp.models.text_classification.base_text_classification_model import \
     BaseTextClassificationModel
@@ -50,15 +48,18 @@ class CNNTextClassification(BaseTextClassificationModel):
         filter_lengths = [3, 4, 5]
         conv_layers = []
         for filter_length in filter_lengths:
-            conv_layer = Conv1D(filters=128, kernel_size=filter_length, padding='valid',
-                                activation='relu', strides=1)(input_embed)
+            conv_layer = tf.keras.layers.Conv1D(filters=128,
+                                                kernel_size=filter_length,
+                                                padding='valid',
+                                                activation='relu',
+                                                strides=1)(input_embed)
             conv_layers.append(conv_layer)
-        poolings = [GlobalMaxPooling1D()(conv) for conv in conv_layers]
-        x = Concatenate()(poolings)
-        output_layer = Dense(self.num_class, activation='softmax')(x)
+        poolings = [tf.keras.layers.GlobalMaxPooling1D()(conv) for conv in conv_layers]
+        x = tf.keras.layers.Concatenate()(poolings)
+        output_layer = tf.keras.layers.Dense(self.num_class, activation='softmax')(x)
         text_classification_loss = 'categorical_crossentropy'
         text_classification_metrics = 'accuracy'
-        text_classification_model = Model(
+        text_classification_model = tf.keras.models.Model(
             model_inputs if len(model_inputs) > 1 else model_inputs[0], output_layer)
         text_classification_model.compile(
             optimizer=self.optimizer, loss=text_classification_loss,
@@ -68,10 +69,6 @@ class CNNTextClassification(BaseTextClassificationModel):
 
 class RCNNTextClassification(BaseTextClassificationModel):
     """RCNN model for text classification.
-       1. Support using CuDNNLSTM for acceleration when gpu is available. You will have to install
-          a gpu version of tensorflow to do so.
-       2. Note that model using CuDNNLSTM can only be deployed to machines with GPU for practical
-          use.
     """
     def __init__(self,
                  num_class,
@@ -109,25 +106,21 @@ class RCNNTextClassification(BaseTextClassificationModel):
 
     def build_model(self):
         model_inputs, input_embed = self.build_input()
-        if tf.test.is_gpu_available(cuda_only=True):
-            input_encode = Bidirectional(
-                CuDNNLSTM(self.rnn_units, return_sequences=True))(input_embed)
-        else:
-            input_encode = Bidirectional(
-                LSTM(self.rnn_units, return_sequences=True))(input_embed)
-        x = Concatenate()([input_embed, input_encode])
+        input_encode = tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(self.rnn_units, return_sequences=True))(input_embed)
+        x = tf.keras.layers.Concatenate()([input_embed, input_encode])
         convs = []
         for kernel_size in range(1, 5):
-            conv = Conv1D(128, kernel_size, activation='relu')(x)
+            conv = tf.keras.layers.Conv1D(128, kernel_size, activation='relu')(x)
             convs.append(conv)
-        poolings = [GlobalAveragePooling1D()(conv) for conv in convs] + [GlobalMaxPooling1D()(conv)
-                                                                         for conv in convs]
-        x = Concatenate()(poolings)
-        output_layer = Dense(self.num_class, activation='softmax')(x)
+        poolings = [tf.keras.layers.GlobalAveragePooling1D()(conv) for conv in convs] + \
+                   [tf.keras.layers.GlobalMaxPooling1D()(conv) for conv in convs]
+        x = tf.keras.layers.Concatenate()(poolings)
+        output_layer = tf.keras.layers.Dense(self.num_class, activation='softmax')(x)
 
         text_classification_loss = 'categorical_crossentropy'
         text_classification_metrics = 'accuracy'
-        text_classification_model = Model(
+        text_classification_model = tf.keras.models.Model(
             model_inputs if len(model_inputs) > 1 else model_inputs[0], output_layer)
         text_classification_model.compile(
             optimizer=self.optimizer, loss=text_classification_loss,
@@ -164,12 +157,12 @@ class BertTextClassification(BaseTextClassificationModel):
 
     def build_model(self):
         model_inputs, input_embed = self.build_input()
-        x = GlobalAveragePooling1D()(input_embed)
+        x = tf.keras.layers.GlobalAveragePooling1D()(input_embed)
 
-        output_layer = Dense(self.num_class, activation='softmax')(x)
+        output_layer = tf.keras.layers.Dense(self.num_class, activation='softmax')(x)
         text_classification_loss = 'categorical_crossentropy'
         text_classification_metrics = 'accuracy'
-        text_classification_model = Model(
+        text_classification_model = tf.keras.models.Model(
             model_inputs if len(model_inputs) > 1 else model_inputs[0], output_layer)
         text_classification_model.compile(
             optimizer=self.optimizer, loss=text_classification_loss,

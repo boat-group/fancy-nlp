@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from keras import backend as K
-from keras.engine.topology import Layer
+import tensorflow as tf
+import tensorflow.keras.backend as K
 
 
-class FullMatching(Layer):
+class FullMatching(tf.keras.layers.Layer):
     """
        Full Matching strategy, each contextual embedding is compared with the average
        representation of the other sentence.
@@ -42,7 +42,7 @@ class FullMatching(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-class MaxPoolingMatching(Layer):
+class MaxPoolingMatching(tf.keras.layers.Layer):
     """
        MaxPooling Matching strategy, each contextual embedding is compared with every
        contextual embeddings of the other sentence, and only the maximum value of each
@@ -80,7 +80,7 @@ class MaxPoolingMatching(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-class AttentiveMatching(Layer):
+class AttentiveMatching(tf.keras.layers.Layer):
     """
        Attentive Matching strategy, each contextual embedding is compared with its attentive
        weighted representation of the other sentence.
@@ -117,7 +117,7 @@ class AttentiveMatching(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-class MaxAttentiveMatching(Layer):
+class MaxAttentiveMatching(tf.keras.layers.Layer):
     """
        MaxAttentive Matching strategy, each contextual embedding picks the contextual
        embedding of the other sentence with the highest cosine similarity as the

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 import jieba
 import numpy as np
+
 from fancy_nlp.utils.data_loader import load_spm_data_and_labels
 from fancy_nlp.preprocessors.spm_preprocessor import SPMPreprocessor
 

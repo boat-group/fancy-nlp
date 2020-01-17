@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 import numpy as np
+
 from fancy_nlp.utils import load_ner_data_and_labels
 from fancy_nlp.utils import train_w2v, train_fasttext, load_pre_trained
 

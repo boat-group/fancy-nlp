@@ -2,8 +2,6 @@
 
 import os
 
-from keras.models import clone_model
-
 from fancy_nlp.utils import load_spm_data_and_labels
 from fancy_nlp.preprocessors import SPMPreprocessor
 from fancy_nlp.models.spm import *

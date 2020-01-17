@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from keras.engine.topology import Layer
+import tensorflow as tf
 
 
-class NonMaskingLayer(Layer):
+class NonMaskingLayer(tf.keras.layers.Layer):
     """
     Fix convolutional 1D can't receive masked input.
     See: https://github.com/keras-team/keras/issues/4978

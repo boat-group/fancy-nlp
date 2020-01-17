@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from fancy_nlp.utils import load_ner_data_and_labels, load_spm_data_and_labels
 
 

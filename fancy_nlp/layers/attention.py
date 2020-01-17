@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from keras import initializers, regularizers, constraints
-from keras.engine.topology import Layer
-import keras.backend as K
 import tensorflow as tf
+import tensorflow.keras.backend as K
 
 
-class MultiHeadAttention(Layer):
+class MultiHeadAttention(tf.keras.layers.Layer):
     """
     Multi-head Attention introduced in Transformer, support masking
     """
@@ -17,9 +15,9 @@ class MultiHeadAttention(Layer):
         self.model_units = self.num_units * self.num_heads
         self.residual = residual
         self.normalize = normalize
-        self.initializer = initializers.get(initializer)
-        self.regularizer = regularizers.get(regularizer)
-        self.constraint = constraints.get(constraint)
+        self.initializer = tf.keras.initializers.get(initializer)
+        self.regularizer = tf.keras.regularizers.get(regularizer)
+        self.constraint = tf.keras.constraints.get(constraint)
         self.supports_masking = True
         super(MultiHeadAttention, self).__init__(**kwargs)
 
@@ -89,8 +87,8 @@ class MultiHeadAttention(Layer):
                   'num_heads': self.num_heads,
                   'residual': self.residual,
                   'normalize': self.normalize,
-                  'initializer': initializers.serialize(self.initializer),
-                  'regularizer': regularizers.serialize(self.regularizer),
-                  'constraint': constraints.serialize(self.constraint)}
+                  'initializer': tf.keras.initializers.serialize(self.initializer),
+                  'regularizer': tf.keras.regularizers.serialize(self.regularizer),
+                  'constraint': tf.keras.constraints.serialize(self.constraint)}
         base_config = super(MultiHeadAttention, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))

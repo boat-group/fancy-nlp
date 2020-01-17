@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 import jieba
 import numpy as np
+
 from fancy_nlp.preprocessors.preprocessor import Preprocessor
 
 

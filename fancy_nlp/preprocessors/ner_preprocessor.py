@@ -3,10 +3,10 @@
 import pickle
 import codecs
 
+import tensorflow as tf
 import numpy as np
 import jieba
 from absl import logging
-from keras.utils.np_utils import to_categorical
 
 from fancy_nlp.preprocessors.preprocessor import Preprocessor
 from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTokenizer
@@ -189,7 +189,7 @@ class NERPreprocessor(Preprocessor):
                 else:
                     label_str = labels[i]
                 label_ids = [self.label_vocab.get(l, self.get_unk_label_id()) for l in label_str]
-                label_ids = to_categorical(label_ids, self.num_class).astype(int)
+                label_ids = tf.keras.utils.to_categorical(label_ids, self.num_class).astype(int)
                 batch_label_ids.append(label_ids)
 
         features = []

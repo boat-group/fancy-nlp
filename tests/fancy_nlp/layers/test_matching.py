@@ -2,6 +2,7 @@
 
 from keras.layers import *
 from keras.models import Model
+
 from fancy_nlp.layers import FullMatching, MaxPoolingMatching, AttentiveMatching, \
     MaxAttentiveMatching
 

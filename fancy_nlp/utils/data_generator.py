@@ -2,11 +2,11 @@
 
 import math
 
+import tensorflow as tf
 import numpy as np
-from keras.utils import Sequence
 
 
-class NERGenerator(Sequence):
+class NERGenerator(tf.keras.utils.Sequence):
     """Data Generator for NER
     """
     def __init__(self, preprocessor, data, labels=None, batch_size=32, shuffle=True):
@@ -44,7 +44,7 @@ class NERGenerator(Sequence):
         return self.preprocessor.prepare_input(batch_data, batch_labels)
 
 
-class TextClassificationGenerator(Sequence):
+class TextClassificationGenerator(tf.keras.utils.Sequence):
     """Data Generator for text classification
     """
     def __init__(self, preprocessor, data, labels=None, batch_size=32, shuffle=True):
@@ -82,7 +82,7 @@ class TextClassificationGenerator(Sequence):
         return self.preprocessor.prepare_input(batch_data, batch_labels)
 
 
-class SPMGenerator(Sequence):
+class SPMGenerator(tf.keras.utils.Sequence):
     """Data Generator for SPM
     """
     def __init__(self, preprocessor, data, labels=None, batch_size=32, shuffle=True):

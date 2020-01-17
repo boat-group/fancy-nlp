@@ -3,7 +3,7 @@
 """Base NER model
 """
 
-from keras.layers import *
+import tensorflow as tf
 from keras_bert import load_trained_model_from_checkpoint
 
 from fancy_nlp.layers import NonMaskingLayer
@@ -57,16 +57,19 @@ class BaseNERModel(BaseModel):
         # TODO: consider masking
         if self.use_char:
             if self.char_embeddings is not None:
-                char_embedding_layer = Embedding(input_dim=self.char_vocab_size,
-                                                 output_dim=self.char_embed_dim,
-                                                 weights=[self.char_embeddings],
-                                                 trainable=self.char_embed_trainable)
+                char_embedding_layer = tf.keras.layers.Embedding(
+                    input_dim=self.char_vocab_size,
+                    output_dim=self.char_embed_dim,
+                    weights=[self.char_embeddings],
+                    trainable=self.char_embed_trainable)
             else:
-                char_embedding_layer = Embedding(input_dim=self.char_vocab_size,
-                                                 output_dim=self.char_embed_dim)
-            input_char = Input(shape=(self.max_len,))
+                char_embedding_layer = tf.keras.layers.Embedding(input_dim=self.char_vocab_size,
+                                                                 output_dim=self.char_embed_dim)
+            input_char = tf.keras.layers.Input(shape=(self.max_len,))
             model_inputs.append(input_char)
-            input_embed.append(SpatialDropout1D(self.dropout)(char_embedding_layer(input_char)))
+
+            char_embed = char_embedding_layer(input_char)
+            input_embed.append(tf.keras.layers.SpatialDropout1D(self.dropout)(char_embed))
 
         if self.use_bert:
             bert_model = load_trained_model_from_checkpoint(self.bert_config_file,
@@ -76,22 +79,28 @@ class BaseNERModel(BaseModel):
                                                             seq_len=self.max_len)
             model_inputs.extend(bert_model.inputs)
             bert_embed = NonMaskingLayer()(bert_model.output)
-            input_embed.append(SpatialDropout1D(0.2)(bert_embed))
+            input_embed.append(tf.keras.layers.SpatialDropout1D(0.2)(bert_embed))
 
         if self.use_word:
             if self.word_embeddings is not None:
-                word_embedding_layer = Embedding(input_dim=self.word_vocab_size,
-                                                 output_dim=self.word_embed_dim,
-                                                 weights=[self.word_embeddings],
-                                                 trainable=self.word_embed_trainable)
+                word_embedding_layer = tf.keras.layers.Embedding(
+                    input_dim=self.word_vocab_size,
+                    output_dim=self.word_embed_dim,
+                    weights=[self.word_embeddings],
+                    trainable=self.word_embed_trainable)
             else:
-                word_embedding_layer = Embedding(input_dim=self.word_vocab_size,
-                                                 output_dim=self.word_embed_dim)
-            input_word = Input(shape=(self.max_len,))
+                word_embedding_layer = tf.keras.layers.Embedding(input_dim=self.word_vocab_size,
+                                                                 output_dim=self.word_embed_dim)
+            input_word = tf.keras.layers.Input(shape=(self.max_len,))
             model_inputs.append(input_word)
-            input_embed.append(SpatialDropout1D(self.dropout)(word_embedding_layer(input_word)))
 
-        input_embed = concatenate(input_embed) if len(input_embed) > 1 else input_embed[0]
+            word_embed = word_embedding_layer(input_word)
+            input_embed.append(tf.keras.layers.SpatialDropout1D(self.dropout)(word_embed))
+
+        if len(input_embed) > 1:
+            input_embed = tf.keras.layers.concatenate(input_embed)
+        else:
+            input_embed = input_embed[0]
         return model_inputs, input_embed
 
     def build_model(self):

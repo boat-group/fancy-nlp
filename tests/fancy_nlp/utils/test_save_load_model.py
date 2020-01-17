@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-from keras.layers import Dense
-from keras.models import Sequential
-from keras import backend as K
-from keras.engine.topology import Layer
+
+import tensorflow as tf
+import tensorflow.keras.backend as K
+
 from fancy_nlp.utils import save_keras_model, load_keras_model
 
 
-class MyLayer(Layer):
+class MyLayer(tf.keras.layers.Layer):
     def __init__(self, output_dim, **kwargs):
         self.output_dim = output_dim
         super(MyLayer, self).__init__(**kwargs)
@@ -39,8 +39,8 @@ class TestSaveLoad:
     test_weights_file = 'my_model_weights.h5'
 
     def setup_class(self):
-        self.model = Sequential()
-        self.model.add(Dense(32, input_shape=(784, )))
+        self.model = tf.keras.models.Sequential()
+        self.model.add(tf.keras.layers.Dense(32, input_shape=(784, )))
         self.model.add(MyLayer(100, name='my_layer1'))
         self.model.add(MyLayer(100, name='my_layer2'))
 

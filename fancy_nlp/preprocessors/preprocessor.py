@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from absl import logging
-from keras.preprocessing.sequence import pad_sequences
+import tensorflow as tf
 
 from ..utils import load_pre_trained, train_w2v, train_fasttext
 
@@ -169,8 +169,10 @@ class Preprocessor(object):
     def pad_sequence(self, sequence_list):
         """Given a list, each item is a id sequence, return the padded sequence
         """
-        return pad_sequences(sequence_list, maxlen=self.max_len, padding=self.padding_mode,
-                             truncating=self.truncating_mode)
+        return tf.keras.preprocessing.sequence.pad_sequences(sequence_list,
+                                                             maxlen=self.max_len,
+                                                             padding=self.padding_mode,
+                                                             truncating=self.truncating_mode)
 
     def label_decode(self, predictions, label_dict):
         """Decode model predictions to labels

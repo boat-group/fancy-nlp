@@ -3,15 +3,14 @@
 import os
 
 from absl import logging
-from keras.callbacks import Callback
-
+import tensorflow as tf
 
 '''
 Applying ensemble during a single training process
 '''
 
 
-class SWA(Callback):
+class SWA(tf.keras.callbacks.Callback):
     """
     This callback implements a stochastic weight averaging (SWA) method with constant lr as
     presented in the paper: "Izmailov et al. Averaging Weights Leads to Wider Optima and Better

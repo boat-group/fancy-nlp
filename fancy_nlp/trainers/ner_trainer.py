@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import os
+
+import tensorflow as tf
 from absl import logging
-from keras.callbacks import *
 from seqeval import metrics
+
 
 from fancy_nlp.utils import NERGenerator
 from fancy_nlp.callbacks import NERMetric
@@ -89,6 +92,7 @@ class NERTrainer(object):
                         For example, if checkpoint_dir is 'ckpt' and model_name is 'model', the
                         weights of ner model saved by `ModelCheckpoint` callback will be
                         'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'
+            swa_model:
 
         Returns: a list of `keras.callbacks.Callback` instances
 
@@ -111,23 +115,24 @@ class NERTrainer(object):
                 '"checkpoint_dir" must must be provided when using "ModelCheckpoint" callback'
             assert model_name is not None, \
                 '"model_name" must must be provided when using "ModelCheckpoint" callback'
-            callbacks.append(ModelCheckpoint(filepath=os.path.join(checkpoint_dir,
-                                                                   f'{model_name}.hdf5'),
-                                             monitor='val_f1' if add_metric else 'loss',
-                                             save_best_only=True,
-                                             save_weights_only=True,
-                                             mode='max' if add_metric else 'min',
-                                             verbose=1))
+            callbacks.append(tf.keras.callbacks.ModelCheckpoint(
+                filepath=os.path.join(checkpoint_dir, f'{model_name}.hdf5'),
+                monitor='val_f1' if add_metric else 'loss',
+                save_best_only=True,
+                save_weights_only=True,
+                mode='max' if add_metric else 'min',
+                verbose=1))
             logging.info('ModelCheckpoint Callback added')
 
         if 'earlystopping' in callback_list:
             if not add_metric:
                 logging.warning('Using `Earlystopping` with validation data not provided is not '
                                 'Recommended! We will use `loss` (of training data) as monitor.')
-            callbacks.append(EarlyStopping(monitor='val_f1' if add_metric else 'loss',
-                                           mode='max' if add_metric else 'min',
-                                           patience=5,
-                                           verbose=1))
+            callbacks.append(tf.keras.callbacks.EarlyStopping(
+                monitor='val_f1' if add_metric else 'loss',
+                mode='max' if add_metric else 'min',
+                patience=5,
+                verbose=1))
             logging.info('Earlystopping Callback added')
 
         if 'swa' in callback_list:

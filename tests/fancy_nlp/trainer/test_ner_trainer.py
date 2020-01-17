@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 from fancy_nlp.utils import load_ner_data_and_labels
 from fancy_nlp.models.ner import BiLSTMCNNNER
 from fancy_nlp.preprocessors import NERPreprocessor

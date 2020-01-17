@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from keras.layers import *
-from keras.models import Model
+import tensorflow as tf
+
 from fancy_nlp.layers import MultiHeadAttention
 
 
 class TestAttention:
     def test_multihead_attention(self):
-        input_embed = Input(shape=(3, 300))
+        input_embed = tf.keras.layersInput(shape=(3, 300))
         input_encode = MultiHeadAttention()(input_embed)
-        model = Model(input_embed, input_encode)
+        model = tf.keras.models.Model(input_embed, input_encode)

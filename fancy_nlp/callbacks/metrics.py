@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from keras.callbacks import Callback
+import tensorflow as tf
 from seqeval import metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
 import numpy as np
 
 
-class NERMetric(Callback):
+class NERMetric(tf.keras.callbacks.Callback):
     """
     callback for evaluating ner model
     """
@@ -45,7 +45,7 @@ class NERMetric(Callback):
         print(metrics.classification_report(self.valid_labels, y_pred))
 
 
-class TextClassificationMetric(Callback):
+class TextClassificationMetric(tf.keras.callbacks.Callback):
     """
     callback for evaluating text classification model
     """
@@ -79,7 +79,7 @@ class TextClassificationMetric(Callback):
         print(classification_report(self.valid_labels, y_pred))
 
 
-class SPMMetric(Callback):
+class SPMMetric(tf.keras.callbacks.Callback):
     """
     callback for evaluating spm model
     """

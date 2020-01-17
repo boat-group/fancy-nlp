@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 import math
+
 from fancy_nlp.utils import load_ner_data_and_labels, load_spm_data_and_labels
 from fancy_nlp.preprocessors import NERPreprocessor, SPMPreprocessor
 from fancy_nlp.utils import NERGenerator, SPMGenerator

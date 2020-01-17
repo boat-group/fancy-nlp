@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from absl import logging
-from keras.models import model_from_json
+import tensorflow as tf
 
 
 def save_keras_model(model, json_file, weights_file):
@@ -33,6 +33,6 @@ def load_keras_model(json_file, weights_file, custom_objects=None):
                         using custom layer
     """
     with open(json_file, 'r') as reader:
-        model = model_from_json(reader.read(), custom_objects=custom_objects)
+        model = tf.keras.models.model_from_json(reader.read(), custom_objects=custom_objects)
     model.load_weights(weights_file)
     return model
