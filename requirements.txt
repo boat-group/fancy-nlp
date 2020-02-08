@@ -45,3 +45,4 @@ Werkzeug==0.16.0
 wrapt==1.11.2
 bert4keras==0.4.9
 tensorflow-addons==0.8.1
+seqeval==0.0.12
