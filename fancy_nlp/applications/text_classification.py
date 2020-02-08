@@ -13,7 +13,7 @@ from fancy_nlp.config import CACHE_DIR, MODEL_STORAGE_PREFIX
 class TextClassification(object):
     """Text classification application"""
 
-    def __init__(self, use_pretrained=True):
+    def __init__(self, use_pretrained=False):
         self.preprocessor = None
         self.model = None
         self.trainer = None
@@ -361,6 +361,7 @@ class TextClassification(object):
 
         return text_classification_model.build_model()
 
+    # todo: 重新训练模型
     def load_pretrained_model(self):
         cache_subdir = 'pretrained_models'
 

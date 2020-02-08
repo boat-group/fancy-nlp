@@ -15,7 +15,7 @@ from fancy_nlp.config import CACHE_DIR, MODEL_STORAGE_PREFIX
 class SPM(object):
     """SPM application"""
 
-    def __init__(self, use_pretrained=True):
+    def __init__(self, use_pretrained=False):
         self.preprocessor = None
         self.model = None
         self.trainer = None
@@ -44,7 +44,6 @@ class SPM(object):
             bert_config_file=None,
             bert_checkpoint_file=None,
             bert_trainable=False,
-            bert_output_layer_num=1,
             label_dict_file=None,
             max_len=None,
             max_word_len=None,
@@ -80,7 +79,6 @@ class SPM(object):
             bert_config_file: str, path to bert's configuration file
             bert_checkpoint_file: str, path to bert's checkpoint file
             bert_trainable: boolean, whether to update bert during training
-            bert_output_layer_num: int, the number of bert layers
             use_bert_model: boolean, whether to use traditional bert model which combines two sentences
                             as one input
             label_dict_file: a file with two columns separated by tab, the first column is raw
@@ -143,7 +141,6 @@ class SPM(object):
                                         bert_config_file=bert_config_file,
                                         bert_checkpoint_file=bert_checkpoint_file,
                                         bert_trainable=bert_trainable,
-                                        bert_output_layer_num=bert_output_layer_num,
                                         max_len=self.preprocessor.max_len,
                                         max_word_len=self.preprocessor.max_word_len,
                                         optimizer=optimizer,
@@ -166,7 +163,6 @@ class SPM(object):
                                            bert_config_file=bert_config_file,
                                            bert_checkpoint_file=bert_checkpoint_file,
                                            bert_trainable=bert_trainable,
-                                           bert_output_layer_num=bert_output_layer_num,
                                            max_len=self.preprocessor.max_len,
                                            max_word_len=self.preprocessor.max_word_len,
                                            optimizer=optimizer,
@@ -309,7 +305,7 @@ class SPM(object):
                       word_embed_dim, word_embed_trainable, use_char, char_embeddings,
                       char_vocab_size, char_embed_dim, char_embed_trainable, use_bert,
                       bert_config_file, bert_checkpoint_file, bert_trainable,
-                      bert_output_layer_num, max_len, max_word_len, optimizer, **kwargs):
+                      max_len, max_word_len, optimizer, **kwargs):
         spm_model_all = {'siamese_cnn': SiameseCNN,
                          'siamese_bilstm': SiameseBiLSTM,
                          'siamese_bigru': SiameseBiGRU,
@@ -333,7 +329,6 @@ class SPM(object):
                 bert_config_file=bert_config_file,
                 bert_checkpoint_file=bert_checkpoint_file,
                 bert_trainable=bert_trainable,
-                bert_output_layer_num=bert_output_layer_num,
                 max_len=max_len,
                 max_word_len=max_word_len,
                 optimizer=optimizer,
@@ -344,6 +339,7 @@ class SPM(object):
 
         return spm_model.build_model()
 
+    # todo: 重新训练模型
     def load_pretrained_model(self):
         cache_subdir = 'pretrained_models'
 
@@ -361,5 +357,3 @@ class SPM(object):
             cache_subdir=cache_subdir, cache_dir=CACHE_DIR)
 
         self.load(preprocessor_file, json_file, weights_file)
-
-
