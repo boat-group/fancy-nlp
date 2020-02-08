@@ -63,10 +63,10 @@ class TextClassificationTrainer(object):
         else:
             valid_generator = None
 
-        print('Training start...')
+        logging.info('Training start...')
         self.model.fit_generator(generator=train_generator, epochs=epochs,
                                  validation_data=valid_generator, callbacks=callbacks)
-        print('Training end...')
+        logging.info('Training end...')
 
         if load_swa_model and callback_list is not None and 'swa' in callback_list:
             logging.info('Loading swa model after using SWA callback')
@@ -165,6 +165,6 @@ class TextClassificationTrainer(object):
         p = precision_score(labels, y_pred, average='macro')
         f1 = f1_score(labels, y_pred, average='macro')
 
-        print('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
-        print(classification_report(labels, y_pred))
+        logging.info('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
+        logging.info(classification_report(labels, y_pred))
         return f1

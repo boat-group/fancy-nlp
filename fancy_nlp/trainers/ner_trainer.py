@@ -170,6 +170,6 @@ class NERTrainer(object):
         p = metrics.precision_score(labels, y_pred)
         f1 = metrics.f1_score(labels, y_pred)
 
-        print('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
-        print(metrics.classification_report(labels, y_pred))
+        logging.info('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
+        logging.info(metrics.classification_report(labels, y_pred))
         return f1
