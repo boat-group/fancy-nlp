@@ -7,7 +7,7 @@ import numpy as np
 import jieba
 from itertools import chain
 from absl import logging
-from keras.utils.np_utils import to_categorical
+import tensorflow as tf
 
 from fancy_nlp.preprocessors.preprocessor import Preprocessor
 from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTokenizer
@@ -63,6 +63,7 @@ class SPMPreprocessor(Preprocessor):
         self.char_embed_type = char_embed_type
         self.max_word_len = max_word_len
 
+        # todo: 删掉，原因：只使用于文本分类
         self.label_dict = self.load_label_dict(label_dict_file)
 
         assert not (self.use_bert_model and (self.use_word or self.use_char)), \
@@ -127,12 +128,8 @@ class SPMPreprocessor(Preprocessor):
 
         # build bert vocabulary
         if self.use_bert:
-            self.bert_vocab = {}
-            with codecs.open(bert_vocab_file, 'r', 'utf8') as reader:
-                for line in reader:
-                    token = line.strip()
-                    self.bert_vocab[token] = len(self.bert_vocab)
-            self.bert_tokenizer = ChineseBertTokenizer(self.bert_vocab)
+            # lower case for non-chinese character
+            self.bert_tokenizer = ChineseBertTokenizer(bert_vocab_file, do_lower_case=True)
 
         # build label vocabulary
         self.label_vocab, self.id2label = self.build_label_vocab(self.train_labels)
@@ -159,6 +156,7 @@ class SPMPreprocessor(Preprocessor):
             for word in self.external_word_dict:
                 jieba.add_word(word, freq=1000000)
 
+    # todo: 删掉，原因：此函数只适用于文本分类的情况
     @staticmethod
     def load_label_dict(label_dict_file):
         result_dict = dict()
@@ -198,8 +196,6 @@ class SPMPreprocessor(Preprocessor):
 
     def prepare_input(self, data, labels=None):
         """Prepare input (features and labels) for SPM model.
-        Here we not only use character embeddings (or bert embeddings) as main input, but also
-        support word embeddings and other hand-crafted features embeddings as additional input.
 
         Args:
             data: list of text pairs, like ``[['我是中国人', ...], ['我爱中国', ...]]``
@@ -218,9 +214,9 @@ class SPMPreprocessor(Preprocessor):
 
         for i, (text_a, text_b) in enumerate(zip(data[0], data[1])):
             if self.use_bert_model:
-                indices, segments = self.bert_tokenizer.encode(first=text_a,
-                                                               second=text_b,
-                                                               max_len=self.max_len)
+                indices, segments = self.bert_tokenizer.encode(first_text=text_a,
+                                                               second_text=text_b,
+                                                               max_length=self.max_len)
                 batch_bert_ids_a.append(indices)
                 batch_bert_seg_ids_a.append(segments)
 
@@ -259,19 +255,19 @@ class SPMPreprocessor(Preprocessor):
                     batch_char_ids_b.append(char_ids_b)
 
                 if self.use_bert:
-                    indices_a, segments_a = self.bert_tokenizer.encode(first=''.join(text_a),
-                                                                       max_len=self.max_len)
+                    indices_a, segments_a = self.bert_tokenizer.encode(first_text=''.join(text_a),
+                                                                       max_length=self.max_len)
                     batch_bert_ids_a.append(indices_a)
                     batch_bert_seg_ids_a.append(segments_a)
 
-                    indices_b, segments_b = self.bert_tokenizer.encode(first=''.join(text_b),
-                                                                       max_len=self.max_len)
+                    indices_b, segments_b = self.bert_tokenizer.encode(first_text=''.join(text_b),
+                                                                       max_length=self.max_len)
                     batch_bert_ids_b.append(indices_b)
                     batch_bert_seg_ids_b.append(segments_b)
 
             if labels is not None:
                 label_ids = self.label_vocab.get(labels[i], self.get_unk_label_id())
-                label_ids = to_categorical(label_ids, self.num_class).astype(int)
+                label_ids = tf.keras.utils.to_categorical(label_ids, self.num_class).astype(int)
                 batch_label_ids.append(label_ids)
 
         features_a, features_b = [], []
@@ -330,6 +326,7 @@ class SPMPreprocessor(Preprocessor):
             word_ids.append(self.word_vocab.get(word, self.word_vocab[self.unk_token]))
         return word_ids
 
+    # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
     def label_decode(self, pred_probs, label_dict=None):
         pred_ids = np.argmax(pred_probs, axis=-1)
         pred_labels = [self.id2label[pred_id] for pred_id in pred_ids]
@@ -346,12 +343,7 @@ class SPMPreprocessor(Preprocessor):
         Returns: int
 
         """
-        if 'O' in self.label_vocab:
-            return self.label_vocab['O']
-        elif 'o' in self.label_vocab:
-            return self.label_vocab['o']
-        else:
-            return 0
+        return 0  # id of 0 is the label with the highest frequency
 
     def save(self, preprocessor_file):
         pickle.dump(self, open(preprocessor_file, 'wb'))

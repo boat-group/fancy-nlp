@@ -15,6 +15,7 @@ from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTo
 class NERPreprocessor(Preprocessor):
     """NER preprocessor.
     """
+
     def __init__(self, train_data, train_labels, min_count=2, use_char=True, use_bert=False,
                  use_word=False, external_word_dict=None, bert_vocab_file=None,
                  char_embed_type=None, char_embed_dim=300, word_embed_type=None, word_embed_dim=300,
@@ -75,12 +76,8 @@ class NERPreprocessor(Preprocessor):
 
         # build bert vocabulary
         if self.use_bert:
-            self.bert_vocab = {}
-            with codecs.open(bert_vocab_file, 'r', 'utf8') as reader:
-                for line in reader:
-                    token = line.strip()
-                    self.bert_vocab[token] = len(self.bert_vocab)
-            self.bert_tokenizer = ChineseBertTokenizer(self.bert_vocab)
+            # lower case for non-chinese character
+            self.bert_tokenizer = ChineseBertTokenizer(bert_vocab_file, do_lower_case=True)
 
         # build word vocabulary and word embedding
         if self.use_word:
@@ -113,7 +110,10 @@ class NERPreprocessor(Preprocessor):
             # max_len must be provided when use bert as input!
             # We will reset max_len from train_data when max_len is not provided.
             self.max_len = get_len_from_corpus(self.train_data)
-            self.max_len = min(self.max_len + 2, 512)  # make sure max_len is shorted than bert's max length (512)
+
+            # make sure max_len is shorted than bert's max length (512)
+            # since there are 2 more special token: <CLS> and <SEQ>, so add 2
+            self.max_len = min(self.max_len + 2, 512)
 
     def load_word_dict(self):
         if self.external_word_dict:
@@ -173,8 +173,8 @@ class NERPreprocessor(Preprocessor):
                 batch_char_ids.append(char_ids)
 
             if self.use_bert:
-                indices, segments = self.bert_tokenizer.encode(first=''.join(char_text),
-                                                               max_len=self.max_len)
+                indices, segments = self.bert_tokenizer.encode(first_text=''.join(char_text),
+                                                               max_length=self.max_len)
                 batch_bert_ids.append(indices)
                 batch_bert_seg_ids.append(segments)
 
@@ -252,7 +252,7 @@ class NERPreprocessor(Preprocessor):
         elif 'o' in self.label_vocab:
             return self.label_vocab['o']
         else:
-            return 0
+            return 0  # id of 0 is the label with the highest frequency
 
     def save(self, preprocessor_file):
         pickle.dump(self, open(preprocessor_file, 'wb'))
