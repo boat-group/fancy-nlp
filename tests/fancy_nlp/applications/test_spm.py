@@ -28,8 +28,8 @@ class TestSPM:
 
     def test_spm(self):
         spm = SPM()
-        spm.predict(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
-        spm.analyze(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
+        # spm.predict(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
+        # spm.analyze(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
 
         # test train word and char
         spm.fit(train_data=self.train_data,
