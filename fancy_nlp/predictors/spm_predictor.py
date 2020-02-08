@@ -54,6 +54,7 @@ class SPMPredictor(object):
 
         """
         pred_prob = self.predict_prob(text)
+        # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
         labels = self.preprocessor.label_decode(np.expand_dims(pred_prob, 0),
                                                 self.preprocessor.label_dict)
         return labels[0]
@@ -68,6 +69,7 @@ class SPMPredictor(object):
 
         """
         pred_probs = self.predict_prob_batch(texts)
+        # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
         labels = self.preprocessor.label_decode(pred_probs,
                                                 self.preprocessor.label_dict)
         return labels
@@ -82,10 +84,10 @@ class SPMPredictor(object):
 
         """
         pred_result = self.predict_prob(text)
+        # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
         tags = self.preprocessor.label_decode(np.expand_dims(pred_result, 0),
                                               self.preprocessor.label_dict)
         label_name = tags[0]
-        label_prob = np.max(pred_result)
         return label_name, pred_result
 
     def matching_with_prob_batch(self, text):
@@ -98,6 +100,7 @@ class SPMPredictor(object):
 
         """
         pred_results = self.predict_prob_batch(text)
+        # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
         tags = self.preprocessor.label_decode(pred_results, self.preprocessor.label_dict)
         results = list(zip(tags, pred_results))
         return results
