@@ -131,7 +131,7 @@ class NERPredictor(object):
 
         results = []
         for entity_type, group in group_entities.items():
-            entity = sorted(group, key=lambda x: x[0])[-1]
+            entity = sorted(group, key=lambda x: x[1])[-1]
             results.append({
                 'name': entity[0],
                 'type': entity_type,
