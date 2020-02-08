@@ -4,7 +4,7 @@
 """
 
 import tensorflow as tf
-from keras_bert import load_trained_model_from_checkpoint
+from bert4keras.bert import build_bert_model
 
 from fancy_nlp.layers import NonMaskingLayer
 from fancy_nlp.models.base_model import BaseModel
@@ -72,11 +72,13 @@ class BaseNERModel(BaseModel):
             input_embed.append(tf.keras.layers.SpatialDropout1D(self.dropout)(char_embed))
 
         if self.use_bert:
-            bert_model = load_trained_model_from_checkpoint(self.bert_config_file,
-                                                            self.bert_checkpoint_file,
-                                                            trainable=self.bert_trainable,
-                                                            output_layer_num=1,
-                                                            seq_len=self.max_len)
+            bert_model = build_bert_model(config_path=self.bert_config_file,
+                                          checkpoint_path=self.bert_checkpoint_file)
+            if not self.bert_trainable:
+                # manually set every layer in bert model to be non-trainable
+                for layer in bert_model.layers:
+                    layer.trainable = False
+
             model_inputs.extend(bert_model.inputs)
             bert_embed = NonMaskingLayer()(bert_model.output)
             input_embed.append(tf.keras.layers.SpatialDropout1D(0.2)(bert_embed))
