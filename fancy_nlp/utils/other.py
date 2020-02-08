@@ -3,9 +3,7 @@
 import math
 
 import numpy as np
-from keras_bert import get_custom_objects as get_custom_objects_for_bert
-from keras_bert import Tokenizer
-
+from bert4keras.tokenizer import Tokenizer
 
 from fancy_nlp.layers import NonMaskingLayer, FullMatching, MaxPoolingMatching, \
     AttentiveMatching, MaxAttentiveMatching, CRF
@@ -84,18 +82,20 @@ def get_len_from_corpus(corpus, mode='most'):
 
 
 def get_custom_objects():
-    """Get all custom objects for loading saved ner models."""
+    """Get all custom objects for loading saved keras models."""
     custom_objects = {'CRF': CRF,
                       'NonMaskingLayer': NonMaskingLayer,
                       'FullMatching': FullMatching,
                       'MaxPoolingMatching': MaxPoolingMatching,
                       'AttentiveMatching': AttentiveMatching,
                       'MaxAttentiveMatching': MaxAttentiveMatching}
-    custom_objects.update(get_custom_objects_for_bert())  # custom objects of bert models
+    # todo: add custom objects for bert
+    # custom_objects.update(get_custom_objects_for_bert())  # custom objects of bert models
     return custom_objects
 
 
 class ChineseBertTokenizer(Tokenizer):
+    """bert tokenizer for chinese"""
     def _tokenize(self, text):
         result = []
         for ch in text:
