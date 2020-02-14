@@ -64,8 +64,11 @@ class SPMTrainer(object):
             valid_generator = None
 
         print('Training start...')
-        self.model.fit_generator(generator=train_generator, epochs=epochs,
-                                 validation_data=valid_generator, callbacks=callbacks)
+        # Note: Model.fit now supports generators
+        self.model.fit(x=train_generator,
+                       epochs=epochs,
+                       callbacks=callbacks,
+                       validation_data=valid_generator)
         print('Training end...')
 
         if load_swa_model and callback_list is not None and 'swa' in callback_list:
@@ -107,13 +110,14 @@ class SPMTrainer(object):
 
         if 'modelcheckpoint' in callback_list:
             if not add_metric:
-                logging.warning('Using `ModelCheckpoint` with validation data not provided is not '
-                                'Recommended! We will use `loss` (of training data) as monitor.')
+                logging.warning(
+                    'Using `ModelCheckpoint` without validation data provided is not Recommended! '
+                    'We will use `loss` (of training data) as monitor.')
 
             assert checkpoint_dir is not None, \
-                '"checkpoint_dir" must must be provided when using "ModelCheckpoint" callback'
+                '`checkpoint_dir` must must be provided when using "ModelCheckpoint" callback'
             assert model_name is not None, \
-                '"model_name" must must be provided when using "ModelCheckpoint" callback'
+                '`model_name` must must be provided when using "ModelCheckpoint" callback'
             callbacks.append(tf.keras.callbacks.ModelCheckpoint(
                 filepath=os.path.join(checkpoint_dir, f'{model_name}.hdf5'),
                 monitor='val_f1' if add_metric else 'loss',
@@ -136,9 +140,11 @@ class SPMTrainer(object):
 
         if 'swa' in callback_list:
             assert checkpoint_dir is not None, \
-                '"checkpoint_dir" must must be provided when using "SWA" callback'
+                '`checkpoint_dir` must must be provided when using "SWA" callback'
             assert model_name is not None, \
-                '"model_name" must must be provided when using "SWA" callback'
+                '`model_name` must must be provided when using "SWA" callback'
+            assert swa_model is not None, \
+                '`swa_model` must must be provided when using "SWA" callback'
             callbacks.append(SWA(swa_model=swa_model, checkpoint_dir=checkpoint_dir,
                                  model_name=model_name, swa_start=5))
             logging.info('SWA Callback added')
