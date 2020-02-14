@@ -43,6 +43,6 @@ termcolor==1.1.0
 urllib3==1.25.7
 Werkzeug==0.16.0
 wrapt==1.11.2
-ber4keras==0.5.0
+ber4keras==0.4.9
 tensorflow-addons==0.8.1
 seqeval==0.0.12
