@@ -1,31 +1,85 @@
 # -*- coding: utf-8 -*-
 
 import os
+from typing import List, Optional
 
 import tensorflow as tf
 from absl import logging
 from seqeval import metrics
 
-
 from fancy_nlp.utils import NERGenerator
-from fancy_nlp.callbacks import NERMetric
-from fancy_nlp.callbacks import SWA
+from fancy_nlp.callbacks import NERMetric, SWA
+from fancy_nlp.preprocessors import NERPreprocessor
 
 
 class NERTrainer(object):
-    def __init__(self, model, preprocessor):
+    """NER Trainer, which is used to
+    1) train ner model with given training dataset
+    2) evaluate ner model with given validation dataset
+
+    """
+
+    def __init__(self,
+                 model: tf.keras.models.Model,
+                 preprocessor: NERPreprocessor) -> None:
         """
 
         Args:
-            model: instance of keras Model
-            preprocessor: instance of NERPreporcessor
+            model: Instance of tf.keras Model. The ner model to be trained.
+            preprocessor: Instance of NERPreprocessor, which helps to prepare feature input for
+                ner model.
         """
         self.model = model
         self.preprocessor = preprocessor
 
-    def train(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
-              epochs=50, callback_list=None, checkpoint_dir=None, model_name=None, swa_model=None,
-              load_swa_model=False):
+    def train(self,
+              train_data: List[List[str]],
+              train_labels: List[List[str]],
+              valid_data: Optional[List[List[str]]] = None,
+              valid_labels: List[List[str]] = None,
+              batch_size: int = 32,
+              epochs: int = 50,
+              callback_list: Optional[List[str]] = None,
+              checkpoint_dir: Optional[str] = None,
+              model_name: Optional[str] = None,
+              swa_model: Optional[tf.keras.models.Model] = None,
+              load_swa_model: bool = False) -> None:
+        """Train ner model with provided training dataset. If validation dataset is provided,
+        evaluate ner model with it after training.
+
+        Args:
+            train_data: List of List of str. List of tokenized (in char level) texts for training,
+                like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            train_labels: List of List of str. The labels of train_data, usually in BIO or BIOES
+                format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+            valid_data: Optional List of List of str, can be None. List of tokenized (in char
+                level) texts for evaluation.
+            valid_labels: Optional List of List of str, can be None. The labels of valid_data.
+                We can use fancy_nlp.utils.load_ner_data_and_labels() function to get training
+                or validation data and labels from raw dataset in CoNLL format.
+            batch_size: int. Number of samples per gradient update.
+            epochs: int. Number of epochs to train the model
+            callback_list: Optional List of str or instance of `keras.callbacks.Callback`,
+                can be None. Each item indicates the callback to apply during training. Currently,
+                we support using 'modelcheckpoint' for `ModelCheckpoint` callback, 'earlystopping`
+                for 'Earlystopping` callback, 'swa' for 'SWA' callback. We will automatically add
+                `NERMetric` callback when valid_data and valid_labels are both provided.
+            checkpoint_dir: Optional str, can be None. Directory to save the ner model. It must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training.
+            model_name: Optional str, can be None. Prefix of ner model's weights file. I must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training. For example, if checkpoint_dir is 'ckpt' and
+                model_name is 'model', the weights of ner model saved by `ModelCheckpoint` callback
+                will be 'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'.
+            swa_model: Instance of `tf.keras.model.Model`. The ner model which is used in `SWA`
+                callback to keep track of weight averaging during training. It has the same architecture as
+                self.model. Only pass it when using `SWA` callback.
+            load_swa_model: Boolean. Whether to load swa model, only apply when using `SWA`
+                Callback. We suggest set it to True when using `SWA` Callback since swa model
+                performs better than the original model at most cases.
+
+        """
         callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
                                           model_name, swa_model)
 
@@ -49,9 +103,56 @@ class NERTrainer(object):
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
-    def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
-                        batch_size=32, epochs=50, callback_list=None, checkpoint_dir=None,
-                        model_name=None, swa_model=None, load_swa_model=False):
+    def train_generator(self,
+                        train_data: List[List[str]],
+                        train_labels: List[List[str]],
+                        valid_data: Optional[List[List[str]]] = None,
+                        valid_labels: Optional[List[List[str]]] = None,
+                        batch_size: int = 32,
+                        epochs: int = 50,
+                        callback_list: Optional[List[str]] = None,
+                        checkpoint_dir: Optional[str] = None,
+                        model_name: Optional[str] = None,
+                        swa_model: Optional[tf.keras.models.Model] = None,
+                        load_swa_model=False):
+        """Train the ner model with provided training data, using a generator that yields data
+        batch-by-batch. If validation data is provided, evaluate the ner model with it
+        after training.
+
+        Args:
+            train_data: List of List of str. List of tokenized (in char level) texts for training,
+                like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            train_labels: List of List of str. The labels of train_data, usually in BIO or BIOES
+                format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+            valid_data: Optional List of List of str, can be None. List of tokenized (in char
+                level) texts for evaluation.
+            valid_labels: Optional List of List of str, can be None. The labels of valid_data.
+                We can use fancy_nlp.utils.load_ner_data_and_labels() function to get training
+                or validation data and labels from raw dataset in CoNLL format.
+            batch_size: int. Number of samples per gradient update.
+            epochs: int. Number of epochs to train the model
+            callback_list: Optional List of str or instance of `keras.callbacks.Callback`,
+                can be None. Each item indicates the callback to apply during training. Currently,
+                we support using 'modelcheckpoint' for `ModelCheckpoint` callback, 'earlystopping`
+                for 'Earlystopping` callback, 'swa' for 'SWA' callback. We will automatically add
+                `NERMetric` callback when valid_data and valid_labels are both provided.
+            checkpoint_dir: Optional str, can be None. Directory to save the ner model. It must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training.
+            model_name: Optional str, can be None. Prefix of ner model's weights file. I must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training. For example, if checkpoint_dir is 'ckpt' and
+                model_name is 'model', the weights of ner model saved by `ModelCheckpoint` callback
+                will be 'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'.
+            swa_model: Instance of `tf.keras.model.Model`. The ner model which is used in `SWA`
+                callback to keep track of weight averaging during training. It has the same architecture as
+                self.model. Only pass it when using `SWA` callback.
+            load_swa_model: Boolean. Whether to load swa model, only apply when using `SWA`
+                Callback. We suggest set it to True when using `SWA` Callback since swa model
+                performs better than the original model at most cases.
+
+        """
+
         callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
                                           model_name, swa_model)
 
@@ -64,8 +165,11 @@ class NERTrainer(object):
             valid_generator = None
 
         print('Training start...')
-        self.model.fit_generator(generator=train_generator, epochs=epochs,
-                                 validation_data=valid_generator, callbacks=callbacks)
+        # Note: Model.fit now supports generators
+        self.model.fit(x=train_generator,
+                       epochs=epochs,
+                       callbacks=callbacks,
+                       validation_data=valid_generator)
         print('Training end...')
 
         if load_swa_model and callback_list is not None and 'swa' in callback_list:
@@ -76,25 +180,41 @@ class NERTrainer(object):
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
-    def prepare_callback(self, callback_list, valid_data=None, valid_labels=None,
-                         checkpoint_dir=None, model_name=None, swa_model=None):
-        """
+    def prepare_callback(self,
+                         callback_list: List[str],
+                         valid_data: Optional[List[List[str]]] = None,
+                         valid_labels: Optional[List[List[str]]] = None,
+                         checkpoint_dir: Optional[str] = None,
+                         model_name: Optional[str] = None,
+                         swa_model: Optional[tf.keras.models.Model] = None) \
+            -> List[tf.keras.callbacks.Callback]:
+        """Prepare the callbacks to be applied during training.
 
         Args:
-            callback_list: list of str, each item indicate the callback to apply during training.
-                       For example, 'earlystopping' means using 'EarlyStopping' callback.
-            valid_data: list of tokenized (in char level) texts for evaluation
-            valid_labels: labels string of valid data
-            checkpoint_dir: str, directory to save ner model, must be provided when using
-                            `ModelCheckpoint` or `SWA` callback.
-            model_name: str, prefix of ner model's weights filem must be provided when using
-                        `ModelCheckpoint` or `SWA` callback.
-                        For example, if checkpoint_dir is 'ckpt' and model_name is 'model', the
-                        weights of ner model saved by `ModelCheckpoint` callback will be
-                        'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'
-            swa_model:
+            callback_list: List of str or instance of `keras.callbacks.Callback`. Each item
+                indicates the callback to be applied during training. Currently, we support using
+                'modelcheckpoint' for `ModelCheckpoint` callback, 'earlystopping` for
+                'Earlystopping` callback, 'swa' for 'SWA' callback.
+            valid_data: Optional List of List of str, can be None. List of tokenized (in char
+                level) texts for evaluation, like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            valid_labels: Optional List of List of str, can be None. The labels of valid_data,
+                usually in BIO or BIOES format, like
+                ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+                When valid_data and valid_labels are both provided, we will automatically add
+                `NERMetric` callback for evaluation during training.
+            checkpoint_dir: Optional str, can be None. Directory to save the ner model. It must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training.
+            model_name: Optional str, can be None. Prefix of ner model's weights file. I must be
+                provided when using `ModelCheckpoint` or `SWA` callback, since these callbacks needs
+                to save ner model after training. For example, if checkpoint_dir is 'ckpt' and
+                model_name is 'model', the weights of ner model saved by `ModelCheckpoint` callback
+                will be 'ckpt/model.hdf5' and by `SWA` callback will be 'ckpt/model_swa.hdf5'.
+            swa_model: Instance of `tf.keras.model.Model`. The ner model which is used in `SWA`
+                callback to keep track of weight averaging during training. It has the same
+                architecture as self.model. Only pass it when using `SWA` callback.
 
-        Returns: a list of `keras.callbacks.Callback` instances
+        Returns: List of `keras.callbacks.Callback` instances
 
         """
         assert not isinstance(callback_list, str)
@@ -108,13 +228,14 @@ class NERTrainer(object):
 
         if 'modelcheckpoint' in callback_list:
             if not add_metric:
-                logging.warning('Using `ModelCheckpoint` with validation data not provided is not '
-                                'Recommended! We will use `loss` (of training data) as monitor.')
+                logging.warning(
+                    'Using `ModelCheckpoint` without validation data provided is not Recommended! '
+                    'We will use `loss` (of training data) as monitor.')
 
             assert checkpoint_dir is not None, \
-                '"checkpoint_dir" must must be provided when using "ModelCheckpoint" callback'
+                '`checkpoint_dir` must must be provided when using "ModelCheckpoint" callback'
             assert model_name is not None, \
-                '"model_name" must must be provided when using "ModelCheckpoint" callback'
+                '`model_name` must must be provided when using "ModelCheckpoint" callback'
             callbacks.append(tf.keras.callbacks.ModelCheckpoint(
                 filepath=os.path.join(checkpoint_dir, f'{model_name}.hdf5'),
                 monitor='val_f1' if add_metric else 'loss',
@@ -137,24 +258,40 @@ class NERTrainer(object):
 
         if 'swa' in callback_list:
             assert checkpoint_dir is not None, \
-                '"checkpoint_dir" must must be provided when using "SWA" callback'
+                '`checkpoint_dir` must must be provided when using "SWA" callback'
             assert model_name is not None, \
-                '"model_name" must must be provided when using "SWA" callback'
+                '`model_name` must must be provided when using "SWA" callback'
+            assert swa_model is not None, \
+                '`swa_model` must must be provided when using "SWA" callback'
             callbacks.append(SWA(swa_model=swa_model, checkpoint_dir=checkpoint_dir,
                                  model_name=model_name, swa_start=5))
             logging.info('SWA Callback added')
 
         return callbacks
 
-    def load_model_weights(self, weights_file):
-        self.model.load_weights(weights_file)
-
-    def evaluate(self, data, labels):
-        """Evaluate the performance of ner model.
+    def load_model_weights(self, weights_file: str) -> None:
+        """Load model's weights from disk, which is usually called after training done.
 
         Args:
-            data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
-            labels: list of list of str, the corresponding label strings
+            weights_file: str. Path to load model weights
+
+        Returns:
+
+        """
+        self.model.load_weights(weights_file)
+
+    def evaluate(self, data: List[List[str]], labels: List[List[str]]) -> float:
+        """Evaluate the performance of ner model with given data and labels, and return the f1
+        score.
+
+        Args:
+            data: List of List of str. List of tokenized (in char level) texts ,
+                like ``[['我', '在', '上', '海', '上', '学'], ...]``.
+            labels: List of List of str. The corresponding labels , usually in BIO or BIOES
+                format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+
+        Returns:
+            Float. The F1 score.
 
         """
         features, y = self.preprocessor.prepare_input(data, labels)
@@ -172,4 +309,5 @@ class NERTrainer(object):
 
         logging.info('Recall: {}, Precision: {}, F1: {}'.format(r, p, f1))
         logging.info(metrics.classification_report(labels, y_pred))
+
         return f1

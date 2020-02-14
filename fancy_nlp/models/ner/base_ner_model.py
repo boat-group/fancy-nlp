@@ -3,6 +3,9 @@
 """Base NER model
 """
 
+from typing import Optional
+
+import numpy as np
 import tensorflow as tf
 from bert4keras.bert import build_bert_model
 
@@ -11,23 +14,50 @@ from fancy_nlp.models.base_model import BaseModel
 
 
 class BaseNERModel(BaseModel):
+    """The basic class for ner models. All the ner models will inherit from it.
+
+    """
     def __init__(self,
-                 use_char=True,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_word=False,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 max_len=None,
-                 dropout=0.2):
+                 use_char: bool = True,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_word: bool = False,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 dropout: float = 0.2) -> None:
+        """
+
+        Args:
+            use_char: Boolean. Whether to use character embedding as input.
+            char_embeddings: Optional np.ndarray. Char embedding matrix, shaped
+                [char_vocab_size, char_embed_dim]. There are 2 cases when char_embeddings is None:
+                1)  use_char is False, do not use char embedding as input; 2) user did not
+                provide valid pre-trained embedding file or any embedding training method. In
+                this case, use randomly initialized embedding instead.
+            char_vocab_size: int. The size of char vocabulary.
+            char_embed_dim: int. Dimensionality of char embedding.
+            char_embed_trainable: Boolean. Whether to update char embedding during training.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            bert_config_file: Optional str, can be None. Path to bert's configuration file.
+            bert_checkpoint_file: Optional str, can be None. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            use_word: Boolean. Whether to use word as additional input.
+            word_embeddings: Optional np.ndarray. Similar as char_embeddings.
+            word_vocab_size: int. Similar as char_vocab_size.
+            word_embed_dim: int. Similar as char_embed_dim.
+            word_embed_trainable: Boolean. Similar as char_embed_trainable.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+        """
 
         self.use_char = use_char
         self.char_embeddings = char_embeddings
@@ -51,6 +81,13 @@ class BaseNERModel(BaseModel):
             "max_len must be provided when using bert embedding as input"
 
     def build_input(self):
+        """Build input placeholder and prepare embedding for ner model.
+
+        Returns: Tuples of 2 tensor:
+            1). Input tensor(s), depending whether using multiple inputs;
+            2). Embedding tensor, which will be passed to following layers of ner models.
+
+        """
         model_inputs = []
         input_embed = []
 
@@ -106,4 +143,5 @@ class BaseNERModel(BaseModel):
         return model_inputs, input_embed
 
     def build_model(self):
+        """Build ner model's architecture."""
         raise NotImplementedError

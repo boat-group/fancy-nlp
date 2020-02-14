@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 
+from typing import List
+
 import tensorflow as tf
 from seqeval import metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
 import numpy as np
 
+from fancy_nlp.preprocessors import NERPreprocessor
+
 
 class NERMetric(tf.keras.callbacks.Callback):
+    """Callback for evaluating ner model during training.
     """
-    callback for evaluating ner model
-    """
-    def __init__(self, preprocessor, valid_data, valid_labels):
+    def __init__(self,
+                 preprocessor: NERPreprocessor,
+                 valid_data: List[List[str]],
+                 valid_labels: List[List[str]]) -> None:
         """
         Args:
-            preprocessor: `NERPreprocessor` instance to help prepare input for ner model
-            valid_data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
-            valid_labels: list of list of str, the corresponding label strings
+            preprocessor: Instance of `NERPreprocessor`, which helps to prepare feature input for
+                ner model.
+            valid_data: List of List of str, can be None. List of tokenized (in char
+                level) texts for evaluation, like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            valid_labels: List of List of str, can be None. The labels of valid_data, usually in
+                BIO or BIOES format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
         """
         self.preprocessor = preprocessor
         self.valid_data = valid_data

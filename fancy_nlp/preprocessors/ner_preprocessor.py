@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pickle
-import codecs
+from typing import List, Optional, Tuple, Dict, Any
 
 import tensorflow as tf
 import numpy as np
@@ -13,33 +13,62 @@ from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTo
 
 
 class NERPreprocessor(Preprocessor):
-    """NER preprocessor.
+    """NER preprocessor, which is used to
+    1) build all kinds of vocabulary (char, word , label) from training data;
+    2) pre-trained embedding matrix using training corpus;
+    3) prepare feature input for ner model;
+    4) decode model predictions to tagging sequence.
     """
 
-    def __init__(self, train_data, train_labels, min_count=2, use_char=True, use_bert=False,
-                 use_word=False, external_word_dict=None, bert_vocab_file=None,
-                 char_embed_type=None, char_embed_dim=300, word_embed_type=None, word_embed_dim=300,
-                 max_len=None, padding_mode='post', truncating_mode='post'):
-        """
+    def __init__(self,
+                 train_data: List[List[str]],
+                 train_labels: List[List[str]],
+                 min_count: int = 2,
+                 use_char: bool = True,
+                 use_bert: bool = False,
+                 use_word: bool = False,
+                 external_word_dict: Optional[List[str]] = None,
+                 bert_vocab_file: Optional[str] = None,
+                 char_embed_type: Optional[str] = None,
+                 char_embed_dim: int = 300,
+                 word_embed_type: Optional[str] = None,
+                 word_embed_dim: int = 300,
+                 max_len: Optional[int] = None,
+                 padding_mode: str = 'post',
+                 truncating_mode: str = 'post') -> None:
+        """Build vocabulary, pre-trained embedding.
 
         Args:
-            train_data: a list of tokenized (in char level) texts
-            train_labels: list of list, train_data's labels
-            min_count: int, token of which frequency is lower than min_count will be ignored
-            use_char：whether to use char embedding as input
-            use_bert: whether to use bert embedding as input
-            use_word: whether to use word embedding as additional input
-            external_word_dict: external word dictionary, only apply when use_word is True
-            bert_vocab_file: vocabulary file of pre-trained bert model, only apply when use_bert is
-                             True
-            char_embed_type: str, can be a pre-trained embedding filename or pre-trained embedding
-                             methods (word2vec, glove, fastext)
-            char_embed_dim: dimensionality of char embedding
-            word_embed_type: same as char_embed_type, only apply when use_word is True
-            word_embed_dim: dimensionality of word embedding
-            max_len: int, max sequence len
-            padding_mode:
-            truncating_mode:
+            train_data: List of List of str. List of tokenized (in char level) texts for training,
+                like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            train_labels: List of List of str. The labels of train_data, usually in BIO or BIOES
+                format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+            min_count: int. Token of which frequency is lower than min_count will be ignored when
+                building vocabulary.
+            use_char：Boolean. Whether to use character embedding as input.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            use_word: Boolean. Whether to use word embedding as additional input.
+            external_word_dict: Optional List of str, can be None. List of words, external word
+                dictionary that will be used to loaded in jieba. It can be regarded as one kind
+                of gazetter that contain a number of correct named-entities.
+                Such as ``['南京市', '长江大桥']``. Only applied when use_word is True.
+            bert_vocab_file: Optional str, can be None. Path to bert's vocabulary file.
+            char_embed_type:  Optional str, can be None. The type of char embedding, can be a
+                pre-trained embedding filename that used to load pre-trained embedding,
+                or a embedding training method (one of {'word2vec', 'fasttext'}) that used to
+                train character embedding with dataset. If None, do not apply anr pre-trained
+                embedding, and use randomly initialized embedding instead.
+            char_embed_dim: int. Dimensionality of char embedding.
+            word_embed_type: str. Same as char_embed_type, only applied when use_word is True.
+            word_embed_dim: int. Dimensionality of word embedding
+            max_len: Optional int, can be None. Max length of one sequence. If None, we dynamically
+                use the max length of each batch as max_len. However, max_len must be provided
+                when using bert as input.
+            padding_mode: str. 'pre' or 'post': pad either before or after each sequence, used when
+                preparing feature input for ner model.
+            truncating_mode: str. pre' or 'post': remove values from sequences larger than
+                `maxlen`, either at the beginning or at the end of the sequences, used when
+                preparing feature input for ner model.
         """
         super(NERPreprocessor, self).__init__(max_len, padding_mode, truncating_mode)
 
@@ -116,15 +145,22 @@ class NERPreprocessor(Preprocessor):
             self.max_len = min(self.max_len + 2, 512)
 
     def load_word_dict(self):
+        """Load external word dictionary in jieba"""
         if self.external_word_dict:
             for word in self.external_word_dict:
                 jieba.add_word(word, freq=1000000)
 
-    def build_label_vocab(self, labels):
-        """Build label vocabulary
+    def build_label_vocab(self,
+                          labels: List[List[str]]) -> Tuple[Dict[str, int], Dict[int, str]]:
+        """Build label vocabulary.
 
         Args:
-            labels: list of list of str, the label strings
+            labels: List of list of str, the label sequences, like
+            ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+
+        Returns:
+            Tuple of 2 dict
+
         """
         label_count = {}
         for sequence in labels:
@@ -146,18 +182,22 @@ class NERPreprocessor(Preprocessor):
                      'vocabulary size: {}'.format(len(label_vocab)))
         return label_vocab, id2label
 
-    def prepare_input(self, data, labels=None):
+    def prepare_input(self,
+                      data: List[List[str]],
+                      labels: Optional[List[List[str]]] = None) -> Tuple[np.ndarray, Any]:
         """Prepare input (features and labels) for NER model.
         Here we not only use character embeddings (or bert embeddings) as main input, but also
         support word embeddings and other hand-crafted features embeddings as additional input.
 
         Args:
-            data: list of tokenized (in char level) texts, like ``[['我', '是', '中', '国', '人']]``
-            labels: list of list of str, the corresponding label strings
+            data: List of List of str. List of tokenized (in char level) texts for training,
+                like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            labels: Optional List of List of str, can be None. The labels of train_data, usually in
+            BIO or BIOES format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
 
-        Returns:
+        Returns: Tuple:
             features: id matrix
-            y: label id matrix (only if labels is provided)
+            y: label id matrix only if labels is provided, otherwise None,
 
         """
         batch_char_ids, batch_bert_ids, batch_bert_seg_ids, batch_word_ids = [], [], [], []
@@ -211,15 +251,14 @@ class NERPreprocessor(Preprocessor):
                                  padding=self.padding_mode, truncating=self.truncating_mode)
             return features, y
 
-    def get_word_ids(self, word_cut):
+    def get_word_ids(self, word_cut: List[str]) -> List[int]:
         """Given a word-level tokenized text, return the corresponding word ids in char-level
            sequence. We add the same word id to each character in the word.
 
         Args:
-            word_cut: list of str, like ['我', '是'. '中国人']
-            unk_idx: the index of words that do not appear in vocabulary, we usually set it to 1
+            word_cut: List of str, like ['我', '是'. '中国人']
 
-        Returns: list of int, id sequence
+        Returns: List of int, id sequence
 
         """
         word_ids = []
@@ -231,7 +270,20 @@ class NERPreprocessor(Preprocessor):
                        [self.word_vocab[self.seq_token]]
         return word_ids
 
-    def label_decode(self, pred_probs, lengths=None):
+    def label_decode(self,
+                     pred_probs: np.ndarray,
+                     lengths: Optional[List[int]] = None) -> List[List[str]]:
+        """Decode model predictions to label strings
+
+        Args:
+            pred_probs: np.ndarray, shaped [num_samples, max_len, num_class], the ner model's
+                predictions
+            lengths: Optional List of int. Length of each sample;
+
+        Returns：
+            List of List of str, the tagging sequences of each sample.
+
+        """
         pred_ids = np.argmax(pred_probs, axis=-1)
         pred_labels = [[self.id2label[label_id] for label_id in ids] for ids in pred_ids]
         if lengths is not None:
@@ -240,9 +292,6 @@ class NERPreprocessor(Preprocessor):
 
     def get_unk_label_id(self):
         """return a default id for label that does not exist in the label vocab
-
-        Args:
-            label: str
 
         Returns: int
 
@@ -254,11 +303,27 @@ class NERPreprocessor(Preprocessor):
         else:
             return 0  # id of 0 is the label with the highest frequency
 
-    def save(self, preprocessor_file):
+    def save(self, preprocessor_file: str):
+        """Save preprocessor to disk
+
+        Args:
+            preprocessor_file: str, path to save preprocessor
+
+        Returns:
+
+        """
         pickle.dump(self, open(preprocessor_file, 'wb'))
 
     @classmethod
     def load(cls, preprocessor_file):
+        """Load preprocessor from disk
+
+        Args:
+            preprocessor_file: str, path to load preprocessor.
+
+        Returns:
+
+        """
         p = pickle.load(open(preprocessor_file, 'rb'))
         p.load_word_dict()  # reload external word dict into jieba
         return p

@@ -11,23 +11,30 @@ Applying ensemble during a single training process
 
 
 class SWA(tf.keras.callbacks.Callback):
-    """
-    This callback implements a stochastic weight averaging (SWA) method with constant lr as
+    """This callback implements a stochastic weight averaging (SWA) method with constant lr as
     presented in the paper: "Izmailov et al. Averaging Weights Leads to Wider Optima and Better
     Generalization" (https://arxiv.org/abs/1803.05407)
 
     Author's implementation: https://github.com/timgaripov/swa
     """
-    def __init__(self, swa_model, checkpoint_dir, model_name, swa_start=1):
+    def __init__(self,
+                 swa_model: tf.keras.models.Model,
+                 checkpoint_dir: str,
+                 model_name: str,
+                 swa_start: int = 1) -> None:
         """
 
         Args:
-            swa_model: the model that used to store the average of the weights once SWA begins
-            checkpoint_dir: the directory where the model will be saved in
-            model_name: the name of model we're training
-            swa_start: the epoch when averaging begins. We generally pre-train the network for a
-                       certain amount of epochs to start (swa_start > 1), as opposed to starting to
-                       track the average from the very beginning.
+            swa_model: Instance of `tf.keras.models.Model`. The model that used to store the
+                average of the weights once SWA begins
+            checkpoint_dir: str. tThe directory where the model will be saved in
+            model_name: str. The name of model we're training.
+                We use checkpoint_dir and model_name to save swa model's weights after training
+                done. For example, if checkpoint_dir is 'ckpt' and model_name is 'model',
+                the weights of swa model will be save in 'ckpt/model_swa.hdf5'.
+            swa_start: str. The epoch when averaging begins. We generally pre-train the network
+                for a certain amount of epochs to start (swa_start > 1), as opposed to starting to
+                track the average from the very beginning.
         """
         super(SWA, self).__init__()
         self.checkpoint_dir = checkpoint_dir

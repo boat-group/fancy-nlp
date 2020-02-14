@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from typing import Optional, Union
+
 import tensorflow as tf
+import numpy as np
 
 from fancy_nlp.models.ner.base_ner_model import BaseNERModel
 from fancy_nlp.layers import CRF
@@ -13,28 +16,61 @@ class BiLSTMNER(BaseNERModel):
        Support using CRF layer.
     """
     def __init__(self,
-                 num_class,
-                 use_char=True,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_word=False,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 max_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 fc_dim=100,
-                 activation='tanh',
-                 use_crf=True,
-                 optimizer='adam'):
+                 num_class: int,
+                 use_char: bool = True,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_word: bool = False,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 use_crf: bool = True,
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam',
+                 **kwargs):
+        """
+
+        Args:
+            num_class: int. Number of entity type.
+            use_char: Boolean. Whether to use character embedding as input.
+            char_embeddings: Optional np.ndarray. Char embedding matrix, shaped
+                [char_vocab_size, char_embed_dim]. There are 2 cases when char_embeddings is None:
+                1)  use_char is False, do not use char embedding as input; 2) user did not
+                provide valid pre-trained embedding file or any embedding training method. In
+                this case, use randomly initialized embedding instead.
+            char_vocab_size: int. The size of char vocabulary.
+            char_embed_dim: int. Dimensionality of char embedding.
+            char_embed_trainable: Boolean. Whether to update char embedding during training.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            bert_config_file: Optional str, can be None. Path to bert's configuration file.
+            bert_checkpoint_file: Optional str, can be None. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            use_word: Boolean. Whether to use word as additional input.
+            word_embeddings: Optional np.ndarray. Similar as char_embeddings.
+            word_vocab_size: int. Similar as char_vocab_size.
+            word_embed_dim: int. Similar as char_embed_dim.
+            word_embed_trainable: Boolean. Similar as char_embed_trainable.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+            rnn_units: int. Dimensionality of the LSTM units.
+            fc_dim: int. Dimensionality of fully-connected layer.
+            activation: str. Activation function to use in fully-connected layer.
+            use_crf: Boolean. Whether to use crf layer.
+            optimizer: str or instance of `tf.keras.optimizers.Optimizer`. Which optimizer to
+                use during training.
+            **kwargs:
+        """
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_fim = fc_dim
@@ -47,7 +83,7 @@ class BiLSTMNER(BaseNERModel):
                                         word_embeddings, word_vocab_size, word_embed_dim,
                                         word_embed_trainable, max_len, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed = self.build_input()
         input_encode = tf.keras.layers.Bidirectional(
             tf.keras.layers.LSTM(self.rnn_units, return_sequences=True))(input_embed)
@@ -76,29 +112,63 @@ class BiGRUNER(BaseNERModel):
     """Bidirectional GRU model for NER.
        Support using CRF layer.
     """
+
     def __init__(self,
-                 num_class,
-                 use_char=True,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_word=False,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 max_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 fc_dim=100,
-                 activation='tanh',
-                 use_crf=True,
-                 optimizer='adam'):
+                 num_class: int,
+                 use_char: bool = True,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_word: bool = False,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 use_crf: bool = True,
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam',
+                 **kwargs):
+        """
+
+        Args:
+            num_class: int. Number of entity type.
+            use_char: Boolean. Whether to use character embedding as input.
+            char_embeddings: Optional np.ndarray. Char embedding matrix, shaped
+                [char_vocab_size, char_embed_dim]. There are 2 cases when char_embeddings is None:
+                1)  use_char is False, do not use char embedding as input; 2) user did not
+                provide valid pre-trained embedding file or any embedding training method. In
+                this case, use randomly initialized embedding instead.
+            char_vocab_size: int. The size of char vocabulary.
+            char_embed_dim: int. Dimensionality of char embedding.
+            char_embed_trainable: Boolean. Whether to update char embedding during training.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            bert_config_file: Optional str, can be None. Path to bert's configuration file.
+            bert_checkpoint_file: Optional str, can be None. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            use_word: Boolean. Whether to use word as additional input.
+            word_embeddings: Optional np.ndarray. Similar as char_embeddings.
+            word_vocab_size: int. Similar as char_vocab_size.
+            word_embed_dim: int. Similar as char_embed_dim.
+            word_embed_trainable: Boolean. Similar as char_embed_trainable.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+            rnn_units: int. Dimensionality of the LSTM units.
+            fc_dim: int. Dimensionality of fully-connected layer.
+            activation: str. Activation function to use in fully-connected layer.
+            use_crf: Boolean. Whether to use crf layer.
+            optimizer: str or instance of `tf.keras.optimizers.Optimizer`. Which optimizer to
+                use during training.
+            **kwargs:
+        """
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_fim = fc_dim
@@ -111,7 +181,7 @@ class BiGRUNER(BaseNERModel):
                                        word_embeddings, word_vocab_size, word_embed_dim,
                                        word_embed_trainable, max_len, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.Model:
         model_inputs, input_embed = self.build_input()
         input_encode = tf.keras.layers.Bidirectional(
             tf.keras.layers.GRU(self.rnn_units, return_sequences=True))(input_embed)
@@ -141,30 +211,65 @@ class BiLSTMCNNNER(BaseNERModel):
        Support using CRF layer.
     """
     def __init__(self,
-                 num_class,
-                 use_char=True,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_word=False,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 max_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 cnn_filters=300,
-                 cnn_kernel_size=3,
-                 fc_dim=100,
-                 activation='tanh',
-                 use_crf=True,
-                 optimizer='adam'):
+                 num_class: int,
+                 use_char: bool = True,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_word: bool = False,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 cnn_filters: int = 300,
+                 cnn_kernel_size: int = 3,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 use_crf: bool = True,
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam',
+                 **kwargs):
+        """
+
+        Args:
+            num_class: int. Number of entity type.
+            use_char: Boolean. Whether to use character embedding as input.
+            char_embeddings: Optional np.ndarray. Char embedding matrix, shaped
+                [char_vocab_size, char_embed_dim]. There are 2 cases when char_embeddings is None:
+                1)  use_char is False, do not use char embedding as input; 2) user did not
+                provide valid pre-trained embedding file or any embedding training method. In
+                this case, use randomly initialized embedding instead.
+            char_vocab_size: int. The size of char vocabulary.
+            char_embed_dim: int. Dimensionality of char embedding.
+            char_embed_trainable: Boolean. Whether to update char embedding during training.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            bert_config_file: Optional str, can be None. Path to bert's configuration file.
+            bert_checkpoint_file: Optional str, can be None. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            use_word: Boolean. Whether to use word as additional input.
+            word_embeddings: Optional np.ndarray. Similar as char_embeddings.
+            word_vocab_size: int. Similar as char_vocab_size.
+            word_embed_dim: int. Similar as char_embed_dim.
+            word_embed_trainable: Boolean. Similar as char_embed_trainable.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+            rnn_units: int. Dimensionality of the LSTM units.
+            cnn_filters: int. The number of output filters in the convolution
+            cnn_kernel_size: int. The length of the 1D convolution window.
+            fc_dim: int. Dimensionality of fully-connected layer.
+            activation: str. Activation function to use in fully-connected layer.
+            use_crf: Boolean. Whether to use crf layer.
+            optimizer: str or instance of `tf.keras.optimizers.Optimizer`. Which optimizer to
+                use during training.
+            **kwargs:
+        """
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.cnn_filters = cnn_filters
@@ -180,7 +285,7 @@ class BiLSTMCNNNER(BaseNERModel):
                                            word_vocab_size, word_embed_dim, word_embed_trainable,
                                            max_len, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.Model:
         model_inputs, input_embed = self.build_input()
         input_encode = tf.keras.layers.Bidirectional(
             tf.keras.layers.LSTM(self.rnn_units, return_sequences=True))(input_embed)
@@ -213,31 +318,67 @@ class BiGRUCNNNER(BaseNERModel):
     """Bidirectional GRU + CNN model for NER.
        Support using CRF layer.
     """
+
     def __init__(self,
-                 num_class,
-                 use_char=True,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_word=False,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 max_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 cnn_filters=300,
-                 cnn_kernel_size=3,
-                 fc_dim=100,
-                 activation='tanh',
-                 use_crf=True,
-                 optimizer='adam'):
+                 num_class: int,
+                 use_char: bool = True,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_word: bool = False,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 cnn_filters: int = 300,
+                 cnn_kernel_size: int = 3,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 use_crf: bool = True,
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam',
+                 **kwargs):
+        """
+
+        Args:
+            num_class: int. Number of entity type.
+            use_char: Boolean. Whether to use character embedding as input.
+            char_embeddings: Optional np.ndarray. Char embedding matrix, shaped
+                [char_vocab_size, char_embed_dim]. There are 2 cases when char_embeddings is None:
+                1)  use_char is False, do not use char embedding as input; 2) user did not
+                provide valid pre-trained embedding file or any embedding training method. In
+                this case, use randomly initialized embedding instead.
+            char_vocab_size: int. The size of char vocabulary.
+            char_embed_dim: int. Dimensionality of char embedding.
+            char_embed_trainable: Boolean. Whether to update char embedding during training.
+            use_bert: Boolean. Whether to use bert embedding as input.
+            bert_config_file: Optional str, can be None. Path to bert's configuration file.
+            bert_checkpoint_file: Optional str, can be None. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            use_word: Boolean. Whether to use word as additional input.
+            word_embeddings: Optional np.ndarray. Similar as char_embeddings.
+            word_vocab_size: int. Similar as char_vocab_size.
+            word_embed_dim: int. Similar as char_embed_dim.
+            word_embed_trainable: Boolean. Similar as char_embed_trainable.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+            rnn_units: int. Dimensionality of the LSTM units.
+            cnn_filters: int. The number of output filters in the convolution
+            cnn_kernel_size: int. The length of the 1D convolution window.
+            fc_dim: int. Dimensionality of fully-connected layer.
+            activation: str. Activation function to use in fully-connected layer.
+            use_crf: Boolean. Whether to use crf layer.
+            optimizer: str or instance of `tf.keras.optimizers.Optimizer`. Which optimizer to
+                use during training.
+            **kwargs:
+        """
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.cnn_filters = cnn_filters
@@ -253,7 +394,7 @@ class BiGRUCNNNER(BaseNERModel):
                                           word_vocab_size, word_embed_dim, word_embed_trainable,
                                           max_len, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed = self.build_input()
         input_encode = tf.keras.layers.Bidirectional(
             tf.keras.layers.GRU(self.rnn_units, return_sequences=True))(input_embed)
@@ -282,20 +423,42 @@ class BiGRUCNNNER(BaseNERModel):
 class BertNER(BaseNERModel):
     """Bert model for NER. Support using CRF layer.
     We suggest you to train bert on machines with GPU cause it will be very slow to be trained with
-    cpu. You will have to re-install a gpu version of tensorflow to do so.
+    cpu.
     """
 
     def __init__(self,
-                 num_class,
-                 bert_config_file,
-                 bert_checkpoint_file,
-                 bert_trainable,
-                 max_len,
-                 dropout=0.2,
-                 fc_dim=100,
-                 activation='tanh',
-                 use_crf=True,
-                 optimizer=tf.keras.optimizers.Adam(lr=1e-5)):  # use a small learning rate for bert
+                 num_class: int,
+                 bert_config_file: str,
+                 bert_checkpoint_file: str,
+                 bert_trainable: bool,
+                 max_len: int,
+                 dropout: float = 0.2,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 use_crf: bool = True,
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = tf.keras.optimizers.Adam(
+                     lr=1e-5),
+                 # use a small
+                 # learning
+                 # rate for
+                 **kwargs):
+        """
+
+        Args:
+            num_class: int. Number of entity type.
+            bert_config_file: str. Path to bert's configuration file.
+            bert_checkpoint_file: str. Path to bert's checkpoint file.
+            bert_trainable: Boolean. Whether to update bert during training.
+            max_len: Optional int, can be None. Max length of one sequence.
+            dropout: float. The dropout rate applied to embedding layer.
+            fc_dim: int. Dimensionality of fully-connected layer.
+            activation: str. Activation function to use in fully-connected layer.
+            use_crf: Boolean. Whether to use crf layer.
+            optimizer: str or instance of `tf.keras.optimizers.Optimizer`. Which optimizer to
+                use during training.
+            **kwargs:
+        """
+        # bert
         self.num_class = num_class
         self.fc_fim = fc_dim
         self.activation = activation
@@ -307,7 +470,7 @@ class BertNER(BaseNERModel):
                                       bert_trainable=bert_trainable, use_word=False,
                                       max_len=max_len, dropout=dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed = self.build_input()
         input_encode = tf.keras.layers.TimeDistributed(
             tf.keras.layers.Dense(self.fc_fim, activation=self.activation))(input_embed)

@@ -1,22 +1,33 @@
 # -*- coding: utf-8 -*-
 
 import math
+from typing import List, Optional
 
 import tensorflow as tf
 import numpy as np
+
+from fancy_nlp.preprocessors import NERPreprocessor
 
 
 class NERGenerator(tf.keras.utils.Sequence):
     """Data Generator for NER
     """
-    def __init__(self, preprocessor, data, labels=None, batch_size=32, shuffle=True):
+    def __init__(self,
+                 preprocessor: NERPreprocessor,
+                 data: List[List[str]],
+                 labels: Optional[List[List[str]]] = None,
+                 batch_size: int = 32,
+                 shuffle: bool = True) -> None:
         """
         Args:
-            preprocessor: `NERPreprocessor` instance to help prepare input for ner model
-            data: list of tokenized texts (, like ``[['我', '是', '中', '国', '人']]``
-            labels: list of list of str, the corresponding label strings
-            batch_size: how many samples to train on in one iteration
-            shuffle: whether to shuffle data after each epoch of training
+            preprocessor: Instance of NERPreprocessor, which helps to prepare feature input for
+                ner model.
+            data: List of List of str. List of tokenized texts for training,
+                like ``[['我', '在', '上', '海', '上'， '学'], ...]``.
+            labels: List of List of str. The labels of train_data, usually in BIO or BIOES
+                format, like ``[['O', 'O', 'B-LOC', 'I-LOC', 'O', 'O'], ...]``.
+            batch_size: int. How many samples to train on in one iteration
+            shuffle: Boolean. wWhether to shuffle data after each epoch of training.
         """
         self.preprocessor = preprocessor
         self.data = data

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+from typing import List, Union, Dict, Any
 
 import numpy as np
 from bert4keras.tokenizer import Tokenizer
@@ -9,9 +10,20 @@ from fancy_nlp.layers import NonMaskingLayer, FullMatching, MaxPoolingMatching, 
     AttentiveMatching, MaxAttentiveMatching, CRF
 
 
-def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', padding='post',
-                     truncating='post', value=0.):
-    """pad sequence for [[[a, b, c, ...]]]"""
+def pad_sequences_2d(sequences: List[List[List[str]]],
+                     max_len_1: int = None,
+                     max_len_2: int = None,
+                     dtype: str = 'int32',
+                     padding: str = 'post',
+                     truncating: str = 'post',
+                     value: Union[int, float] = 0.) -> np.ndarray:
+    """Pad sequence for [[[a, b, c, ...], ...], ...] to the same length, similar as
+    `tf.keras.preprocessing.sequence.pad_sequences` does.
+
+    Returns:
+        np.ndarray, shaped [num_samples, max_len_1, max_len_2}
+
+    """
     lengths_1, lengths_2 = [], []
     for s in sequences:
         lengths_1.append(len(s))
@@ -66,8 +78,15 @@ def pad_sequences_2d(sequences, max_len_1=None, max_len_2=None, dtype='int32', p
     return x
 
 
-def get_len_from_corpus(corpus, mode='most'):
-    """Get sequence len from corpus"""
+def get_len_from_corpus(corpus: List[List[str]],
+                        mode: str = 'most') -> int:
+    """Get sequence len from corpus
+
+    Args:
+        corpus: List of List of str.
+        mode: str. One of {'avg', 'median', 'max'm, 'most'}
+
+    """
     lengths = [len(seq) for seq in corpus]
     if mode == 'avg':
         return math.ceil(np.mean(lengths))
@@ -81,16 +100,14 @@ def get_len_from_corpus(corpus, mode='most'):
         raise ValueError(f'`mode` not understood: {mode}')
 
 
-def get_custom_objects():
-    """Get all custom objects for loading saved keras models."""
+def get_custom_objects() -> Dict[str, Any]:
+    """Get all custom objects for loading saved tf.keras models in Fancy-NLP."""
     custom_objects = {'CRF': CRF,
                       'NonMaskingLayer': NonMaskingLayer,
                       'FullMatching': FullMatching,
                       'MaxPoolingMatching': MaxPoolingMatching,
                       'AttentiveMatching': AttentiveMatching,
                       'MaxAttentiveMatching': MaxAttentiveMatching}
-    # todo: add custom objects for bert
-    # custom_objects.update(get_custom_objects_for_bert())  # custom objects of bert models
     return custom_objects
 
 

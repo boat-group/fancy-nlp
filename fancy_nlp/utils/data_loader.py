@@ -1,27 +1,43 @@
 # -*- coding: utf-8 -*-
 
+from typing import Tuple, Union, List
+
 import codecs
 
 from sklearn.model_selection import train_test_split
 
 
-def load_ner_data_and_labels(filename, delimiter='\t', split=False, split_size=0.1, seed=42):
+def load_ner_data_and_labels(filename: str,
+                             delimiter: str = '\t',
+                             split: bool = False,
+                             split_size: float = 0.1,
+                             seed: int = 42):
     """Load ner data and label from a file.
 
     The file should follow CoNLL format:
     Each line is a token and its label separated by 'delimiter', or a blank line indicating the end of
-    a sentence.
+    a sentence. Like:
+    ```
+    我 O
+    在 O
+    上 B-LOC
+    海 I-LOC
+    上 O
+    学 O
+
+    ...
+    ```
 
     Args:
-        filename: str, path to ner file
-        delimiter: str, delimiter to split token and label
-        split: bool, whether to split into train and test subsets
-        split_size: float, the proportion of test subset, between 0.0 and 1.0
-        seed: int, random seed
+        filename: str. Path to ner file.
+        delimiter: str. Delimiter to split token and label.
+        split: Boolean. Whether to split into train and test subsets.
+        split_size: float. The proportion of test subset, between 0.0 and 1.0
+        seed: int. Random seed.
 
-    Returns: If split: tuple(list, list, list, list), train data and labels as well as test data and
+    Returns: If split: return a tuple of 4 list: train data and labels as well as test data and
              labels.
-             Otherwise: tuple(list, list), data and labels
+             Otherwise: return a tuple of 2 list: data and labels
 
     """
     with codecs.open(filename, 'r', encoding='utf8') as reader:

@@ -7,7 +7,6 @@ import tensorflow as tf
 from ..layers.crf import CRF
 
 
-@tf.keras.utils.register_keras_serializable(package="Addons")
 def crf_accuracy(y_true, y_pred):
     """
     Args

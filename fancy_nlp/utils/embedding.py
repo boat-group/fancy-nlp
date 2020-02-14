@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from typing import Dict, Union, List, Optional
+
 from absl import logging
 import numpy as np
 from gensim.models import Word2Vec
@@ -7,14 +9,15 @@ from gensim.models import KeyedVectors
 from gensim.models import FastText
 
 
-def load_glove_format(filename, embedding_dim):
-    """Load pre-trained embedding from a file in glove-embedding-like format
+def load_glove_format(filename: str, embedding_dim: int) -> Dict[str, np.ndarray]:
+    """Load pre-trained embedding from a file in glove-embedding-like format:
+    Each line is a token and its embedding separated by blank space.
 
     Args:
-        filename: str, file path to pre-trained embedding
-        embedding_dim: int, dimensionality of embedding
+        filename: str. File path to pre-trained embedding.
+        embedding_dim: int. Dimensionality of embedding, used to validate the embedding file.
     Returns:
-        word_vector: dict(str, np.array), a mapping of words to embeddings;
+        word_vector: Dict(str, np.ndarray), a mapping of words to embeddings.
 
     """
     word_vectors = {}
@@ -33,20 +36,23 @@ def load_glove_format(filename, embedding_dim):
     return word_vectors
 
 
-def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_indices=0,
-                      rand_init_indices=1):
-    """Build word embeddings matrix from pre-trained-embeddings
+def filter_embeddings(trained_embedding: Dict[str, np.ndarray],
+                      embedding_dim: int,
+                      vocabulary: Dict[str, int],
+                      zero_init_indices: Union[int, List[int]] = 0,
+                      rand_init_indices: Union[int, List[int]] = 1) -> np.ndarray:
+    """Build word embeddings matrix from pre-trained-embeddings and word vocabulary.
 
     Args:
-        trained_embedding: dict(str, np.array), a mapping of words to embeddings
-        embedding_dim: int, dimensionality of embedding
-        vocabulary: dict. a mapping of words to indices
-        zero_init_indices: int or a list, the indices which use zero-initialization. These indices
-                           usually represent padding token.
-        rand_init_indices: int or a list, the indices which use randomly-initialization.These
-                           indices usually represent other special tokens, such as "unk" token.
+        trained_embedding: Dict(str, np.ndarray). A mapping of words to pre-trained embeddings
+        embedding_dim: int. Dimensionality of embedding.
+        vocabulary: Dict[str, int]. A mapping of words to indices
+        zero_init_indices: int or a List of int. The indices which use zero-initialization. These
+            indices usually represent padding token.
+        rand_init_indices: int or a List of int. The indices which use randomly-initialization.These
+            indices usually represent other special tokens, such as "unk" token.
 
-    Returns: np.array, a word embedding matrix.
+    Returns: np.ndarray, a word embedding matrix, shaped [vocab_size, embedding_dim].
 
     """
     emb = np.zeros(shape=(len(vocabulary), embedding_dim), dtype='float32')
@@ -72,21 +78,26 @@ def filter_embeddings(trained_embedding, embedding_dim, vocabulary, zero_init_in
     return emb
 
 
-def load_pre_trained(load_filename, embedding_dim=None, vocabulary=None, zero_init_indices=0,
-                     rand_init_indices=1):
+def load_pre_trained(load_filename: str,
+                     embedding_dim: Optional[int] = None,
+                     vocabulary: Optional[Dict[str, int]] = None,
+                     zero_init_indices: Union[int, List[int]] = 0,
+                     rand_init_indices: Union[int, List[int]] = 1) \
+        -> Union[Dict[str, np.ndarray], np.ndarray]:
     """Load pre-trained embedding and fit into vocabulary if provided
 
     Args:
-        load_filename: str, pre-trained embedding file, in word2vec-like format or glove-like format
-        embedding_dim: int, dimensionality of embeddings in the embedding file, must be provided when
-                       the file is in glove-like format.
-        vocabulary: dict. a mapping of words to indices
-        zero_init_indices: int or a list, the indices which use zero-initialization. These indices
-                           usually represent padding token.
-        rand_init_indices: int or a list, the indices which use randomly-initialization.These
-                           indices usually represent other special tokens, such as "unk" token.
-    Returns: If vocabulary is None: dict(str, np.array), a mapping of words to embeddings.
-             Otherwise: np.array, a word embedding matrix.
+        load_filename: str. Pre-trained embedding file, in word2vec-like format or glove-like format
+        embedding_dim: int. Dimensionality of embeddings in the embedding file, must be provided
+            when the file is in glove-like format.
+        vocabulary: Dict[str, int]. A mapping of words to indices.
+        zero_init_indices: int or a List of int. The indices which use zero-initialization. These
+            indices usually represent padding token.
+        rand_init_indices: int or a List of int. The indices which use randomly-initialization.These
+            indices usually represent other special tokens, such as "unk" token.
+
+    Returns: If vocabulary is None: Dict(str, np.ndarray), a mapping of words to embeddings.
+             Otherwise: np.ndarray, a word embedding matrix.
 
     """
     word_vectors = {}
@@ -116,19 +127,24 @@ def load_pre_trained(load_filename, embedding_dim=None, vocabulary=None, zero_in
         return word_vectors
 
 
-def train_w2v(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embedding_dim=300):
-    """Use word2vec to train on corpus to obtain embedding
+def train_w2v(corpus: List[List[str]],
+              vocabulary: Dict[str, int],
+              zero_init_indices: Union[int, List[int]] = 0,
+              rand_init_indices: Union[int, List[int]] = 1,
+              embedding_dim: int = 300) -> np.ndarray:
+    """Use word2vec to train on corpus to obtain embedding.
 
     Args:
-        corpus: list of tokenized texts, corpus to train on
-        vocabulary: dict, a mapping of words to indices
-        zero_init_indices: int or a list, the indices which use zero-initialization. These indices
-                           usually represent padding token.
-        rand_init_indices: int or a list, the indices which use randomly-initialization.These
-                           indices usually represent other special tokens, such as "unk" token.
-        embedding_dim: int, dimensionality of embedding
+        corpus: List of List of str. List of tokenized texts, the corpus to train on, like ``[['我',
+            '是', '中', '国', '人'], ...]``.
+        vocabulary: Dict[str, int']. A mapping of words to indices
+        zero_init_indices: int or a List of int. The indices which use zero-initialization. These
+            indices usually represent padding token.
+        rand_init_indices: int or a List of int. The indices which use randomly-initialization.These
+            indices usually represent other special tokens, such as "unk" token.
+        embedding_dim: int. Dimensionality of embedding
 
-    Returns: np.array, a word embedding matrix.
+    Returns: np.ndarray, a word embedding matrix, shaped [vocab_size, embedding_dim].
 
     """
     model = Word2Vec(corpus, size=embedding_dim, min_count=1, window=5, sg=1, iter=10)
@@ -140,21 +156,26 @@ def train_w2v(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embe
     return emb
 
 
-def train_fasttext(corpus, vocabulary, zero_init_indices=0, rand_init_indices=1, embedding_dim=300):
+def train_fasttext(corpus: List[List[str]],
+                   vocabulary: Dict[str, int],
+                   zero_init_indices: Union[int, List[int]] = 0,
+                   rand_init_indices: Union[int, List[int]] = 1,
+                   embedding_dim: int = 300) -> np.ndarray:
     """Use fasttext to train on corpus to obtain embedding
 
-        Args:
-            corpus: list of tokenized texts, corpus to train on
-            vocabulary: dict, a mapping of words to indices
-            zero_init_indices: int or a list, the indices which use zero-initialization. These
-                               indices usually represent padding token.
-            rand_init_indices: int or a list, the indices which use randomly-initialization.These
-                               indices usually represent other special tokens, such as "unk" token.
-            embedding_dim: int, dimensionality of embedding
+    Args:
+        corpus: List of List of str. List of tokenized texts, the corpus to train on, like ``[['我',
+            '是', '中', '国', '人'], ...]``.
+        vocabulary: Dict[str, int']. A mapping of words to indices
+        zero_init_indices: int or a List of int. The indices which use zero-initialization. These
+            indices usually represent padding token.
+        rand_init_indices: int or a List of int. The indices which use randomly-initialization.These
+            indices usually represent other special tokens, such as "unk" token.
+        embedding_dim: int. Dimensionality of embedding
 
-        Returns: np.array, a word embedding matrix.
+    Returns: np.ndarray, a word embedding matrix, shaped [vocab_size, embedding_dim].
 
-        """
+    """
     model = FastText(size=embedding_dim, min_count=1, window=5, sg=1, word_ngrams=1)
     model.build_vocab(sentences=corpus)
     model.train(sentences=corpus, total_examples=len(corpus), epochs=10)
