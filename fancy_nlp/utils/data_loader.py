@@ -119,7 +119,12 @@ def load_text_classification_data_and_labels(
         return token_seqs, label_seqs
 
 
-def load_spm_data_and_labels(filename, delimiter='\t', split_mode=0, split_size=0.2, seed=42):
+def load_spm_data_and_labels(filename: str, delimiter: str = '\t', split_mode: int = 0,
+                             split_size: float = 0.2, seed: int = 42) -> \
+    Union[Tuple[Tuple[List[str], List[str]], List[str]],
+          Tuple[Tuple[List[str], List[str]], List[str], Tuple[List[str], List[str]], List[str]],
+          Tuple[Tuple[List[str], List[str]], List[str], Tuple[List[str], List[str]], List[str],
+                Tuple[List[str], List[str]], List[str]]]:
     """Load spm data and label from a file.
 
     The file should follow fixed format:
@@ -138,6 +143,7 @@ def load_spm_data_and_labels(filename, delimiter='\t', split_mode=0, split_size=
              Otherwise: tuple((list_a, list_b), list), data pairs and labels
 
     """
+    # read data file
     with codecs.open(filename, 'r', encoding='utf8') as reader:
         text_a, text_b, labels = [], [], []
         for i, line in enumerate(reader):
@@ -152,10 +158,13 @@ def load_spm_data_and_labels(filename, delimiter='\t', split_mode=0, split_size=
                 else:
                     raise Exception(f'Format Error at line {i}!'
                                     f'Input file should follow fixed spm format.')
+
+    # randomly split train data and valid data
     if split_mode == 1:
         x_a_train, x_a_valid, x_b_train, x_b_valid, y_train, y_valid = train_test_split(
             text_a, text_b, labels, test_size=split_size, stratify=labels, random_state=seed)
         return (x_a_train, x_b_train), y_train, (x_a_valid, x_b_valid), y_valid
+    # randomly split train data, valid data and test data
     elif split_mode == 2:
         x_a_train, x_a_holdout, x_b_train, x_b_holdout, y_train, y_holdout = train_test_split(
             text_a, text_b, labels, test_size=split_size, stratify=labels, random_state=seed)

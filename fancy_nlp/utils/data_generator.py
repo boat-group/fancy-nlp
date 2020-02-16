@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import math
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import tensorflow as tf
 import numpy as np
 
-from fancy_nlp.preprocessors import NERPreprocessor
+from fancy_nlp.preprocessors import NERPreprocessor, SPMPreprocessor
 
 
 class NERGenerator(tf.keras.utils.Sequence):
@@ -96,7 +96,11 @@ class TextClassificationGenerator(tf.keras.utils.Sequence):
 class SPMGenerator(tf.keras.utils.Sequence):
     """Data Generator for SPM
     """
-    def __init__(self, preprocessor, data, labels=None, batch_size=32, shuffle=True):
+    def __init__(self, preprocessor: SPMPreprocessor,
+                 data: Tuple[List[str], List[str]],
+                 labels: Optional[List[str]] = None,
+                 batch_size: int = 32,
+                 shuffle: bool = True) -> None:
         """
         Args:
             preprocessor: `SPMPreprocessor` instance to help prepare input for spm model

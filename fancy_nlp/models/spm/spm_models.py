@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
+from typing import Tuple, List, Union, Optional
+import numpy as np
 
 from fancy_nlp.models.spm.base_spm_model import BaseSPMModel
 from fancy_nlp.layers.matching import *
@@ -10,30 +11,62 @@ class SiameseCNN(BaseSPMModel):
     """Siamese CNN model for SPM.
     """
     def __init__(self,
-                 num_class,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 max_len=None,
-                 max_word_len=None,
-                 dropout=0.2,
-                 filters=200,
-                 kernel_size=(2, 3, 4, 5),
-                 char_dim=50,
-                 fc_dim=200,
-                 activation='relu',
-                 optimizer='adam'):
+                 num_class: int,
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: bool = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 filters: int = 200,
+                 kernel_size: Union[Tuple[int], List[int]] = (2, 3, 4, 5),
+                 char_dim: int = 50,
+                 fc_dim: int = 200,
+                 activation: str = 'relu',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam'):
+        """
+
+        Args:
+            num_class: int: the number of classification class
+            use_word: boolean, whether to use word embedding as input
+            word_embeddings: np.ndarray, word embeddings
+            word_vocab_size: int, the number of words in vocabulary
+            word_embed_dim: int, dimensionality of word embedding
+            word_embed_trainable: boolean, whether to update word embedding during training
+            use_char: boolean, whether to use char as input
+            char_embeddings: ndarray, char_embeddings
+            char_vocab_size: int, the number of chars in vocabulary
+            char_embed_dim: int, dimensionality of char embedding
+            char_embed_trainable: boolean, similar as 'word_embed_trainable'
+            use_bert: boolean, whether to use bert embedding as input
+            bert_config_file: str, path to bert's configuration file
+            bert_checkpoint_file: str, path to bert's checkpoint file
+            bert_trainable: boolean, whether to update bert during training
+            max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                     as max_len. However, max_len must be provided when using bert as input.
+            max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                          batch as max_word_len.
+            dropout: float, drop rate
+            filters: int, the number of filters for cnn
+            kernel_size: list, kernel size for cnn
+            char_dim: int, char embedding dim for word+char input
+            fc_dim: int, output dimensionality of fully connected layer
+            activation: str, activation function name
+            optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                       use during training
+        """
+
         self.num_class = num_class
         self.filters = filters
         self.kernel_size = kernel_size
@@ -47,7 +80,7 @@ class SiameseCNN(BaseSPMModel):
                                          bert_checkpoint_file, bert_trainable,
                                          False, max_len, max_word_len, char_dim, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed_a, input_embed_b = self.build_input()
 
         a_conv_layers = []
@@ -79,29 +112,60 @@ class SiameseBiLSTM(BaseSPMModel):
     """Siamese Bidirectional LSTM model for SPM.
     """
     def __init__(self,
-                 num_class,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 max_len=None,
-                 max_word_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 char_dim=50,
-                 fc_dim=200,
-                 activation='relu',
-                 optimizer='adam'):
+                 num_class: int,
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: bool = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 char_dim: int = 50,
+                 fc_dim: int = 200,
+                 activation: str = 'relu',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam'):
+        """
+
+        Args:
+            num_class: int: the number of classification class
+            use_word: boolean, whether to use word embedding as input
+            word_embeddings: np.ndarray, word embeddings
+            word_vocab_size: int, the number of words in vocabulary
+            word_embed_dim: int, dimensionality of word embedding
+            word_embed_trainable: boolean, whether to update word embedding during training
+            use_char: boolean, whether to use char as input
+            char_embeddings: ndarray, char_embeddings
+            char_vocab_size: int, the number of chars in vocabulary
+            char_embed_dim: int, dimensionality of char embedding
+            char_embed_trainable: boolean, similar as 'word_embed_trainable'
+            use_bert: boolean, whether to use bert embedding as input
+            bert_config_file: str, path to bert's configuration file
+            bert_checkpoint_file: str, path to bert's checkpoint file
+            bert_trainable: boolean, whether to update bert during training
+            max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                     as max_len. However, max_len must be provided when using bert as input.
+            max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                          batch as max_word_len.
+            dropout: float, drop rate
+            rnn_units: int, hidden size for lstm
+            char_dim: int, char embedding dim for word+char input
+            fc_dim: int, output dimensionality of fully connected layer
+            activation: str, activation function name
+            optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                       use during training
+        """
+
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_dim = fc_dim
@@ -114,7 +178,7 @@ class SiameseBiLSTM(BaseSPMModel):
                                             bert_checkpoint_file, bert_trainable,
                                             False, max_len, max_word_len, char_dim, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed_a, input_embed_b = self.build_input()
 
         bilstm_layer = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(self.rnn_units))
@@ -137,30 +201,60 @@ class SiameseBiGRU(BaseSPMModel):
     """
 
     def __init__(self,
-                 num_class,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 bert_output_layer_num=1,
-                 max_len=None,
-                 max_word_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 char_dim=50,
-                 fc_dim=200,
-                 activation='relu',
-                 optimizer='adam'):
+                 num_class: int,
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: bool = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 char_dim: int = 50,
+                 fc_dim: int = 200,
+                 activation: str = 'relu',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam'):
+        """
+
+        Args:
+           num_class: int: the number of classification class
+           use_word: boolean, whether to use word embedding as input
+           word_embeddings: np.ndarray, word embeddings
+           word_vocab_size: int, the number of words in vocabulary
+           word_embed_dim: int, dimensionality of word embedding
+           word_embed_trainable: boolean, whether to update word embedding during training
+           use_char: boolean, whether to use char as input
+           char_embeddings: ndarray, char_embeddings
+           char_vocab_size: int, the number of chars in vocabulary
+           char_embed_dim: int, dimensionality of char embedding
+           char_embed_trainable: boolean, similar as 'word_embed_trainable'
+           use_bert: boolean, whether to use bert embedding as input
+           bert_config_file: str, path to bert's configuration file
+           bert_checkpoint_file: str, path to bert's checkpoint file
+           bert_trainable: boolean, whether to update bert during training
+           max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                    as max_len. However, max_len must be provided when using bert as input.
+           max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                         batch as max_word_len.
+           dropout: float, drop rate
+           rnn_units: int, hidden size for lstm
+           char_dim: int, char embedding dim for word+char input
+           fc_dim: int, output dimensionality of fully connected layer
+           activation: str, activation function name
+           optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                      use during training
+        """
+
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_dim = fc_dim
@@ -173,7 +267,7 @@ class SiameseBiGRU(BaseSPMModel):
                                            bert_checkpoint_file, bert_trainable,
                                            False, max_len, max_word_len, char_dim, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed_a, input_embed_b = self.build_input()
 
         bigru_layer = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(self.rnn_units))
@@ -196,30 +290,60 @@ class ESIM(BaseSPMModel):
     Support using CUDANNLSTM for acceleration when gpu is available.
     """
     def __init__(self,
-                 num_class,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 bert_output_layer_num=1,
-                 max_len=None,
-                 max_word_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 char_dim=50,
-                 fc_dim=200,
-                 activation='relu',
-                 optimizer='adam'):
+                 num_class: int,
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: bool = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 char_dim: int = 50,
+                 fc_dim: int = 200,
+                 activation: str = 'relu',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam'):
+        """
+
+        Args:
+           num_class: int: the number of classification class
+           use_word: boolean, whether to use word embedding as input
+           word_embeddings: np.ndarray, word embeddings
+           word_vocab_size: int, the number of words in vocabulary
+           word_embed_dim: int, dimensionality of word embedding
+           word_embed_trainable: boolean, whether to update word embedding during training
+           use_char: boolean, whether to use char as input
+           char_embeddings: ndarray, char_embeddings
+           char_vocab_size: int, the number of chars in vocabulary
+           char_embed_dim: int, dimensionality of char embedding
+           char_embed_trainable: boolean, similar as 'word_embed_trainable'
+           use_bert: boolean, whether to use bert embedding as input
+           bert_config_file: str, path to bert's configuration file
+           bert_checkpoint_file: str, path to bert's checkpoint file
+           bert_trainable: boolean, whether to update bert during training
+           max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                    as max_len. However, max_len must be provided when using bert as input.
+           max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                         batch as max_word_len.
+           dropout: float, drop rate
+           rnn_units: int, hidden size for lstm
+           char_dim: int, char embedding dim for word+char input
+           fc_dim: int, output dimensionality of fully connected layer
+           activation: str, activation function name
+           optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                      use during training
+        """
+
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_dim = fc_dim
@@ -232,7 +356,7 @@ class ESIM(BaseSPMModel):
                                    bert_checkpoint_file, bert_trainable,
                                    False, max_len, max_word_len, char_dim, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed_a, input_embed_b = self.build_input()
 
         bilstm_layer = tf.keras.layers.Bidirectional(
@@ -287,30 +411,60 @@ class BiMPM(BaseSPMModel):
     """
 
     def __init__(self,
-                 num_class,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 bert_output_layer_num=1,
-                 max_len=None,
-                 max_word_len=None,
-                 dropout=0.2,
-                 rnn_units=150,
-                 char_dim=50,
-                 fc_dim=200,
-                 activation='relu',
-                 optimizer='adam'):
+                 num_class: int,
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: bool = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 dropout: float = 0.2,
+                 rnn_units: int = 150,
+                 char_dim: int = 50,
+                 fc_dim: int = 200,
+                 activation: str = 'relu',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] = 'adam'):
+        """
+
+        Args:
+           num_class: int: the number of classification class
+           use_word: boolean, whether to use word embedding as input
+           word_embeddings: np.ndarray, word embeddings
+           word_vocab_size: int, the number of words in vocabulary
+           word_embed_dim: int, dimensionality of word embedding
+           word_embed_trainable: boolean, whether to update word embedding during training
+           use_char: boolean, whether to use char as input
+           char_embeddings: ndarray, char_embeddings
+           char_vocab_size: int, the number of chars in vocabulary
+           char_embed_dim: int, dimensionality of char embedding
+           char_embed_trainable: boolean, similar as 'word_embed_trainable'
+           use_bert: boolean, whether to use bert embedding as input
+           bert_config_file: str, path to bert's configuration file
+           bert_checkpoint_file: str, path to bert's checkpoint file
+           bert_trainable: boolean, whether to update bert during training
+           max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                    as max_len. However, max_len must be provided when using bert as input.
+           max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                         batch as max_word_len.
+           dropout: float, drop rate
+           rnn_units: int, hidden size for lstm
+           char_dim: int, char embedding dim for word+char input
+           fc_dim: int, output dimensionality of fully connected layer
+           activation: str, activation function name
+           optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                      use during training
+        """
+
         self.num_class = num_class
         self.rnn_units = rnn_units
         self.fc_dim = fc_dim
@@ -323,7 +477,7 @@ class BiMPM(BaseSPMModel):
                                     bert_checkpoint_file, bert_trainable,
                                     False, max_len, max_word_len, char_dim, dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed_a, input_embed_b = self.build_input()
 
         bilstm_layer = tf.keras.layers.Bidirectional(
@@ -389,17 +543,35 @@ class BertSPM(BaseSPMModel):
     """
 
     def __init__(self,
-                 num_class,
-                 bert_config_file,
-                 bert_checkpoint_file,
-                 bert_trainable,
-                 max_len,
-                 dropout=0.2,
-                 fc_dim=100,
-                 activation='tanh',
-                 optimizer=tf.keras.optimizers.Adam(lr=1e-5),  # use a small learning rate for bert
-                 bert_output_layer_num=1,
+                 num_class: int,
+                 bert_config_file: str,
+                 bert_checkpoint_file: str,
+                 bert_trainable: bool,
+                 max_len: int,
+                 dropout: float = 0.2,
+                 fc_dim: int = 100,
+                 activation: str = 'tanh',
+                 optimizer: Union[str, tf.keras.optimizers.Optimizer] =
+                 tf.keras.optimizers.Adam(lr=1e-5),  # use a small learning rate for bert
                  **kwargs):
+        """
+
+        Args:
+           num_class: int: the number of classification class
+           use_bert: boolean, whether to use bert embedding as input
+           bert_config_file: str, path to bert's configuration file
+           bert_checkpoint_file: str, path to bert's checkpoint file
+           bert_trainable: boolean, whether to update bert during training
+           max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                    as max_len. However, max_len must be provided when using bert as input.
+           max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                         batch as max_word_len.
+           dropout: float, drop rate
+           fc_dim: int, output dimensionality of fully connected layer
+           activation: str, activation function name
+           optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                      use during training
+        """
         self.num_class = num_class
         self.fc_dim = fc_dim
         self.activation = activation
@@ -411,7 +583,7 @@ class BertSPM(BaseSPMModel):
                                       use_bert_model=True,
                                       max_len=max_len, dropout=dropout)
 
-    def build_model(self):
+    def build_model(self) -> tf.keras.models.Model:
         model_inputs, input_embed = self.build_input()
 
         sent_rep = tf.keras.layers.Lambda(lambda x: x[:, 0])(input_embed)

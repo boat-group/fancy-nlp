@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Tuple
 
 import tensorflow as tf
 from seqeval import metrics
 from sklearn.metrics import f1_score, precision_score, recall_score, classification_report
 import numpy as np
 
-from fancy_nlp.preprocessors import NERPreprocessor
+from fancy_nlp.preprocessors import NERPreprocessor, SPMPreprocessor
 
 
 class NERMetric(tf.keras.callbacks.Callback):
@@ -92,7 +92,10 @@ class SPMMetric(tf.keras.callbacks.Callback):
     """
     callback for evaluating spm model
     """
-    def __init__(self, preprocessor, valid_data, valid_labels):
+    def __init__(self,
+                 preprocessor: SPMPreprocessor,
+                 valid_data: Tuple[List[str], List[str]],
+                 valid_labels: List[str]) -> None:
         """
         Args:
             preprocessor: `SPMPreprocessor` instance to help prepare input for spm model

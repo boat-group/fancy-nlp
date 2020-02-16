@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pickle
-import codecs
+from typing import Tuple, List, Union, Dict, Optional
 
 import numpy as np
 import jieba
@@ -16,33 +16,43 @@ from fancy_nlp.utils import pad_sequences_2d, get_len_from_corpus, ChineseBertTo
 class SPMPreprocessor(Preprocessor):
     """SPM preprocessor.
     """
-    def __init__(self, train_data, train_labels, min_count=2, use_word=False, use_char=True,
-                 use_bert=False, use_bert_model=False, external_word_dict=None, bert_vocab_file=None,
-                 word_embed_type=None, word_embed_dim=300, char_embed_type=None, char_embed_dim=300,
-                 label_dict_file=None, max_len=None, max_word_len=None,
-                 padding_mode='post', truncating_mode='post'):
+    def __init__(self,
+                 train_data: Tuple[List[str], List[str]],
+                 train_labels: List[str],
+                 min_count: int = 2,
+                 use_word: bool = False,
+                 use_char: bool = True,
+                 use_bert: bool = False,
+                 use_bert_model: bool = False,
+                 external_word_dict: Optional[List[str]] = None,
+                 bert_vocab_file: Optional[str] = None,
+                 word_embed_type: Optional[str] = None,
+                 word_embed_dim: int = 300,
+                 char_embed_type: Optional[str] = None,
+                 char_embed_dim: int = 300,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 padding_mode: str = 'post',
+                 truncating_mode: str = 'post') -> None:
         """
 
         Args:
             train_data: a list of untokenized text pairs
             train_labels: list of str, train_data's labels
             min_count: int, token of which frequency is lower than min_count will be ignored
-            use_word: whether to use word embedding as input
-            use_char：whether to use char embedding as input
-            use_bert: whether to use bert embedding as input
+            use_word: boolean, whether to use word embedding as input
+            use_char：boolean, whether to use char embedding as input
+            use_bert: boolean, whether to use bert embedding as input
             use_bert_model: boolean, whether to use traditional bert model which combines two
                             sentences as one input
             word_embed_type: str, can be a pre-trained embedding filename or pre-trained embedding
                              methods (word2vec, glove, fastext)
-            word_embed_dim: dimensionality of word embedding
-            char_embed_type: same as word_embed_type, only apply when use_char is True
-            char_embed_dim: dimensionality of char embedding
+            word_embed_dim: int, dimensionality of word embedding
+            char_embed_type: sstr, ame as word_embed_type, only apply when use_char is True
+            char_embed_dim: int, dimensionality of char embedding
             external_word_dict: external word dictionary, only apply when use_word is True
             bert_vocab_file: vocabulary file of pre-trained bert model, only apply when use_bert is
                              True
-            label_dict_file: a file with two columns separated by tab, the first column is raw
-                             label name, and the second column is the corresponding name which is
-                             meaningful
             max_len: int, max sequence length
             max_word_len: int, max word length
             padding_mode: str, 'pre' or 'post', pad either before or after each sequence
@@ -62,9 +72,6 @@ class SPMPreprocessor(Preprocessor):
         self.word_embed_type = word_embed_type
         self.char_embed_type = char_embed_type
         self.max_word_len = max_word_len
-
-        # todo: 删掉，原因：只使用于文本分类
-        self.label_dict = self.load_label_dict(label_dict_file)
 
         assert not (self.use_bert_model and (self.use_word or self.use_char)), \
             "bert model can not add word or char embedding as additional input"
@@ -151,25 +158,12 @@ class SPMPreprocessor(Preprocessor):
             # max length is 512 for bert
             self.max_len = min(self.max_len, 512)
 
-    def load_word_dict(self):
+    def load_word_dict(self) -> None:
         if self.external_word_dict:
             for word in self.external_word_dict:
                 jieba.add_word(word, freq=1000000)
 
-    # todo: 删掉，原因：此函数只适用于文本分类的情况
-    @staticmethod
-    def load_label_dict(label_dict_file):
-        result_dict = dict()
-        if label_dict_file:
-            with codecs.open(label_dict_file, encoding='utf-8') as f_label_dict:
-                for line in f_label_dict:
-                    line_items = line.strip().split('\t')
-                    result_dict[line_items[0]] = line_items[1]
-            return result_dict
-        else:
-            return None
-
-    def build_label_vocab(self, labels):
+    def build_label_vocab(self, labels: List[str]) -> Tuple[Dict[str, int], Dict[int, str]]:
         """Build label vocabulary
 
         Args:
@@ -194,7 +188,10 @@ class SPMPreprocessor(Preprocessor):
                      'vocabulary size: {}'.format(len(label_vocab)))
         return label_vocab, id2label
 
-    def prepare_input(self, data, labels=None):
+    def prepare_input(self,
+                      data: Tuple[List[str], List[str]],
+                      labels: Optional[List[str]] = None) -> \
+        Union[Tuple[List[np.ndarray], None], Tuple[List[np.ndarray], np.ndarray]]:
         """Prepare input (features and labels) for SPM model.
 
         Args:
@@ -311,7 +308,7 @@ class SPMPreprocessor(Preprocessor):
             y = np.asarray(batch_label_ids)
             return features, y
 
-    def get_word_ids(self, word_cut):
+    def get_word_ids(self, word_cut: List[str]) -> List[int]:
         """Given a word-level tokenized text, return the corresponding word ids.
 
         Args:
@@ -326,12 +323,11 @@ class SPMPreprocessor(Preprocessor):
             word_ids.append(self.word_vocab.get(word, self.word_vocab[self.unk_token]))
         return word_ids
 
-    # todo: 去掉label_dict参数，原因：此参数只适用于文本分类的情况
-    def label_decode(self, pred_probs, label_dict=None):
+    def label_decode(self,
+                     pred_probs: np.ndarray,
+                     label_dict=None) -> List[str]:
         pred_ids = np.argmax(pred_probs, axis=-1)
         pred_labels = [self.id2label[pred_id] for pred_id in pred_ids]
-        if label_dict:
-            pred_labels = [label_dict[raw_label] for raw_label in pred_labels]
         return pred_labels
 
     def get_unk_label_id(self):
@@ -345,11 +341,11 @@ class SPMPreprocessor(Preprocessor):
         """
         return 0  # id of 0 is the label with the highest frequency
 
-    def save(self, preprocessor_file):
+    def save(self, preprocessor_file: str) -> None:
         pickle.dump(self, open(preprocessor_file, 'wb'))
 
     @classmethod
-    def load(cls, preprocessor_file):
+    def load(cls, preprocessor_file: str):
         p = pickle.load(open(preprocessor_file, 'rb'))
         p.load_word_dict()  # reload external word dict into jieba
         return p

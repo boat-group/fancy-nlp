@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from typing import Tuple, List, Union, Optional
 
 from absl import logging
 import numpy as np
@@ -10,10 +11,13 @@ from sklearn import metrics
 from fancy_nlp.utils import SPMGenerator
 from fancy_nlp.callbacks import SPMMetric
 from fancy_nlp.callbacks import SWA
+from fancy_nlp.preprocessors import SPMPreprocessor
 
 
 class SPMTrainer(object):
-    def __init__(self, model, preprocessor):
+    def __init__(self,
+                 model: tf.keras.models.Model,
+                 preprocessor: SPMPreprocessor) -> None:
         """
 
         Args:
@@ -23,9 +27,18 @@ class SPMTrainer(object):
         self.model = model
         self.preprocessor = preprocessor
 
-    def train(self, train_data, train_labels, valid_data=None, valid_labels=None, batch_size=32,
-              epochs=50, callback_list=None, checkpoint_dir=None, model_name=None, swa_model=None,
-              load_swa_model=False):
+    def train(self,
+              train_data: Tuple[List[str], List[str]],
+              train_labels: List[str],
+              valid_data: Optional[Tuple[List[str], List[str]]] = None,
+              valid_labels: Optional[List[str]] = None,
+              batch_size: int = 32,
+              epochs: int = 50,
+              callback_list: Optional[List[str]] = None,
+              checkpoint_dir: Optional[str] = None,
+              model_name: Optional[str] = None,
+              swa_model: Optional[tf.keras.models.Model] = None,
+              load_swa_model: bool = False) -> None:
         callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
                                           model_name, swa_model)
 
@@ -49,9 +62,18 @@ class SPMTrainer(object):
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
-    def train_generator(self, train_data, train_labels, valid_data=None, valid_labels=None,
-                        batch_size=32, epochs=50, callback_list=None, checkpoint_dir=None,
-                        model_name=None, swa_model=None, load_swa_model=False):
+    def train_generator(self,
+                        train_data: Tuple[List[str], List[str]],
+                        train_labels: List[str],
+                        valid_data: Optional[Tuple[List[str], List[str]]] = None,
+                        valid_labels: Optional[List[str]] = None,
+                        batch_size: int = 32,
+                        epochs: int = 50,
+                        callback_list: Optional[List[str]] = None,
+                        checkpoint_dir: Optional[str] = None,
+                        model_name: Optional[str] = None,
+                        swa_model: Optional[tf.keras.models.Model] = None,
+                        load_swa_model: bool = False) -> None:
         callbacks = self.prepare_callback(callback_list, valid_data, valid_labels, checkpoint_dir,
                                           model_name, swa_model)
 
@@ -79,8 +101,14 @@ class SPMTrainer(object):
             logging.info('Loading best model after using ModelCheckpoint callback...')
             self.load_model_weights(os.path.join(checkpoint_dir, f'{model_name}.hdf5'))
 
-    def prepare_callback(self, callback_list, valid_data=None, valid_labels=None,
-                         checkpoint_dir=None, model_name=None, swa_model=None):
+    def prepare_callback(self,
+                         callback_list: List[str],
+                         valid_data: Optional[Tuple[List[str], List[str]]] = None,
+                         valid_labels: Optional[List[str]] = None,
+                         checkpoint_dir: Optional[str] = None,
+                         model_name: Optional[str] = None,
+                         swa_model: Optional[tf.keras.models.Model] = None) -> \
+        Optional[List[tf.keras.callbacks.Callback]]:
         """
 
         Args:
@@ -151,10 +179,10 @@ class SPMTrainer(object):
 
         return callbacks
 
-    def load_model_weights(self, weights_file):
+    def load_model_weights(self, weights_file: str) -> None:
         self.model.load_weights(weights_file)
 
-    def evaluate(self, data, labels):
+    def evaluate(self, data: Tuple[List[str], List[str]], labels: List[str]) -> float:
         """Evaluate the performance of spm model.
 
         Args:

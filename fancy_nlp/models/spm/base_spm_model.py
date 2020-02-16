@@ -2,7 +2,9 @@
 
 """Base SPM model
 """
+from typing import Optional
 
+import numpy as np
 import tensorflow as tf
 from bert4keras.bert import build_bert_model
 
@@ -12,25 +14,51 @@ from fancy_nlp.models.base_model import BaseModel
 
 class BaseSPMModel(BaseModel):
     def __init__(self,
-                 use_word=True,
-                 word_embeddings=None,
-                 word_vocab_size=-1,
-                 word_embed_dim=-1,
-                 word_embed_trainable=False,
-                 use_char=False,
-                 char_embeddings=None,
-                 char_vocab_size=-1,
-                 char_embed_dim=-1,
-                 char_embed_trainable=False,
-                 use_bert=False,
-                 bert_config_file=None,
-                 bert_checkpoint_file=None,
-                 bert_trainable=False,
-                 use_bert_model=False,
-                 max_len=None,
-                 max_word_len=None,
-                 char_dim=50,
-                 dropout=0.2):
+                 use_word: bool = True,
+                 word_embeddings: Optional[np.ndarray] = None,
+                 word_vocab_size: int = -1,
+                 word_embed_dim: int = -1,
+                 word_embed_trainable: bool = False,
+                 use_char: True = False,
+                 char_embeddings: Optional[np.ndarray] = None,
+                 char_vocab_size: int = -1,
+                 char_embed_dim: int = -1,
+                 char_embed_trainable: bool = False,
+                 use_bert: bool = False,
+                 bert_config_file: Optional[str] = None,
+                 bert_checkpoint_file: Optional[str] = None,
+                 bert_trainable: bool = False,
+                 use_bert_model: bool = False,
+                 max_len: Optional[int] = None,
+                 max_word_len: Optional[int] = None,
+                 char_dim: int = 50,
+                 dropout: float = 0.2) -> None:
+        """
+
+        Args:
+            use_word: boolean, whether to use word embedding as input
+            word_embeddings: np.ndarray, word embeddings
+            word_vocab_size: int, the number of words in vocabulary
+            word_embed_dim: int, dimensionality of word embedding
+            word_embed_trainable: boolean, whether to update word embedding during training
+            use_char: boolean, whether to use char as input
+            char_embeddings: ndarray, char_embeddings
+            char_vocab_size: int, the number of chars in vocabulary
+            char_embed_dim: int, dimensionality of char embedding
+            char_embed_trainable: boolean, similar as 'word_embed_trainable'
+            use_bert: boolean, whether to use bert embedding as input
+            bert_config_file: str, path to bert's configuration file
+            bert_checkpoint_file: str, path to bert's checkpoint file
+            bert_trainable: boolean, whether to update bert during training
+            use_bert_model: boolen, whether to use bert model
+            max_len: int, max sequence length. If None, we dynamically use the max length of one batch
+                     as max_len. However, max_len must be provided when using bert as input.
+            max_word_len: int, max word length. If None, we dynamically use the max word length of one
+                          batch as max_word_len.
+            optimizer: str or instance of `keras.optimizers.Optimizer`, indicating the optimizer to
+                       use during training
+            **kwargs: other argument for building spm model, such as "rnn_units", "fc_dim" etc.
+        """
 
         self.use_word = use_word
         self.word_embeddings = word_embeddings
@@ -78,6 +106,7 @@ class BaseSPMModel(BaseModel):
     def build_input(self):
 
         # TODO: consider masking
+        # build input for bert model
         if self.use_bert_model:
             model_inputs = []
             bert_model = build_bert_model(config_path=self.bert_config_file,
@@ -102,6 +131,7 @@ class BaseSPMModel(BaseModel):
         input_embed_b = []
 
         if self.use_word:
+            # add word input
             if self.word_embeddings is not None:
                 word_embedding_layer = tf.keras.layers.Embedding(
                     input_dim=self.word_vocab_size, output_dim=self.word_embed_dim,
@@ -119,6 +149,7 @@ class BaseSPMModel(BaseModel):
             input_embed_b.append(tf.keras.layers.SpatialDropout1D(self.dropout)(
                 word_embedding_layer(input_word_b)))
 
+            # add char input
             if self.use_char:
                 if self.char_embeddings is not None:
                     char_embedding_layer = tf.keras.layers.Embedding(
@@ -139,6 +170,7 @@ class BaseSPMModel(BaseModel):
                 input_embed_b.append(tf.keras.layers.SpatialDropout1D(self.dropout)(char_embed_b))
 
         else:
+            # add char input
             if self.use_char:
                 if self.char_embeddings is not None:
                     char_embedding_layer = tf.keras.layers.Embedding(
@@ -157,6 +189,7 @@ class BaseSPMModel(BaseModel):
                 input_embed_b.append(tf.keras.layers.SpatialDropout1D(self.dropout)(
                     char_embedding_layer(input_char_b)))
 
+            # add bert input
             if self.use_bert:
                 bert_model = build_bert_model(config_path=self.bert_config_file,
                                               checkpoint_path=self.bert_checkpoint_file)
