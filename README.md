@@ -1,123 +1,90 @@
-# Fancy-NLP
+<h1 align="center">Fancy-NLP</h1>
 
-![fancy-nlp logo](./img/fancy-nlp.jpg)
+<p align="center">NLP for human. A fast and esay-to-use natural language processing (NLP) toolkit, satisfying your imagination about NLP.</p>
 
-![GitHub stars](https://img.shields.io/github/stars/boat-group/fancy-nlp?style=social)
-![GitHub forks](https://img.shields.io/github/forks/boat-group/fancy-nlp?style=social)
+<div align="center">
+  <img src="./img/fancy-nlp_300-180_white.jpg">
+</div>
 
-[![Build Status](https://travis-ci.org/boat-group/fancy-nlp.svg?branch=master)](https://travis-ci.org/boat-group/fancy-nlp)
-![PyPI](https://img.shields.io/pypi/v/fancy-nlp)
-[![Coverage Status](https://coveralls.io/repos/github/boat-group/fancy-nlp/badge.svg?branch=master)](https://coveralls.io/github/boat-group/fancy-nlp?branch=master)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+<p align="center">
+  <a href="https://github.com/boat-group/fancy-nlp/stargazers">
+    <img src="https://img.shields.io/github/stars/boat-group/fancy-nlp.svg?colorA=orange&colorB=orange&logo=github" alt="GitHub stars">
+  </a>
+  <a href="https://github.com/boat-group/fancy-nlp/network/members">
+    <img src="https://img.shields.io/github/forks/boat-group/fancy-nlp.svg?colorA=orange&colorB=orange&logo=github" alt="GitHub forks">
+  </a>
+  <a href="https://travis-ci.org/boat-group/fancy-nlp">
+    <img src="https://travis-ci.org/boat-group/fancy-nlp.svg?branch=master" alt="Build status">
+  </a>
+  <a href="https://pypi.org/project/fancy-nlp">
+    <img src="https://img.shields.io/pypi/v/fancy-nlp.svg?colorB=brightgreen" alt="Pypi package">
+  </a>
+  <a href="https://pypi.org/project/fancy-nlp">
+    <img src="https://img.shields.io/pypi/dm/fancy-nlp" alt="PyPI - Downloads">
+  </a>
+  <a href="https://github.com/boat-group/fancy-nlp/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/boat-group/fancy-nlp.svg" alt="GitHub license">
+  </a>
+  <a href="https://coveralls.io/github/boat-group/fancy-nlp?branch=master">
+    <img src="https://coveralls.io/repos/github/boat-group/fancy-nlp/badge.svg?branch=master" alt="Coverage status">
+  </a>
+  <a href="http://commitizen.github.io/cz-cli/">
+    <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly">
+  </a> 
+</p>
+
+<p align="center">
+  <a href="#基本介绍">基本介绍</a> •
+  <a href="#安装">安装</a> •
+  <a href="#入门指引">入门指引</a> •
+  <a href="#详细教程">详细教程</a> •
+  <a href="#荣誉奖励">荣誉奖励</a> •
+  <a href="#如何贡献代码">如何贡献代码</a> •
+  <a href="#引用">引用</a> •
+  <a href="致谢">致谢</a>
+</p>
 
 
-## 基本介绍
+<h2 align="center">基本介绍</h2>
 
-fancy-nlp 是由腾讯广告 AMS 创意优化组团队构建的用于建设商品画像的文本知识挖掘工具，其支持诸如实体提取、文本分类等多种常见NLP任务。与当前业界常用框架相比，其能够支持用户快速的功能迭代：既可以满足高阶用户对模型进行深度定制，也可以让普通用户快速利用预训练的模型进行功能使用。在当前的商品广告业务场景中，我们利用fancy-nlp快速挖掘海量商品数据的特征，从而支持广告商品推荐等业务需求场景中。项目的初衷是希望提供一套面向文本的、易用的自然语言处理工具，其直接面向业务场景，满足用户对自然语言处理任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
+**Fancy-NLP** 是由腾讯商品广告策略组团队构建的用于建设商品画像的文本知识挖掘工具，其支持诸如实体提取、文本分类和文本相似度匹配等多种常见 NLP 任务。与当前业界常用框架相比，其能够支持用户进行快速的功能实心：既可以满足高阶用户对模型进行深度定制，也可以让普通用户快速利用预训练的模型快速进行功能实践。在当前的商品广告业务场景中，我们利用该工具快速挖掘海量商品数据的特征，从而支持广告商品推荐等模块中。
 
-### Highlight
+**项目的初衷**是希望提供一套易用的NLP工具，其直接面向使用场景，满足用户对NLP任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
 
-* 实体提取
-* 文本分类
-* 快速迭代
-* 一键式Predict
-* 预训练模型加载
+**Fancy 是什么寓意？**对于当前众多的NLP任务，例如实体识别（Named Entity Recognizition, NER）、文本分类以及文本相似度匹配（Sentence Pair Matching, SPM），大多数工具的设计都是偏向于模型的训练和评估。当普通用户希望将这些模型应用于实际业务场景中时，往往需要进行复杂的预处理和部署配置，这些过程往往和用户所期望的流程不符。因此 **Fancy** 的寓意为**满足你的想象**，你可以在 Fancy-NLP 中实现对 NLP 任务各个环节的一键式处理，高效将模型应用于实际的需求场景中。
 
+<h2 align="center">安装</h2>
 
-## fancy是什么寓意？
+**Fancy-NLP** 当前支持在Python 3环境下使用，且在Python 3.6中进行了完整的测试。当前的版本中已全面依赖 **Tensorflow 2.x**，如果你对模块的兼容性有所担忧，我们建议你使用 [virtualenv](https://virtualenv.pypa.io/en/latest/) 来创建虚拟环境以使用本工具。
 
-对于当前众多的NLP任务，例如序列标注、文本分类，大多数工具的设计都是偏向于模型的训练和评估。当普通用户希望将这些模型应用于实际业务场景中时，往往需要进行复杂的预处理和部署配置，这些过程往往和用户所期望的流程不符。因此`fancy`的寓意为**满足你的想象**，你可以在`fancy-nlp`中实现对NLP任务各个环节的一键式处理，高效将模型应用于实际的业务中。
+Fancy-NLP 支持使用 `pip` 来进行一键式安装：
 
-## 安装
-
-`fancy-nlp`当前支持在Python 3环境下使用：
-
-```
+```bash
 pip install fancy-nlp
-pip install git+https://www.github.com/keras-team/keras-contrib.git
 ```
 
-## 知识实体识别使用指引
+<h2 align="center">入门指引</h2>
 
-### 自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，分别使用一行代码，实现对商品品牌、型号等知识实体的提取。
+在入门指引中，我们将使用预训练模型来带你快速了解和体验 Fancy-NLP 的基本功能。
 
-在当前的业务场景中，知识实体的提取准确率F1值可以达到**0.8692**。
+*注：我们将在随后不断优化多种场景（不同标注数据）的实体识别模型，以供用户直接使用，如果你有相关数据集，也欢迎在 issue 中给我们积极反馈*
 
-```python
->>> from fancy_nlp.applications import NER
-# 获取NER实例
->>> ner_app = NER()
-# 加载你的训练集和验证集
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
->>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
-# 开始训练模型
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',
-                char_embed_trainable=True,
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir='pretrained_models',
-                model_name='dpa_ner_bilstm_cnn_crf',
-                load_swa_model=True)
-# 使用测试集评估模型效果
->>> test_data, test_labels = load_ner_data_and_labels('./your/path/to/test.txt')
->>> ner_app.score(test_data, test_labels)
-Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.8692437745364932
-...
->>> ner_app.restrict_analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
-{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
- 'entities': [{'name': '小米',
-   'type': '品牌',
-   'score': 0.9986118674278259,
-   'beginOffset': 0,
-   'endOffset': 2},
-  {'name': '骁龙712',
-   'type': '型号',
-   'score': 0.9821863174438477,
-   'beginOffset': 5,
-   'endOffset': 10},
-  {'name': '手机',
-   'type': '类别',
-   'score': 0.9981447458267212,
-   'beginOffset': 30,
-   'endOffset': 32}]}
->>> ner_app.analyze('小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机')
-{'text': '小米9SE骁龙712全息幻彩紫8GB+128GB游戏智能拍照手机',
- 'entities': [{'name': '小米',
-   'type': '品牌',
-   'score': 0.9986118674278259,
-   'beginOffset': 0,
-   'endOffset': 2},
-  {'name': '9SE',
-   'type': '型号',
-   'score': 0.8843186497688293,
-   'beginOffset': 2,
-   'endOffset': 5},
-  {'name': '骁龙712',
-   'type': '型号',
-   'score': 0.9821863174438477,
-   'beginOffset': 5,
-   'endOffset': 10},
-  {'name': '手机',
-   'type': '类别',
-   'score': 0.9981447458267212,
-   'beginOffset': 30,
-   'endOffset': 32}]}
+### 实体识别使用指引
 
-``` 
+当前版本的 Fancy-NLP 可以默认加载使用了 [MSRA NER 子集数据](https://github.com/juand-r/entity-recognition-datasets) 训练得到的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）实体进行识别，默认加载的基础模型是为了便于用户直接体验。若想直接使用自己训练的自定义模型，你可以惨叫后续**详细教程**中的介绍，来构建你的实体提取系统。
 
-### 基础模型
-
-当前fancy-nlp中默认加载了使用MSRA NER数据集训练的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）进行识别。当前的基础模型仅为便于用户直接体验，暂未进行深度的模型调优。目前，你可以根据后续的**自定义模型**使用介绍，来构建你的实体提取系统。
-
-*注：我们将在随后不断优化多种场景（不同标注数据）的实体识别模型，以供用户直接使用*
+#### 初始化实体识别应用程序
 
 ```python
 >>> from fancy_nlp.applications import NER
-# 获取NER实例
 >>> ner_app = NER()
-# analyze: 输出文本中的实体信息
+```
+
+第一次运行以上代码时，会从云端下载预训练的 NER 模型。
+
+#### 输出文本中的实体信息
+
+```python
 >>> ner_app.analyze('同济大学位于上海市杨浦区，校长为陈杰')
 {'text': '同济大学位于上海市杨浦区，校长为陈杰',
  'entities': [
@@ -141,7 +108,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
    'score': 1.0,
    'beginOffset': 16,
    'endOffset': 18}]}
-# restrict_analyze: 限制输出结果中，每种实体只保留一个实体，取得分最高的实体
+```
+
+#### 限制输出结果中，每种实体只保留一个实体，取得分最高的实体
+
+```python
 >>> ner_app.restrict_analyze('同济大学位于上海市杨浦区，校长为陈杰')
 {'text': '同济大学位于上海市杨浦区，校长为陈杰',
  'entities': [
@@ -160,7 +131,11 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
    'score': 1.0,
    'beginOffset': 16,
    'endOffset': 18}]}
-# predict: 查看具体的序列标注结果
+```
+
+#### 查看具体的序列标注结果
+
+```
 >>> ner_app.predict('同济大学位于上海市杨浦区，校长为陈杰')
 ['B-ORG',
  'I-ORG',
@@ -182,38 +157,408 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
  'I-PER']
 ``` 
 
-### BERT 
+### 文本分类使用指引
 
-`fancy-nlp` 提供了各种使用 bert 的方法: 1) 直接微调 bert 模型完成 NLP 任务；2) 使用 bert 模型输出的向量作为下游任务模型的特征输入；3) 结合 bert 模型输出的向量与其他特征向量作为下游任务模型的特征输入。要想在 `fancy-nlp` 使用 bert，你只需要下载好预训练的 bert 模型（如 google 的中文 [bert](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度的 [ernie](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈工大的 [bert_wwm](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)），然后在 `fit` 方法中传入 bert 模型的词表文件、配置文件、模型文件的路径。下面给出三种使用方法的例子。
+Fancy-NLP 中默认加载了在当前公开的[中文新闻标题分类数据集](https://github.com/skdjfla/toutiao-text-classfication-dataset)训练得到的文本分类模型，其能够针对新闻标题文本，预测其所属的新闻类别。
 
-1. **微调bert**  
+#### 初始化文本分类应用程序
+
+```python
+>>> from fancy_nlp.applications import TextClassification
+>>> text_classification_app = TextClassification()
+```
+
+第一次运行以上程序时，会从云端下载预训练模型。
+
+#### 直接预测文本类别
+
+```python
+>>> text_classification_app.predict('苹果iOS占移动互联网流量份额逾65% 位居第一')
+'科技'
+```
+
+#### 输出文本分类得到的目标类别和得分
+
+```python
+>>> text_classification_app.analyze('苹果iOS占移动互联网流量份额逾65% 位居第一')
+('科技', 0.9981864)
+```
+
+### 文本相似度匹配使用指引
+
+Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数据集](http://icrc.hitsz.edu.cn/info/1037/1162.htm)训练得到的文本相似度匹配模型，其能够针对所提供的文本对，预测其是否表达相同的意图。
+
+#### 初始化文本相似度匹配应用程序
+
+```python
+>>> from fancy_nlp.applications import SPM
+>>> spm_app = applications.SPM()
+```
+
+第一次运行以上程序时，会从云端下载预训练的文本相似度匹配模型。
+
+#### 预测文本对是否表达相同意图
+
+```python
+>>> spm_app.predict(('未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'))
+'1'
+```
+
+预测结果中，`1`表示相同意图或相似文本，`0`表示不同意图或不相似文本。
+
+#### 预测文本对是否表达相同意图及其在不同标签上的得分
+
+```python
+>>> spm_app.analyze(('未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'))
+('1', [0.0000325, 0.9999675])
+```
+
+<h2 align="center">详细教程</h2>
+
+在**详细教程**中，你可以了解如何使用 Fancy-NLP 使用你自己的数据集，构建适用于满足自定义场景的自定义模型，并对 Fancy-NLP 的接口有着更加全面的了解。
+
+### 实体识别任务
+
+我们依然采用上文提到过的 [MSRA NER 子集数据](https://github.com/juand-r/entity-recognition-datasets) 为例，来介绍如何使用已有的数据集，来训练属于自己的实体识别模型。以下所有代码片段的完整版，可参考 `examples/ner_example.py`。
+
+#### 数据集准备
+
+在 Fancy-NLP 中，实体识别应用程序支持使用标准的 NER 数据集格式，每个待识别的字符和其对应的标签采用 `\t` 分隔，句子与句子之间采用空行分隔。标签的格式可以是 `BIO`、`BIOES` 等常见的标准格式。
+
+#### 加载训练集和验证集
+
+使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
+
+```python
+>>> from fancy_nlp.applications import NER
+>>> ner_app = NER(use_pretrained=False)
+>>> from fancy_nlp.utils import load_ner_data_and_labels
+>>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+>>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+```
+
+`load_ner_data_and_labels` 实现了对 NER 数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数，这里使用了测试集来作为验证集。实际任务中，你应该具有各自独立的验证集和测试集，从而获得有价值的测试评估结果。
+
+#### 训练模型
+
+当获得了有效的数据后，NER 应用程序就可以开始直接进行模型的训练。
+
+```python
+>>> checkpoint_dir = 'pretrained_models'
+>>> model_name = 'msra_ner_bilstm_cnn_crf'
+>>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+                ner_model_type='bilstm_cnn',
+                char_embed_trainable=True,
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir=checkpoint_dir,
+                model_name=model_name,
+                load_swa_model=True)
+```
+
+对于 NER 应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
+
+- `ner_model_type`： 指明需要使用的模型名称。本例中使用了 `bilstm_cnn` 模型；
+- `char_embed_trainable`：字向量层是否是可以进行微调（fine tuning）。本例中是将其置为 `True`，表示可以进行微调;
+- `callback_list`：需要使用的回调功能名称。本例中使用的回调功能有：
+	- `modelcheckpoint`：使用模型检查点功能。在每次迭代后，保存训练得到的模型；
+	- `earlystopping`：使用提前停止功能。若模型的性能在 n 轮迭代（默认 n=5）后没有提升，则结束训练；
+	- `swa`：**SWA** 表示 Stochastic Weight Averaging，是一种常见的模型集成策略，能够有效提升模型的性能，更多详情可以参考[论文原文](http://auai.org/uai2018/proceedings/papers/313.pdf)中的介绍；
+- `checkpoint_dir`：保存模型文件的目录路径；
+- `model_name`：模型文件的文件名；
+- `load_swa_model`：模型训练完之后，是否加载 SWA 模型权重。这里置为 `True`，表示使用 SWA 模型；
+
+#### 使用测试集评估模型效果
+
+```python
+>>> test_data, test_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+>>> ner_app.score(test_data, test_labels)
+Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.8692437745364932
+```
+
+这里依然使用 `load_ner_data_and_labels` 来处理测试集数据。得到有效的数据格式后，直接使用 NER 应用程序的 `score` 接口来获取模型在测试集中的得分。
+
+#### 保存训练模型
+
+在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
+
+```python
+>>> import os
+>>> ner_app.save(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+```
+
+NER应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
+
+- preprocessor_file：保存的预处理文件；
+- json_file：保存的模型结构文件；
+- weight_file：保存的权重文件名。通常无需显示指定，因为在先前的模型训练中，通过 `modelcheckpoint` 功能，已经将权重文件进行了保存；
+
+#### 加载先前训练得到的模型进行预测
+
+```python
+>>> ner_app.load(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+```
+
+此时的 `ner_app` 就已经具有了对样本进行预测的能力，你就可以完成在 **入门指引** 中提到的相关预测功能。例如，`analyze`、`restrict_analyze`。
+
+### 文本分类任务
+
+我们依然采用上文提到过的 [中文新闻标题分类数据集](https://github.com/skdjfla/toutiao-text-classfication-dataset) 为例，来介绍如何使用已有的数据集，来训练属于自己的文本分类模型。以下所有代码片段的完整版，可参考 `examples/text_classification_example.py`。
+
+#### 数据集准备
+
+在 Fancy-NLP 中，文本分类应用程序支持使用原始文本采用固定分隔符分隔的数据集格式，其可以有多余的和文本分类任务无关的列，只需要保证标签列和输入文本列都处于统一的固定位置即可。
+
+此外，对于分类标签，还需要准备一份标签和标签ID的映射文件，其由两列组成：第一列为标签在数据集中的原始名称，通常为一些编码的ID；第二列为标签原始名称对应的可读名称。该文件的对应关系，将用于在模型预测时，直接输出可读的标签名称。
+
+#### 加载训练集和验证集
+
+使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
+
+```python
+>>> from fancy_nlp.applications import TextClassification
+>>> text_classification_app = TextClassification(use_pretrained=False)
+>>> data_file = 'datasets/text_classification/toutiao/toutiao_cat_data.txt'
+>>> from fancy_nlp.utils import load_text_classification_data_and_labels
+>>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels =
+        load_text_classification_data_and_labels(data_file,
+                                                 label_index=1,
+                                                 text_index=3,
+                                                 delimiter='_!_',
+                                                 split_mode=2,
+                                                 split_size=0.3)
+```
+
+`load_ner_data_and_labels` 实现了对文本分类数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数，这里使用了完整的数据来划分训练集、验证集和测试集。除了数据文件，上述其余参数的具体含义为：
+
+- `label_index`：分类标签在数据文件中所处的位置（位置编号从0开始）；
+- `text_index`：待分类文本在数据文件中所处的位置；
+- `delimiter`：数据文件各列之间的分隔符；
+- `split_mode`：通过改参数来指明如何对原始数据进行划分。其中：
+	- 1：表示将原始数据划分为训练集和验证集，这意味着你先前已经拥有了一份独立的测试集；
+	- 2：表示将原始数据划分为训练接、验证集和测试集；
+- `split_size`：数据划分比例。在 `split_mode=1` 时，其表示将从原始数据中划分出 `split_size` 比例的数据作为验证集；在 `split_mode=2` 时，其表示将从原始数据中划分出 `split_size` 比例的数据作为验证集和测试集的总和，其中验证集和测试集的比例各占一半。
+
+#### 训练模型
+
+当获得了有效的数据后，文本分类应用程序就可以开始直接进行模型的训练。
+
+```python
+>>> dict_file = 'datasets/text_classification/toutiao/toutiao_label_dict.txt'
+>>> model_name = 'toutiao_text_classification_cnn'
+>>> checkpoint_dir = 'pretrained_models'
+>>> text_classification_app.fit(
+        train_data, train_labels, valid_data, valid_labels,
+        text_classification_model_type='cnn',
+        char_embed_trainable=True,
+        callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+        checkpoint_dir=checkpoint_dir,
+        model_name=model_name,
+        label_dict_file=dict_file,
+        max_len=60,
+        load_swa_model=True)
+```
+
+对于文本分类应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
+
+- `text_classification_model_type`： 指明需要使用的模型名称。本例中使用了 `cnn` 模型；
+- `char_embed_trainable`：字向量层是否是可以进行微调（fine tuning）。本例中是将其置为 `True`，表示可以进行微调;
+- `callback_list`：需要使用的回调功能名称。本例中使用的回调功能有：
+	- `modelcheckpoint`：使用模型检查点功能。在每次迭代后，保存训练得到的模型；
+	- `earlystopping`：使用提前停止功能。若模型的性能在 n 轮迭代（默认 n=5）后没有提升，则结束训练；
+	- `swa`：**SWA** 表示 Stochastic Weight Averaging，是一种常见的模型集成策略，能够有效提升模型的性能，更多详情可以参考[论文原文](http://auai.org/uai2018/proceedings/papers/313.pdf)中的介绍；
+- `checkpoint_dir`：保存模型文件的目录路径；
+- `model_name`：模型文件的文件名；
+- `label_dict_file`：标签字典文件，其由两列组成：第一列为标签在数据集中的原始名称，通常为一些编码的ID；第二列为标签原始名称对应的可读名称；
+- `max_len`: 对于输入文本保留的最大长度，超出该长度的文本将被截断；
+- `load_swa_model`：模型训练完之后，是否加载 SWA 模型权重。这里置为 `True`，表示使用 SWA 模型；
+
+#### 使用测试集评估模型效果
+
+```python
+>>> text_classification_app.score(test_data, test_labels)
+```
+
+这里可以直接使用文本分类应用程序的 `score` 接口来获取模型在测试集中的得分。
+
+#### 保存训练模型
+
+在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
+
+```python
+>>> import os
+>>> text_classification_app.save(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+```
+
+文本分类应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
+
+- preprocessor_file：保存的预处理文件；
+- json_file：保存的模型结构文件；
+- weight_file：保存的权重文件名。通常无需显示指定，因为在先前的模型训练中，通过 `modelcheckpoint` 功能，已经将权重文件进行了保存。
+
+#### 加载先前训练得到的模型进行预测
+
+```python
+
+>>> text_classification_app.load(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+```
+
+此时的 `text_classification_app` 就已经具有了对样本进行预测的能力，你就可以完成在 **入门指引** 中提到的相关预测功能。例如，`predict`、`analyze`。
+
+### 文本相似度匹配任务
+
+我们依然采用上文提到过的 [微众银行客服问句匹配数据集](http://icrc.hitsz.edu.cn/info/1037/1162.htm) 为例，介绍如何使用已有的数据集来训练属于自己的文本相似度匹配模型。以下所有代码片段的完整版，可参考 `examples/spm_example.py`。
+
+#### 数据集准备
+
+在 Fancy-NLP 中，文本相似度匹配任务应用程序支持使用原始文本采用`\t`分隔的数据集格式，其由三列组成：第一列和第二列分别为一组文本对；第三列为样本的标签，`1`表示文本语义相似，`0`表示不相似。
+
+#### 加载训练集和验证集
+
+使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
+
+```python
+>>> from fancy_nlp.applications import SPM
+>>> spm_app = applications.SPM(use_pretrained=False)
+>>> train_file = 'datasets/spm/webank/BQ_train.txt'
+>>> valid_file = 'datasets/spm/webank/BQ_dev.txt'
+>>> from fancy_nlp.utils import load_spm_data_and_labels
+>>> train_data, train_labels = load_spm_data_and_labels(train_file)
+>>> valid_data, valid_labels = load_spm_data_and_labels(valid_file)
+```
+
+`load_spm_data_and_labels` 实现了对文本相似度匹配数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数。
+
+#### 训练模型
+
+当获得了有效的数据后，文本相似度匹配应用程序就可以开始直接进行模型的训练。
+
+```python
+>>> model_name = 'spm_siamese_cnn'
+>>> checkpoint_dir = 'pretrained_models'
+>>> spm_app.fit(train_data, train_labels, valid_data, valid_labels,
+                spm_model_type='siamese_cnn',
+                word_embed_trainable=True,
+                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+                checkpoint_dir=checkpoint_dir,
+                model_name=model_name,
+                max_len=60,
+                load_swa_model=True)
+```
+
+对于文本相似度匹配应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
+
+- `spm_model_type`： 指明需要使用的模型名称。本例中使用了 `siamese_cnn` 模型；
+- `word_embed_trainable`：词向量层是否是可以进行微调（fine tuning）。本例中是将其置为 `True`，表示可以进行微调;
+- `callback_list`：需要使用的回调功能名称。本例中使用的回调功能有：
+	- `modelcheckpoint`：使用模型检查点功能。在每次迭代后，保存训练得到的模型；
+	- `earlystopping`：使用提前停止功能。若模型的性能在 n 轮迭代（默认 n=5）后没有提升，则结束训练；
+	- `swa`：**SWA** 表示 Stochastic Weight Averaging，是一种常见的模型集成策略，能够有效提升模型的性能，更多详情可以参考[论文原文](http://auai.org/uai2018/proceedings/papers/313.pdf)中的介绍；
+- `checkpoint_dir`：保存模型文件的目录路径；
+- `model_name`：模型文件的文件名；
+- `max_len`: 对于输入文本保留的最大长度，超出该长度的文本将被截断；
+- `load_swa_model`：模型训练完之后，是否加载 SWA 模型权重。这里置为 `True`，表示使用 SWA 模型；
+
+#### 使用测试集评估模型效果
+
+```python
+>>> test_file = 'datasets/spm/webank/BQ_test.txt'
+>>> test_data, test_labels = load_spm_data_and_labels(test_file)
+>>> spm_app.score(test_data, test_labels)
+```
+
+这里可以直接使用文本相似度匹配应用程序的 `score` 接口来获取模型在测试集中的得分。
+
+#### 保存训练模型
+
+在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
+
+```python
+>>> import os
+>>> spm_app.save(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+```
+
+文本相似度匹配应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
+
+- preprocessor_file：保存的预处理文件；
+- json_file：保存的模型结构文件；
+- weight_file：保存的权重文件名。通常无需显示指定，因为在先前的模型训练中，通过 `modelcheckpoint` 功能，已经将权重文件进行了保存。
+
+#### 加载先前训练得到的模型进行预测
+
+```python
+
+>>> spm_app.load(
+        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+```
+
+此时的 `spm_app` 就已经具有了对样本进行预测的能力，你可以继续完成在 **入门指引** 中提到的相关预测功能。例如，`predict`、`analyze`。
+
+
+### BERT 模型的使用
+
+**Facny-NLP** 提供了各种使用 **BERT** 模型的方法: 
+
+- 直接微调 BERT 模型完成 NLP 任务；
+- 使用 BERT 模型输出的向量作为下游任务模型的特征输入；
+- 结合 BERT 模型输出的向量与其他特征向量作为下游任务模型的特征输入。
+
+要想在 Fancy-NLP 中使用 BERT，你只需要下载好预训练的 BERT 模型（如谷歌官方提供的[中文 BERT 模型](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度提供的 [ERNIE 模型](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈尔滨工业大学提供的 [BERT-wwm 模型](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)）。之后就可以在相关应用程序的 `fit` 方法中传入 BERT 模型的词表文件、配置文件、模型文件的路径。下面以实体识别应用程序为例给出三种使用方法的示范。完整的示例代码，请参考 `examples/bert_fine_tuning.py`、`examples/bert_single.py` 和 `examples/bert_combination.py`。
+
+*注意 BERT 模型只能与字符向量共同使用，不能与词向量共同使用。*
+
+#### 微调 BERT 模型  
+
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.applications import NER
-# 获取NER实例
+# 获取 NER 实例
 >>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
->>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+>>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+>>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bert',  # 设置ner模型类型为'bert'
+                ner_model_type='bert',
                 use_char=False,       
                 use_bert=True,  # 设置只使用bert输入
                 bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
                 bert_cofig_file='/your/path/to/bert_config.json',
-	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
                 bert_trainable=True,  # 设置bert可训练
                 use_word=False,
                 optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
-                model_name='ner_bert_crf',
+                model_name='msra_ner_bert_crf',
                 load_swa_model=True)
-``` 
+```
 
-2. **使用bert输出向量作为下游任务模型的特征输入**   
+在以上代码片段中，需要注意的是：
+
+- `ner_model_type`：设置模型的类型为 `bert`；
+- `use_char`：设置不使用字符级向量，因其与 BERT 输入会有冲突；
+- `use_bert`：设置只使用 BERT 输入；
+- `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
+- `bert_trainable`：设置 BERT 模型参数为可训练状态；
+- `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。 
+
+#### 使用 BERT 模型的输出向量作为下游任务模型的特征输入  
+
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.applications import NER
@@ -221,25 +566,36 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 >>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
->>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+>>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+>>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',  # 设置任一ner模型
-		use_char=False,       
-                use_bert=True,  # 设置只使用bert向量作为特征输入
-                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
+                ner_model_type='bilstm_cnn',
+                use_char=False,       
+                use_bert=True,
+                bert_vocab_file='/your/path/to/vocab.txt',
                 bert_cofig_file='/your/path/to/bert_config.json',
-	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
-                bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
+                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_trainable=False,
                 use_word=False,
-                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                optimizer=Adam(1e-5),
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
-                model_name='ner_bilstm_cnn_bert_crf',
+                model_name='msra_ner_bilstm_cnn_bert_crf',
                 load_swa_model=True)
-``` 
-3. **结合bert输出向量以及其他特征向量**  
+```
+
+在以上代码片段中，需要注意的是：
+
+- `ner_model_type`：设置模型的类型为 `bilstm_cnn`，这里需使用非 BERT 模型；
+- `use_char`：设置不使用字符级向量；
+- `use_bert`：设置只使用 BERT 向量作为特征输入；
+- `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
+- `bert_trainable`：设置 BERT 模型参数为可训练状态，这里设置为 `True` 也可以；
+- `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。
+
+#### 结合 BERT 输出向量以及其他特征向量  
+
 ```python
 >>> from keras.optimizers import Adam
 >>> from fancy_nlp.applications import NER
@@ -247,241 +603,67 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 >>> ner_app = NER()
 # 加载你的训练集和验证集
 >>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('/your/path/to/train.txt')
->>> valid_data, valid_labels = load_ner_data_and_labels('/your/path/to/valid.txt')
+>>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+>>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
 # 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',  # 设置任一ner模型
-		use_char=True,         
-                use_bert=True,  # 结合字向量以及bert向量作为特征输入
-                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
+                ner_model_type='bilstm_cnn',
+				   use_char=True,
+                use_bert=True,
+                bert_vocab_file='/your/path/to/vocab.txt',
                 bert_cofig_file='/your/path/to/bert_config.json',
-	        bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
-                bert_trainable=True,  # 设置bert训练方法（固定和微调均可）
+                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
+                bert_trainable=True,
                 use_word=False,
-                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                optimizer=Adam(1e-5),
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
-                model_name='ner_bilstm_cnn_char_bert_crf',
+                model_name='msra_ner_bilstm_cnn_char_bert_crf',
                 load_swa_model=True)
 ``` 
 
-## 文本分类使用指引
+在以上代码片段中，需要注意的是：
 
-### 自定义模型
-在当前的商品画像构建业务中，我们为海量的商品建立了基础的商品画像信息，使用`fancy-nlp`可以基于商品名的文本信息，使用一行代码，实现对商品类目的获取。在目前的实际业务场景中，商品分类准确率可以达到**0.8428**。
+- `ner_model_type`：设置模型的类型为 `bilstm_cnn`，这里需使用非 BERT 模型；
+- `use_char`：设置使用字符级向量；
+- `use_bert`：设置只使用 BERT 向量，这将结合字向量以及 BERT 向量作为特征输入；
+- `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
+- `bert_trainable`：设置 BERT 模型参数为可训练状态，这里设置为 `True` 也可以；
+- `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。
 
-```python
->>> from fancy_nlp.utils import load_text_classification_data_and_labels
-# 加载自定义业务数据集，并将其拆分为train、valid以及test
->>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels = load_text_classification_data_and_labels(
-    '/path/to/your/data.txt',
-    label_index=1,
-    text_index=3,
-    delimiter='_!_',
-    split_mode=2,
-    split_size=0.3)
+<h2 align="center">荣誉奖励</h2>
 
->>> from fancy_nlp import applications
-# 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
->>> text_classification_app = applications.TextClassification(use_pretrained=False)
+- 本项目源自**2019腾讯广告犀牛鸟专项研究计划——面向商品推荐的知识图谱构建技术研究**，核心贡献者由腾讯广告团队与同济大学大数据处理与智能分析实验室组成；
+- **Fancy-NLP** 在**CCKS 2019——中文短文本的实体链指**评测竞赛中取得了初赛第三名，复赛[第五名](https://biendata.com/competition/ccks_2019_el/final-leaderboard/)的成绩，且获得了该评测竞赛唯一的一项[技术创新奖](https://biendata.com/competition/ccks_2019_el/winners/)，可复现流程指引，请参考原始[repo](https://github.com/AlexYangLi/ccks2019_el)；
+- **Fancy-NLP 0.0.1** 版本获得了2019年腾讯AI代码文化奖第三期优秀奖。 
 
->>> text_classification_app.fit(train_data, train_labels, valid_data, valid_labels,
-                                text_classification_model_type='rcnn',
-                                char_embed_trainable=True,
-                                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                                checkpoint_dir='pretrained_models',
-                                model_name='text_classification_rcnn',
-                                label_dict_file='/your/path/to/label_dict.txt',
-                                max_len=60,
-                                epochs=50,
-                                load_swa_model=True)
-# 训练完毕后，可以评估模型在测试集中的得分
->>> text_classification_app.score(test_data, test_labels)
-# 使用一行代码对输入文本进行商品类目的预测
->>> text_classification_app.predict('亿色(ESR)红米k20/红米k20pro钢化膜 全屏覆盖防指纹 自营无白边小米Redmi k20pro防爆手机贴膜保护膜 高清')
-'手机通讯|手机配件|手机贴膜'
-# 输出结果中附带预测的概率值
->>> text_classification_app.analyze('亿色(ESR)红米k20/红米k20pro钢化膜 全屏覆盖防指纹 自营无白边小米Redmi k20pro防爆手机贴膜保护膜 高清')
-('手机通讯|手机配件|手机贴膜', 0.9966506)
+<h2 align="center">如何贡献代码</h2>
+
+请有意改进 **Fancy NLP** 代码的开发者遵循一下规范来提交 Pull requests： 
+
+- 项目的代码规范请符合 [PEP8](https://www.python.org/dev/peps/pep-0008/) 标准；
+- 所有的代码提交请遵循[约定式提交规范](https://www.conventionalcommits.org/zh/v1.0.0-beta.4/)；
+- 为项目添加新的核心代码，请编写相应的[单元测试](https://docs.pytest.org/en/latest/)模块。
+
+<h2 align="center">引用</h2>
+
+如果你在相关研究过程中使用了 **Fancy NLP**，你可以将以下内容加入到引用列表中
+
+```latex
+@misc{tencent2019fancynlp,
+  title={Fancy-NLP},
+  author={Li Yang and Shiyao Xu and Shijia E},
+  howpublished={\url{https://github.com/boat-group/fancy-nlp}},
+  year={2019}
+}
 ```
 
-### 基础模型
+<h2 align="center">致谢</h2>
+<p align="right"><a href="#Fancy-NLP"><sup>▴ 返回顶部</sup></a></p>
 
-fancy-nlp中默认加载了在当前公开的中文新闻标题分类数据集训练得到的文本分类模型，其能够针对新闻标题文本，预测其所属的新闻类别。
-
-```python
->>> from fancy_nlp import applications
->>> text_classification_app = applications.TextClassification()
->>> text_classification_app.predict('苹果iOS占移动互联网流量份额逾65% 位居第一')
-'科技'
->>> text_classification_app.analyze('苹果iOS占移动互联网流量份额逾65% 位居第一')
-('科技', 0.9981864)
-```
-
-### Bert
-
-文本分类模型和知识实体识别模型一样，支持对Bert Embedding的使用，具体使用方式可以参照知识实体识别指引中的介绍。
-
-## 文本相似度匹配使用指引
-
-### 自定义模型
-使用`fancy-nlp`可以基于文本对信息，使用一行代码，实现对文本间相似程度的判断。
-
-```python
->>> from fancy_nlp.utils import load_spm_data_and_labels
-# 加载自定义数据集，并将其拆分为train、valid以及test
->>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels = load_spm_data_and_labels(
-    '/path/to/your/data.txt',
-    split_mode=2,
-    split_size=0.3)
-
->>> from fancy_nlp import applications
-# 不加载基础模型，可以使用自定义的label_dict_file来指明标签的实际名称，该文件为两列，第一列为数据集中的标签名称，第二列为易于理解的标签名称，两列文本以tab分隔
->>> spm_app = applications.SPM(use_pretrained=False)
-
->>> spm_app.fit(train_data, train_labels, valid_data, valid_labels,
-                spm_model_type='siamese_cnn',
-                word_embed_trainable=True,
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir='pretrained_models',
-                model_name='spm_siamese_cnn',
-                label_dict_file='/your/path/to/label_dict.txt',
-                max_len=60,
-                epochs=50,
-                load_swa_model=True)
-# 训练完毕后，可以评估模型在测试集中的F1得分
->>> spm_app.score(test_data, test_labels)
-# 使用一行代码对输入文本对进行匹配度的预测
->>> spm_app.predict(['Text_A', 'Text_B'])
-# 输出结果中附带预测的概率值
->>> spm_app.analyze(['Text_A', 'Text_B'])
-```
-
-### 基础模型
-
-fancy-nlp中默认加载了在当前公开的微众银行客服问句匹配数据集训练得到的文本相似度匹配模型，其能够针对问句文本对，预测其是否表达相同意图。
-
-```python
->>> from fancy_nlp import applications
->>> spm_app = applications.SPM()
-# 预测问题对是否表达相同意图（'1'：相同意图，'0'：不同意图）
->>> spm_app.predict(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
-'1'
->>> spm_app.analyze(['未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'])
-('1', [0.0000325, 0.9999675])
-```
-
-### Bert
-文本相似度匹配模型和知识实体识别模型一样，支持对微调Bert和Bert Embedding的使用，具体使用方式可以参照知识实体识别指引中的介绍。
-其中Bert Embedding只能与字符向量共同使用，不能与词向量共同使用。
-
-## 模型架构
-### 知识实体识别
-对于知识实体识别，我们使用字向量序列作为基础输入，并在此基础上：
-
-- 加入bert特征向量；
-- 加入分词特征，包括字所在词的词向量与位置向量；
-- 加入邻接字特征，如bi-gram字向量；
-- ...  
-
-然后使用序列标注模型进行序列标注，如BiLSTM, BiLSTM+CRF, BiLSTM+CNN+CRF等。
-
-![知识实体识别模型架构](./img/entity_extract.png)
-
-与基于词序列输入和基于字序列输入的模型相比，本实体识别方法可以显式利用句子中词的语义信息，同时还不会受分词错误的影响。
-
-模型在各种基准数据集（如 [Chinese Daily](https://github.com/zjy-ucas/ChineseNER/tree/master/data)、 [MSRA](https://github.com/Determined22/zh-NER-TF/tree/master/data_path)、 [Weibo NER](https://github.com/hltcoe/golden-horse/tree/master/data)、 [CCKS 2019中文短文本实体链接](https://biendata.com/competition/ccks_2019_el/)）训练的效果对比如下：  
-
-| dataset       | model        | F1    | F1_SWA |
-|:-------------:|:------------:|:-----:|:------:|
-|Chinese Daily  |BiLSTM_CRF    |0.82847|0.84509 |
-|Chinese Daily  |BiLSTM_CNN_CRF|0.84728|0.86270 |
-|Chinese Daily  |BiGRU_CRF     |0.82762|0.84478 |
-|Chinese Daily  |BiGRU_CNN_CRF |0.84731|0.86559 |
-|MSRA           |BiLSTM_CRF    |0.83133|0.84293 |
-|MSRA           |BiLSTM_CNN_CRF|0.83899|0.86246 |
-|MSRA           |BiGRU_CRF     |0.81850|0.83567 |
-|MSRA           |BiGRU_CNN_CRF |0.82936|0.84943 |
-|Weibo NER      |BiLSTM_CRF    |0.37027|0.36693 |
-|Weibo NER      |BiLSTM_CNN_CRF|0.37301|0.37750 |
-|Weibo NER      |BiGRU_CRF     |0.37337|0.40049 |
-|Weibo NER      |BiGRU_CNN_CRF |0.39173|0.41147 |
-|CCKS2019 Task 2|BiLSTM_CRF    |0.75963|0.76012 |
-|CCKS2019 Task 2|BiLSTM_CNN_CRF|0.76575|0.76437 |
-|CCKS2019 Task 2|BiGRU_CRF     |0.75507|0.75530 |
-|CCKS2019 Task 2|BiGRU_CNN_CRF |0.75954|0.76268 |
-
-### 文本分类模型
-对于文本分类模型，我们集成了当前常用的文本分类模型，并进行了对比试验，效果如下：
-
-| 序号 |    模型名   | Precision |  Recall | Macro-F1 | Accuracy | Time(s)/60015个样本 |
-|:----:|:-----------:|:---------:|:------:|:--------:|:--------:|:-------------------:|
-|   1  |     CNN     |   0.7532  | 0.7453 |  0.7462  |  0.8636  |        4.7972       |
-|   2  |     LSTM    |   0.7446  | 0.7339 |  0.7389  |  0.8599  |        4.8093       |
-|   3  |   Bi-LSTM   |   0.7436  | 0.7374 |  0.7384  |  0.8594  |        8.7405       |
-|   4  |    DPCNN    |   0.7411  | 0.7326 |  0.7333  |  0.8462  |        5.6679       |
-|   5  |     RCNN    |   0.7687  | 0.7633 |  0.7639  |  0.8744  |       11.1846       |
-|   6  |     DCNN    |   0.6873  | 0.6743 |  0.6746  |  0.7955  |        5.2111       |
-|   7  |    VDCNN    |   0.7119  | 0.6981 |  0.7049  |  0.8065  |       53.2978       |
-|   8  | Att_Bi-LSTM |   0.7512  | 0.7448 |  0.7549  |  0.8644  |        9.0593       |
-|   9  | CNN-Bi-LSTM |   0.7486  | 0.7411 |  0.7422  |  0.8563  |        3.4688       |
-|  10  |   FastText  |   0.7313  | 0.7270 |  0.7274  |  0.8400  |        1.1811       |
-
-效果最优的是RCNN模型，这也是我们当前实际采用的模型。若从模型速度和性能兼顾的角度来考虑，也可采用基础的TextCNN模型，其在一般的业务场景中，在训练数据足够的情况下，也足以满足业务需求
-
-### 文本相似度匹配模型
-在文本相似度匹配任务中，我们根据给定的两段文本，得到文本间的相似程度。相似度匹配模型通过各种方法将词向量编码为文本对应的句子向量，并计算出句子向量间的匹配得分。除了基本的孪生结构的CNN和Bi
--LSTM模型外，还实现了融合注意力机制的ESIM、BiMPM等模型。
-
-- ESIM：交互注意力机制
-- BiMPM：多视角的相似度匹配
-- Bert：微调Bert模型
-
-![文本相似匹配模型架构](./img/text_matching.png)
-
-文本匹配模型可用于文本相似度计算、问答、自然语言推理等多项匹配任务中。
-
-对于fancy-nlp中的文本相似度匹配模型，我们在CCKS 2018微众银行智能问句匹配任务[WeBank](https://biendata
-.com/competition/CCKS2018_3/)
-中进行了对比试验，效果如下：
-
-| 序号 |     模型名    | Precision |  Recall | Macro-F1 | Accuracy |
-|:----:|:-------------:|:---------:|:------:|:--------:|:--------:|
-|   1  |  Siamese_CNN  |   0.7954  | 0.7604 |  0.7775  |  0.7824  |
-|   2  |  Siamese_LSTM |   0.7760  | 0.8119 |  0.7935  |  0.7981  |
-|   3  |      ESIM     |   0.8288  | 0.7814 |  0.8044  |  0.8100  |
-|   4  |      BiMPM    |   0.8066  | 0.8202 |  0.8134  |  0.8149  |
-|   5  |      Bert     |   0.8678  | 0.8102 |  0.8380  |  0.8434  |
-
-## Comming soon
-
-### 知识实体链接
-对于实体链接模型，我们先使用基于注意力机制的Bi-LSTM模型抽取实体指称的语义特征，同时融合多种消歧特征：
-
-- 文本相似度特征；
-- 实体类型匹配特征；
-- 基于文本中所有候选实体所构成的知识子图的多实体联合消歧特征，之后使用排序学习方法对候选实体列表进行排序，得到最佳匹配实体。
-
-![实体链接模型架构](./img/entity_linking.png)
-
-与传统方法相比，该链接模型融合多种消歧特征，能有效解决短文本上下文语境不丰富问题，提高泛化能力。
-
-## Acknowledgement
-
-- 本项目所属2019腾讯广告犀牛鸟专项研究计划，并与同济大学大数据处理与智能分析实验室与联合开发
-- `fancy-nlp`在**CCKS 2019——中文短文本的实体链指**评测竞赛中取得了初赛第三名，复赛[第五名](https://biendata.com/competition/ccks_2019_el/final-leaderboard/)的成绩，且获得了该评测竞赛唯一的一项[技术创新奖](https://biendata.com/competition/ccks_2019_el/winners/)，可复现流程指引，请参考原始[repo](https://github.com/AlexYangLi/ccks2019_el)。
-
-## Contribution
-
-- 项目的代码规范符合PEP8标准
-- 所有的代码提交请遵循[约定式提交规范](https://www.conventionalcommits.org/zh/v1.0.0-beta.4/)
-- 为项目添加新的核心代码，请编写相应的单元测试模块
-
-## Reference
-本项目的灵感来自于众多的优秀的开源项目，尤其是Keras，正如Keras的slogan: **Deep learning for human** 所说，我们希望`fancy-nlp`是**NLP for human**，尤其在中文领域。
+本项目的灵感来自于众多的优秀的开源项目，尤其是Keras，正如Keras的slogan: **Deep learning for human** 所说，我们希望 Fancy NLP 是 **NLP for human**，尤其在中文领域。
 
 - Keras: <https://github.com/keras-team/keras>
 - anoGo: <https://github.com/Hironsan/anago>
 - Kashgari: <https://github.com/BrikerMan/Kashgari>
-
+- bert-as-service: <https://github.com/hanxiao/bert-as-service>
