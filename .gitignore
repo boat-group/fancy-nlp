@@ -108,3 +108,6 @@ venv.bak/
 
 # Pycharm files
 .idea/
+
+# Model checkpoints
+pretrained_models/
