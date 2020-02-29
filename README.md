@@ -47,7 +47,7 @@
 
 <h2 align="center">基本介绍</h2>
 
-**Fancy-NLP** 是由腾讯商品广告策略组团队构建的用于建设商品画像的文本知识挖掘工具，其支持诸如实体提取、文本分类和文本相似度匹配等多种常见 NLP 任务。与当前业界常用框架相比，其能够支持用户进行快速的功能实心：既可以满足高阶用户对模型进行深度定制，也可以让普通用户快速利用预训练的模型快速进行功能实践。在当前的商品广告业务场景中，我们利用该工具快速挖掘海量商品数据的特征，从而支持广告商品推荐等模块中。
+**Fancy-NLP** 是由腾讯商品广告策略组团队构建的用于建设商品画像的文本知识挖掘工具，其支持诸如实体提取、文本分类和文本相似度匹配等多种常见 NLP 任务。与当前业界常用框架相比，其能够支持用户进行快速的功能实现：既可以满足高阶用户对模型进行深度定制，也可以让普通用户快速利用预训练的模型快速进行功能实践。在当前的商品广告业务场景中，我们利用该工具快速挖掘海量商品数据的特征，从而支持广告商品推荐等模块中。
 
 **项目的初衷**是希望提供一套易用的NLP工具，其直接面向使用场景，满足用户对NLP任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
 
@@ -71,7 +71,7 @@ pip install fancy-nlp
 
 ### 实体识别使用指引
 
-当前版本的 Fancy-NLP 可以默认加载使用了 [MSRA NER 子集数据](https://github.com/juand-r/entity-recognition-datasets) 训练得到的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）实体进行识别，默认加载的基础模型是为了便于用户直接体验。若想直接使用自己训练的自定义模型，你可以惨叫后续**详细教程**中的介绍，来构建你的实体提取系统。
+当前版本的 Fancy-NLP 可以默认加载使用了 [MSRA NER 子集数据](https://github.com/juand-r/entity-recognition-datasets) 训练得到的NER模型，其能够对中文文本中的组织机构（ORG）、地点（LOC）以及人物（PER）实体进行识别，默认加载的基础模型是为了便于用户直接体验。若想直接使用自己训练的自定义模型，你可以参照后续**详细教程**中的介绍，来构建你的实体提取系统。
 
 #### 初始化实体识别应用程序
 
@@ -516,32 +516,29 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 - 使用 BERT 模型输出的向量作为下游任务模型的特征输入；
 - 结合 BERT 模型输出的向量与其他特征向量作为下游任务模型的特征输入。
 
-要想在 Fancy-NLP 中使用 BERT，你只需要下载好预训练的 BERT 模型（如谷歌官方提供的[中文 BERT 模型](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度提供的 [ERNIE 模型](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈尔滨工业大学提供的 [BERT-wwm 模型](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)）。之后就可以在相关应用程序的 `fit` 方法中传入 BERT 模型的词表文件、配置文件、模型文件的路径。下面以实体识别应用程序为例给出三种使用方法的示范。完整的示例代码，请参考 `examples/bert_fine_tuning.py`、`examples/bert_single.py` 和 `examples/bert_combination.py`。
+要想在 Fancy-NLP 中使用 BERT，你只需要下载好预训练的 BERT 模型（如谷歌官方提供的[中文 BERT 模型](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip)、百度提供的 [ERNIE 模型（提取码：iq74）](https://pan.baidu.com/s/1I7kKVlZN6hl-sUbnvttJzA)、哈尔滨工业大学提供的 [BERT-wwm 模型](https://drive.google.com/file/d/1RoTQsXp2hkQ1gSRVylRIJfQxJUgkfJMW/view)）。之后就可以在相关应用程序的 `fit` 方法中传入 BERT 模型的词表文件、配置文件、模型文件的路径。下面以实体识别应用程序为例给出三种使用方法的示范。完整的示例代码，请参考 `examples/bert_fine_tuning.py`、`examples/bert_single.py` 和 `examples/bert_combination.py`。
 
 *注意 BERT 模型只能与字符向量共同使用，不能与词向量共同使用。*
 
 #### 微调 BERT 模型  
 
 ```python
->>> from keras.optimizers import Adam
+>>> import tensorflow as tf
 >>> from fancy_nlp.applications import NER
-# 获取 NER 实例
->>> ner_app = NER()
-# 加载你的训练集和验证集
+>>> ner_app = NER(use_pretrained=False)
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
 >>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
-# 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bert',
                 use_char=False,       
-                use_bert=True,  # 设置只使用bert输入
-                bert_vocab_file='/your/path/to/vocab.txt',  # 传入bert模型各文件的路径
-                bert_cofig_file='/your/path/to/bert_config.json',
-                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
-                bert_trainable=True,  # 设置bert可训练
                 use_word=False,
-                optimizer=Adam(1e-5),  # 使用小一点学习率的优化器
+                use_bert=True,  # 设置只使用bert输入
+                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
+                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+                bert_trainable=True,  # 设置bert可训练
+                optimizer=tf.keras.optimizers.Adam(1e-5),  # 使用小一点学习率的优化器
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
                 model_name='msra_ner_bert_crf',
@@ -551,34 +548,31 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 在以上代码片段中，需要注意的是：
 
 - `ner_model_type`：设置模型的类型为 `bert`；
-- `use_char`：设置不使用字符级向量，因其与 BERT 输入会有冲突；
-- `use_bert`：设置只使用 BERT 输入；
+- `use_char`：设置不使用字符级向量；
+- `use_word`：设置不使用单词级向量作为辅助输入；
+- `use_bert`：当微调bert模型时，设置只使用 BERT 输入，；
 - `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
-- `bert_trainable`：设置 BERT 模型参数为可训练状态；
+- `bert_trainable`：设置 BERT 模型参数为可训练状态，即微调；
 - `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。 
 
 #### 使用 BERT 模型的输出向量作为下游任务模型的特征输入  
 
 ```python
->>> from keras.optimizers import Adam
 >>> from fancy_nlp.applications import NER
-# 获取NER实例
->>> ner_app = NER()
-# 加载你的训练集和验证集
+>>> ner_app = NER(use_pretrained=False)
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
 >>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
-# 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bilstm_cnn',
-                use_char=False,       
+                use_char=False,
+                use_word=False,       
                 use_bert=True,
-                bert_vocab_file='/your/path/to/vocab.txt',
-                bert_cofig_file='/your/path/to/bert_config.json',
-                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
-                bert_trainable=False,
-                use_word=False,
-                optimizer=Adam(1e-5),
+                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
+                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+                bert_trainable=False,  # 设置bert不可训练
+                optimizer='adam',
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
                 model_name='msra_ner_bilstm_cnn_bert_crf',
@@ -589,33 +583,31 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 
 - `ner_model_type`：设置模型的类型为 `bilstm_cnn`，这里需使用非 BERT 模型；
 - `use_char`：设置不使用字符级向量；
+- `use_word`：设置不使用单词级向量作为辅助输入；
 - `use_bert`：设置只使用 BERT 向量作为特征输入；
 - `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
-- `bert_trainable`：设置 BERT 模型参数为可训练状态，这里设置为 `True` 也可以；
-- `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。
+- `bert_trainable`：设置 BERT 模型参数为不可训练状态，这里设置为 `True` 也可以；
+- `optimizer`：设置优化器，若bert模型可训练，建议将优化器的学习率调整得小一些。
 
 #### 结合 BERT 输出向量以及其他特征向量  
 
 ```python
->>> from keras.optimizers import Adam
+>>> import tensorflow as tf
 >>> from fancy_nlp.applications import NER
-# 获取NER实例
->>> ner_app = NER()
-# 加载你的训练集和验证集
+>>> ner_app = NER(use_pretrained=False)
 >>> from fancy_nlp.utils import load_ner_data_and_labels
 >>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
 >>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
-# 开始训练模型
 >>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
                 ner_model_type='bilstm_cnn',
-				   use_char=True,
-                use_bert=True,
-                bert_vocab_file='/your/path/to/vocab.txt',
-                bert_cofig_file='/your/path/to/bert_config.json',
-                bert_checkpoint_file='your/path/to/bert_nodel.ckpt',
-                bert_trainable=True,
+				use_char=True,
                 use_word=False,
-                optimizer=Adam(1e-5),
+                use_bert=True,
+                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
+                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
+                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+                bert_trainable=True,  # 设置bert可训练
+                optimizer=tf.keras.optimizers.Adam(1e-5),  # 使用小一点学习率的优化器
                 callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
                 checkpoint_dir='pretrained_models',
                 model_name='msra_ner_bilstm_cnn_char_bert_crf',
@@ -626,10 +618,11 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 
 - `ner_model_type`：设置模型的类型为 `bilstm_cnn`，这里需使用非 BERT 模型；
 - `use_char`：设置使用字符级向量；
-- `use_bert`：设置只使用 BERT 向量，这将结合字向量以及 BERT 向量作为特征输入；
+- `use_word`：设置不使用单词级向量作为辅助输入；
+- `use_bert`：设置使用 BERT 向量，这将结合字向量以及 BERT 向量作为特征输入；
 - `bert_vocab_file`、`bert_config_file`、`bert_checkpoint_file`：BERT 模型相关文件的路径
-- `bert_trainable`：设置 BERT 模型参数为可训练状态，这里设置为 `True` 也可以；
-- `optimizer`：设置 BERT 模型的优化器，在微调 BERT 模型中需要将优化器的学习率调整得小一些。
+- `bert_trainable`：设置 BERT 模型参数为可训练状态，这里设置为 `False` 也可以；
+- `optimizer`：设置优化器，若bert模型可训练，建议将优化器的学习率调整得小一些。
 
 <h2 align="center">荣誉奖励</h2>
 
