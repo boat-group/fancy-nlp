@@ -107,7 +107,7 @@ class TestSPM:
         assert isinstance(score, (float, int))
 
         # test predict
-        valid_label = spm.predict([self.valid_data[0][0], self.valid_data[1][0]])
+        valid_label = spm.predict((self.valid_data[0][0], self.valid_data[1][0]))
         assert isinstance(valid_label, str)
 
         # test predict_batch
@@ -117,7 +117,7 @@ class TestSPM:
         assert valid_label == valid_labels[0]
 
         # test analyze
-        valid_label = spm.analyze([self.valid_data[0][0], self.valid_data[1][0]])
+        valid_label = spm.analyze((self.valid_data[0][0], self.valid_data[1][0]))
         assert isinstance(valid_label, tuple)
         assert len(valid_label) == spm.preprocessor.num_class
 
