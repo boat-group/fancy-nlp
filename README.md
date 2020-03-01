@@ -219,6 +219,49 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 
 在**详细教程**中，你可以了解如何使用 Fancy-NLP 使用你自己的数据集，构建适用于满足自定义场景的自定义模型，并对 Fancy-NLP 的接口有着更加全面的了解。
 
+### 数据下载
+为了完整的体验以下教程，你需要下载我们使用的数据集和BERT 模型：
+
+- 数据集下载链接：<https://share.weiyun.com/5h1IPNj> 密码：`86geqk`
+- BERT 模型下载链接：<https://share.weiyun.com/5neKbM0> 密码：`7e6rb7`
+
+你可以将下载的数据移动至与`examples`目录平级，最终的目录结构如下：
+
+```
+.
+├── datasets
+│   ├── ner
+│   │   └── msra
+│   │       ├── test_data
+│   │       └── train_data
+│   ├── spm
+│   │   └── webank
+│   │       ├── BQ_dev.txt
+│   │       ├── BQ_test.txt
+│   │       └── BQ_train.txt
+│   └── text_classification
+│       └── toutiao
+│           ├── toutiao_cat_data.txt
+│           └── toutiao_label_dict.txt
+├── examples
+│   ├── bert_combination.py
+│   ├── bert_fine_tuning.py
+│   ├── bert_single.py
+│   ├── ner_example.py
+│   ├── spm_example.py
+│   └── text_classification_example.py
+└── pretrained_embeddings
+    └── chinese_L-12_H-768_A-12
+        ├── bert_config.json
+        ├── bert_model.ckpt.data-00000-of-00001
+        ├── bert_model.ckpt.index
+        ├── bert_model.ckpt.meta
+        └── vocab.txt
+
+```
+
+从而你可以直接运行示例程序。例如， `python examples/ner_example.py`。
+
 ### 实体识别任务
 
 我们依然采用上文提到过的 [MSRA NER 子集数据](https://github.com/juand-r/entity-recognition-datasets) 为例，来介绍如何使用已有的数据集，来训练属于自己的实体识别模型。以下所有代码片段的完整版，可参考 `examples/ner_example.py`。
