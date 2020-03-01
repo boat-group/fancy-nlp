@@ -16,7 +16,7 @@ from fancy_nlp.config import CACHE_DIR, MODEL_STORAGE_PREFIX
 class SPM(object):
     """SPM application"""
 
-    def __init__(self, use_pretrained: bool = False) -> None:
+    def __init__(self, use_pretrained: bool = True) -> None:
         self.preprocessor = None
         self.model = None
         self.trainer = None
@@ -389,7 +389,6 @@ class SPM(object):
 
         return spm_model.build_model()
 
-    # todo: 重新训练模型
     def load_pretrained_model(self) -> None:
         cache_subdir = 'pretrained_models'
 

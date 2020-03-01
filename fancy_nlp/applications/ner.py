@@ -11,7 +11,7 @@ from fancy_nlp.models.ner import ner_model_dict
 from fancy_nlp.trainers import NERTrainer
 from fancy_nlp.predictors import NERPredictor
 from fancy_nlp.utils import get_custom_objects
-from fancy_nlp.config import CACHE_DIR
+from fancy_nlp.config import CACHE_DIR, MODEL_STORAGE_PREFIX
 
 
 class NER(object):
@@ -97,7 +97,7 @@ class NER(object):
 
     """
 
-    def __init__(self, use_pretrained: bool = False) -> None:
+    def __init__(self, use_pretrained: bool = True) -> None:
         """
 
         Args:
@@ -681,28 +681,25 @@ class NER(object):
 
             return ner_model.build_model()
 
-    # todo: 重新训练模型
     def load_pretrained_model(self) -> None:
         """Load a pre-trained ner model that was trained on msra dataset using BiLSTM+CNN+CRF model.
 
         """
         cache_subdir = 'pretrained_models'
 
-        prefix = 'https://fancy-nlp-1253403094.cos.ap-shanghai.myqcloud.com/pretrained_models/'
-
         preprocessor_file = tf.keras.utils.get_file(
             fname='msra_ner_bilstm_cnn_crf_preprocessor.pkl',
-            origin=prefix+'msra_ner_bilstm_cnn_crf_preprocessor.pkl',
+            origin=MODEL_STORAGE_PREFIX+'msra_ner_bilstm_cnn_crf_preprocessor.pkl',
             cache_subdir=cache_subdir,
             cache_dir=CACHE_DIR)
         json_file = tf.keras.utils.get_file(
             fname='msra_ner_bilstm_cnn_crf.json',
-            origin=prefix+'msra_ner_bilstm_cnn_crf.json',
+            origin=MODEL_STORAGE_PREFIX+'msra_ner_bilstm_cnn_crf.json',
             cache_subdir=cache_subdir,
             cache_dir=CACHE_DIR)
         weights_file = tf.keras.utils.get_file(
             fname='msra_ner_bilstm_cnn_crf.hdf5',
-            origin=prefix+'msra_ner_bilstm_cnn_crf.hdf5',
+            origin=MODEL_STORAGE_PREFIX+'msra_ner_bilstm_cnn_crf.hdf5',
             cache_subdir=cache_subdir,
             cache_dir=CACHE_DIR)
 
