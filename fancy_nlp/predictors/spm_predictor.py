@@ -33,7 +33,7 @@ class SPMPredictor(object):
         Returns: np.array, shaped [num_classes]
 
         """
-        assert isinstance(text, list) and len(text) == 2, "input must be a list of two texts"
+        assert isinstance(text, tuple) and len(text) == 2, "input must be a tuple of two texts"
         features, _ = self.preprocessor.prepare_input(([text[0]], [text[1]]))
         pred_probs = self.model.predict(features)
         return pred_probs[0]
