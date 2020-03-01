@@ -8,4 +8,4 @@ from . import utils
 from . import applications
 from . import preprocessors
 
-__version__ = '0.0.4'
+__version__ = '1.0.0'

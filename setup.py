@@ -16,7 +16,7 @@ with codecs.open('requirements.txt', 'r', 'utf8') as reader:
     install_requires = list(map(lambda x: x.strip(), reader.readlines()))
 
 setup(name='fancy-nlp',
-      version='0.0.4',
+      version='1.0.0',
       author='boat-group',
       author_email='e.shijia@foxmail.com',
       description='NLP for humans',
