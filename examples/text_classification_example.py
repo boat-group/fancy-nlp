@@ -33,12 +33,10 @@ text_classification_app.fit(train_data, train_labels, valid_data, valid_labels,
                             max_len=60,
                             load_swa_model=True)
 
-# noinspection DuplicatedCode
 text_classification_app.save(
     preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
     json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
 
-# noinspection DuplicatedCode
 text_classification_app.load(
     preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
     json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),

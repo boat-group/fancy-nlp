@@ -9,7 +9,7 @@ train_file = 'datasets/spm/webank/BQ_train.txt'
 valid_file = 'datasets/spm/webank/BQ_dev.txt'
 test_file = 'datasets/spm/webank/BQ_test.txt'
 
-model_name = 'spm_siamese_cnn'
+model_name = 'webank_spm_siamese_cnn_word'
 checkpoint_dir = 'pretrained_models'
 
 if not os.path.exists(checkpoint_dir):
@@ -29,6 +29,15 @@ spm_app.fit(train_data, train_labels, valid_data, valid_labels,
             model_name=model_name,
             max_len=60,
             load_swa_model=True)
+
+spm_app.save(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+
+spm_app.load(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+    weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 
 print(spm_app.score(test_data, test_labels))
 print(spm_app.predict(('未满足微众银行审批是什么意思', '为什么我未满足微众银行审批')))

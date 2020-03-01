@@ -27,11 +27,9 @@ ner.fit(train_data, train_labels, dev_data, dev_labels,
         model_name=model_name,
         load_swa_model=True)
 
-# noinspection DuplicatedCode
 ner.save(preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
          json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
 
-# noinspection DuplicatedCode
 ner.load(preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
          json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
          weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
@@ -41,4 +39,4 @@ print(ner.analyze(train_data[2]))
 print(ner.analyze_batch(train_data[:3]))
 print(ner.restrict_analyze(train_data[2]))
 print(ner.restrict_analyze_batch(train_data[:3]))
-print(ner.analyze('同济大学本部校区的地址位于上海市杨浦区'))
+print(ner.analyze('同济大学位于上海市杨浦区，校长为陈杰'))
