@@ -181,7 +181,7 @@ Fancy-NLP 中默认加载了在当前公开的[中文新闻标题分类数据集
 
 ```python
 >>> text_classification_app.analyze('苹果iOS占移动互联网流量份额逾65% 位居第一')
-('科技', 0.9981864)
+('科技', 0.9996544)
 ```
 
 ### 文本相似度匹配使用指引
@@ -192,7 +192,7 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 
 ```python
 >>> from fancy_nlp.applications import SPM
->>> spm_app = applications.SPM()
+>>> spm_app = SPM()
 ```
 
 第一次运行以上程序时，会从云端下载预训练的文本相似度匹配模型。
@@ -210,7 +210,7 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 
 ```python
 >>> spm_app.analyze(('未满足微众银行审批是什么意思', '为什么我未满足微众银行审批'))
-('1', [0.0000325, 0.9999675])
+('1', array([1.6599501e-09, 1.0000000e+00], dtype=float32))
 ```
 
 <h2 align="center">详细教程</h2>
@@ -230,11 +230,12 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
 
 ```python
->>> from fancy_nlp.applications import NER
->>> ner_app = NER(use_pretrained=False)
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
->>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+from fancy_nlp.applications import NER
+ner_app = NER(use_pretrained=False)
+
+from fancy_nlp.utils import load_ner_data_and_labels
+train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
 ```
 
 `load_ner_data_and_labels` 实现了对 NER 数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数，这里使用了测试集来作为验证集。实际任务中，你应该具有各自独立的验证集和测试集，从而获得有价值的测试评估结果。
@@ -244,15 +245,15 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 当获得了有效的数据后，NER 应用程序就可以开始直接进行模型的训练。
 
 ```python
->>> checkpoint_dir = 'pretrained_models'
->>> model_name = 'msra_ner_bilstm_cnn_crf'
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',
-                char_embed_trainable=True,
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir=checkpoint_dir,
-                model_name=model_name,
-                load_swa_model=True)
+checkpoint_dir = 'pretrained_models'
+model_name = 'msra_ner_bilstm_cnn_crf'
+ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+            ner_model_type='bilstm_cnn',
+            char_embed_trainable=True,
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir=checkpoint_dir,
+            model_name=model_name,
+            load_swa_model=True)
 ```
 
 对于 NER 应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
@@ -270,9 +271,8 @@ Fancy-NLP 中默认加载了在当前公开的[微众银行客服问句匹配数
 #### 使用测试集评估模型效果
 
 ```python
->>> test_data, test_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
->>> ner_app.score(test_data, test_labels)
-Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.8692437745364932
+test_data, test_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+ner_app.score(test_data, test_labels)
 ```
 
 这里依然使用 `load_ner_data_and_labels` 来处理测试集数据。得到有效的数据格式后，直接使用 NER 应用程序的 `score` 接口来获取模型在测试集中的得分。
@@ -282,10 +282,10 @@ Recall: 0.8922289546443909, Precision: 0.8474131187842217, F1: 0.869243774536493
 在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
 
 ```python
->>> import os
->>> ner_app.save(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+import os
+ner_app.save(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
 ```
 
 NER应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
@@ -297,10 +297,10 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 加载先前训练得到的模型进行预测
 
 ```python
->>> ner_app.load(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
-        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+ner_app.load(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+    weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 ```
 
 此时的 `ner_app` 就已经具有了对样本进行预测的能力，你就可以完成在 **入门指引** 中提到的相关预测功能。例如，`analyze`、`restrict_analyze`。
@@ -320,17 +320,19 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
 
 ```python
->>> from fancy_nlp.applications import TextClassification
->>> text_classification_app = TextClassification(use_pretrained=False)
->>> data_file = 'datasets/text_classification/toutiao/toutiao_cat_data.txt'
->>> from fancy_nlp.utils import load_text_classification_data_and_labels
->>> train_data, train_labels, valid_data, valid_labels, test_data, test_labels =
-        load_text_classification_data_and_labels(data_file,
-                                                 label_index=1,
-                                                 text_index=3,
-                                                 delimiter='_!_',
-                                                 split_mode=2,
-                                                 split_size=0.3)
+from fancy_nlp.applications import TextClassification
+text_classification_app = TextClassification(use_pretrained=False)
+
+data_file = 'datasets/text_classification/toutiao/toutiao_cat_data.txt'
+
+from fancy_nlp.utils import load_text_classification_data_and_labels
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels =
+    load_text_classification_data_and_labels(data_file,
+                                             label_index=1,
+                                             text_index=3,
+                                             delimiter='_!_',
+                                             split_mode=2,
+                                             split_size=0.3)
 ```
 
 `load_ner_data_and_labels` 实现了对文本分类数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数，这里使用了完整的数据来划分训练集、验证集和测试集。除了数据文件，上述其余参数的具体含义为：
@@ -348,19 +350,19 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 当获得了有效的数据后，文本分类应用程序就可以开始直接进行模型的训练。
 
 ```python
->>> dict_file = 'datasets/text_classification/toutiao/toutiao_label_dict.txt'
->>> model_name = 'toutiao_text_classification_cnn'
->>> checkpoint_dir = 'pretrained_models'
->>> text_classification_app.fit(
-        train_data, train_labels, valid_data, valid_labels,
-        text_classification_model_type='cnn',
-        char_embed_trainable=True,
-        callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-        checkpoint_dir=checkpoint_dir,
-        model_name=model_name,
-        label_dict_file=dict_file,
-        max_len=60,
-        load_swa_model=True)
+dict_file = 'datasets/text_classification/toutiao/toutiao_label_dict.txt'
+model_name = 'toutiao_text_classification_cnn'
+checkpoint_dir = 'pretrained_models'
+text_classification_app.fit(
+    train_data, train_labels, valid_data, valid_labels,
+    text_classification_model_type='cnn',
+    char_embed_trainable=True,
+    callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+    checkpoint_dir=checkpoint_dir,
+    model_name=model_name,
+    label_dict_file=dict_file,
+    max_len=60,
+    load_swa_model=True)
 ```
 
 对于文本分类应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
@@ -380,7 +382,7 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 使用测试集评估模型效果
 
 ```python
->>> text_classification_app.score(test_data, test_labels)
+text_classification_app.score(test_data, test_labels)
 ```
 
 这里可以直接使用文本分类应用程序的 `score` 接口来获取模型在测试集中的得分。
@@ -390,10 +392,10 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
 
 ```python
->>> import os
->>> text_classification_app.save(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+import os
+text_classification_app.save(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
 ```
 
 文本分类应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
@@ -405,11 +407,10 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 加载先前训练得到的模型进行预测
 
 ```python
-
->>> text_classification_app.load(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
-        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+text_classification_app.load(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+    weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 ```
 
 此时的 `text_classification_app` 就已经具有了对样本进行预测的能力，你就可以完成在 **入门指引** 中提到的相关预测功能。例如，`predict`、`analyze`。
@@ -427,13 +428,15 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 使用 Fancy-NLP 提供的接口，我们可以直接对数据集进行加载，并处理成模型所需要的格式。
 
 ```python
->>> from fancy_nlp.applications import SPM
->>> spm_app = applications.SPM(use_pretrained=False)
->>> train_file = 'datasets/spm/webank/BQ_train.txt'
->>> valid_file = 'datasets/spm/webank/BQ_dev.txt'
->>> from fancy_nlp.utils import load_spm_data_and_labels
->>> train_data, train_labels = load_spm_data_and_labels(train_file)
->>> valid_data, valid_labels = load_spm_data_and_labels(valid_file)
+from fancy_nlp.applications import SPM
+spm_app = applications.SPM(use_pretrained=False)
+
+train_file = 'datasets/spm/webank/BQ_train.txt'
+valid_file = 'datasets/spm/webank/BQ_dev.txt'
+
+from fancy_nlp.utils import load_spm_data_and_labels
+train_data, train_labels = load_spm_data_and_labels(train_file)
+valid_data, valid_labels = load_spm_data_and_labels(valid_file)
 ```
 
 `load_spm_data_and_labels` 实现了对文本相似度匹配数据集的有效加载，你可以直接将需要加载的数据（训练集、验证集或测试集）文件路径作为参数。
@@ -443,16 +446,16 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 当获得了有效的数据后，文本相似度匹配应用程序就可以开始直接进行模型的训练。
 
 ```python
->>> model_name = 'spm_siamese_cnn'
->>> checkpoint_dir = 'pretrained_models'
->>> spm_app.fit(train_data, train_labels, valid_data, valid_labels,
-                spm_model_type='siamese_cnn',
-                word_embed_trainable=True,
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir=checkpoint_dir,
-                model_name=model_name,
-                max_len=60,
-                load_swa_model=True)
+model_name = 'spm_siamese_cnn'
+checkpoint_dir = 'pretrained_models'
+spm_app.fit(train_data, train_labels, valid_data, valid_labels,
+            spm_model_type='siamese_cnn',
+            word_embed_trainable=True,
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir=checkpoint_dir,
+            model_name=model_name,
+            max_len=60,
+            load_swa_model=True)
 ```
 
 对于文本相似度匹配应用程序的 `fit` 接口，你需要传入之前处理过的训练集和验证集样本，其余参数的含义如下：
@@ -471,9 +474,9 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 使用测试集评估模型效果
 
 ```python
->>> test_file = 'datasets/spm/webank/BQ_test.txt'
->>> test_data, test_labels = load_spm_data_and_labels(test_file)
->>> spm_app.score(test_data, test_labels)
+test_file = 'datasets/spm/webank/BQ_test.txt'
+test_data, test_labels = load_spm_data_and_labels(test_file)
+spm_app.score(test_data, test_labels)
 ```
 
 这里可以直接使用文本相似度匹配应用程序的 `score` 接口来获取模型在测试集中的得分。
@@ -483,10 +486,10 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 在训练完模型后，需要将任务需要的所有模型相关文件进行保存，以便于在外部其它应用中使用 Fancy-NLP 训练过的模型。
 
 ```python
->>> import os
->>> spm_app.save(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
+import os
+spm_app.save(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'))
 ```
 
 文本相似度匹配应用程序的 `save` 接口可以用来将模型的结构文件（json）以及权重文件（hdf5）和预处理的相关结果（pickle）进行持久化保存：
@@ -498,11 +501,10 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 加载先前训练得到的模型进行预测
 
 ```python
-
->>> spm_app.load(
-        preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
-        json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
-        weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
+spm_app.load(
+    preprocessor_file=os.path.join(checkpoint_dir, f'{model_name}_preprocessor.pkl'),
+    json_file=os.path.join(checkpoint_dir, f'{model_name}.json'),
+    weights_file=os.path.join(checkpoint_dir, f'{model_name}_swa.hdf5'))
 ```
 
 此时的 `spm_app` 就已经具有了对样本进行预测的能力，你可以继续完成在 **入门指引** 中提到的相关预测功能。例如，`predict`、`analyze`。
@@ -523,26 +525,27 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 微调 BERT 模型  
 
 ```python
->>> import tensorflow as tf
->>> from fancy_nlp.applications import NER
->>> ner_app = NER(use_pretrained=False)
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
->>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bert',
-                use_char=False,       
-                use_word=False,
-                use_bert=True,  # 设置只使用bert输入
-                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
-                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
-                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
-                bert_trainable=True,  # 设置bert可训练
-                optimizer=tf.keras.optimizers.Adam(1e-5),  # 使用小一点学习率的优化器
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir='pretrained_models',
-                model_name='msra_ner_bert_crf',
-                load_swa_model=True)
+import tensorflow as tf
+from fancy_nlp.applications import NER
+ner_app = NER(use_pretrained=False)
+
+from fancy_nlp.utils import load_ner_data_and_labels
+train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+            ner_model_type='bert',
+            use_char=False,       
+            use_word=False,
+            use_bert=True,
+            bert_vocab_file='pretrained_embeddings/chinese_L-12_H-768_A-12/vocab.txt',
+            bert_cofig_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_config.json',
+            bert_checkpoint_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+            bert_trainable=True,
+            optimizer=tf.keras.optimizers.Adam(1e-5),
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir='pretrained_models',
+            model_name='msra_ner_bert_crf',
+            load_swa_model=True)
 ```
 
 在以上代码片段中，需要注意的是：
@@ -558,25 +561,26 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 使用 BERT 模型的输出向量作为下游任务模型的特征输入  
 
 ```python
->>> from fancy_nlp.applications import NER
->>> ner_app = NER(use_pretrained=False)
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
->>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',
-                use_char=False,
-                use_word=False,       
-                use_bert=True,
-                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
-                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
-                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
-                bert_trainable=False,  # 设置bert不可训练
-                optimizer='adam',
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir='pretrained_models',
-                model_name='msra_ner_bilstm_cnn_bert_crf',
-                load_swa_model=True)
+from fancy_nlp.applications import NER
+ner_app = NER(use_pretrained=False)
+
+from fancy_nlp.utils import load_ner_data_and_labels
+train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+            ner_model_type='bilstm_cnn',
+            use_char=False,
+            use_word=False,       
+            use_bert=True,
+            bert_vocab_file='pretrained_embeddings/chinese_L-12_H-768_A-12/vocab.txt',
+            bert_cofig_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_config.json',
+            bert_checkpoint_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+            bert_trainable=False,
+            optimizer='adam',
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir='pretrained_models',
+            model_name='msra_ner_bilstm_cnn_bert_crf',
+            load_swa_model=True)
 ```
 
 在以上代码片段中，需要注意的是：
@@ -592,26 +596,27 @@ NER应用程序的 `save` 接口可以用来将模型的结构文件（json）�
 #### 结合 BERT 输出向量以及其他特征向量  
 
 ```python
->>> import tensorflow as tf
->>> from fancy_nlp.applications import NER
->>> ner_app = NER(use_pretrained=False)
->>> from fancy_nlp.utils import load_ner_data_and_labels
->>> train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
->>> valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
->>> ner_app.fit(train_data, train_labels, valid_data, valid_labels,
-                ner_model_type='bilstm_cnn',
-				use_char=True,
-                use_word=False,
-                use_bert=True,
-                bert_vocab_file='pretrained_models/chinese_L-12_H-768_A-12/vocab.txt',  # 传入bert模型各文件的路径
-                bert_cofig_file='pretrained_models/chinese_L-12_H-768_A-12/bert_config.json',
-                bert_checkpoint_file='pretrained_models/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
-                bert_trainable=True,  # 设置bert可训练
-                optimizer=tf.keras.optimizers.Adam(1e-5),  # 使用小一点学习率的优化器
-                callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
-                checkpoint_dir='pretrained_models',
-                model_name='msra_ner_bilstm_cnn_char_bert_crf',
-                load_swa_model=True)
+import tensorflow as tf
+from fancy_nlp.applications import NER
+ner_app = NER(use_pretrained=False)
+
+from fancy_nlp.utils import load_ner_data_and_labels
+train_data, train_labels = load_ner_data_and_labels('datasets/ner/msra/train_data')
+valid_data, valid_labels = load_ner_data_and_labels('datasets/ner/msra/test_data')
+ner_app.fit(train_data, train_labels, valid_data, valid_labels,
+            ner_model_type='bilstm_cnn',
+            use_char=True,
+            use_word=False,
+            use_bert=True,
+            bert_vocab_file='pretrained_embeddings/chinese_L-12_H-768_A-12/vocab.txt',
+            bert_cofig_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_config.json',
+            bert_checkpoint_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_nodel.ckpt',
+            bert_trainable=True,
+            optimizer=tf.keras.optimizers.Adam(1e-5),
+            callback_list=['modelcheckpoint', 'earlystopping', 'swa'],
+            checkpoint_dir='pretrained_models',
+            model_name='msra_ner_bilstm_cnn_char_bert_crf',
+            load_swa_model=True)
 ``` 
 
 在以上代码片段中，需要注意的是：
