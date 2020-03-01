@@ -26,7 +26,7 @@ ner.fit(train_data, train_labels, valid_data, valid_labels,
         use_bert=True,
         # 传入bert模型各文件的路径
         bert_vocab_file='pretrained_embeddings/chinese_L-12_H-768_A-12/vocab.txt',
-        bert_cofig_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_config.json',
+        bert_config_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_config.json',
         bert_checkpoint_file='pretrained_embeddings/chinese_L-12_H-768_A-12/bert_model.ckpt',
         # 设置bert可训练
         bert_trainable=True,
