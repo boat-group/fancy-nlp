@@ -1,6 +1,6 @@
 <h1 align="center">Fancy-NLP</h1>
 
-<p align="center">NLP for human. A fast and esay-to-use natural language processing (NLP) toolkit, satisfying your imagination about NLP.</p>
+<p align="center">NLP for human. A fast and easy-to-use natural language processing (NLP) toolkit, satisfying your imagination about NLP.</p>
 
 <p align="left"><a href="https://github.com/boat-group/fancy-nlp/blob/master/README.md"><sup>→ 中文版本</sup></a></p>
 
