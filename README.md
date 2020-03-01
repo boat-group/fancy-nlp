@@ -1,6 +1,8 @@
 <h1 align="center">Fancy-NLP</h1>
 
-<p align="center">NLP for human. A fast and esay-to-use natural language processing (NLP) toolkit, satisfying your imagination about NLP.</p>
+<p align="center">NLP for human. A fast and easy-to-use natural language processing (NLP) toolkit, satisfying your imagination about NLP.</p>
+
+<p align="left"><a href="https://github.com/boat-group/fancy-nlp/blob/master/README.md"><sup>→ English version</sup></a></p>
 
 <div align="center">
   <img src="./img/fancy-nlp_300-180_white.jpg">
@@ -51,7 +53,7 @@
 
 **项目的初衷**是希望提供一套易用的NLP工具，其直接面向使用场景，满足用户对NLP任务的需求，使得用户无需处理复杂的预处理等中间过程，直接针对输入的自然语言文本来完成多种NLP任务，实现所想即所得！
 
-**Fancy 是什么寓意？**对于当前众多的NLP任务，例如实体识别（Named Entity Recognizition, NER）、文本分类以及文本相似度匹配（Sentence Pair Matching, SPM），大多数工具的设计都是偏向于模型的训练和评估。当普通用户希望将这些模型应用于实际业务场景中时，往往需要进行复杂的预处理和部署配置，这些过程往往和用户所期望的流程不符。因此 **Fancy** 的寓意为**满足你的想象**，你可以在 Fancy-NLP 中实现对 NLP 任务各个环节的一键式处理，高效将模型应用于实际的需求场景中。
+**Fancy 是什么寓意？**对于当前众多的NLP任务，例如实体识别（Named Entity Recognition, NER）、文本分类以及文本相似度匹配（Sentence Pair Matching, SPM），大多数工具的设计都是偏向于模型的训练和评估。当普通用户希望将这些模型应用于实际业务场景中时，往往需要进行复杂的预处理和部署配置，这些过程往往和用户所期望的流程不符。因此 **Fancy** 的寓意为**满足你的想象**，你可以在 Fancy-NLP 中实现对 NLP 任务各个环节的一键式处理，高效将模型应用于实际的需求场景中。
 
 <h2 align="center">安装</h2>
 
