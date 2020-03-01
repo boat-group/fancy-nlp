@@ -1,1 +1,2 @@
 datasets/** filter=lfs diff=lfs merge=lfs -text
+pretrained_embeddings/** filter=lfs diff=lfs merge=lfs -text
